@@ -19,7 +19,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 include_directories(
     ./IncludeLib/vcglib
-    ./IncludeLib/ann_1.1.2/include
     )
 
 QT4_ADD_RESOURCES (RES_SRC  mainwindow.qrc )
