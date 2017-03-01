@@ -55,36 +55,26 @@ class AnistropicPca
     typedef typename vcg::Box3<ScalarType> BoundingBoxType;
     typedef typename vcg::Matrix33<ScalarType> MatrixType;
 
+  private:
+    class DummyObjectMarker
+    {
+    };
+
+    // Object functor: compute the distance between a vertex and a point
+    struct VertPointDistanceFunctor
+    {
+        inline bool operator()(const VertexType &v, const CoordType &p, ScalarType &d, CoordType &q) const
+        {
+            ScalarType distance = vcg::Distance(p, v.P());
+            if (distance > d)
+                return false;
+
+            d = distance;
+            q = v.P();
+            return true;
+        }
+    };
   public:
-    // static void ConvertCMesh2CMeshO(const CMesh &cmesh, CMeshO &cmeshO)
-    //{
-    //	CMeshO::VertexIterator viO;
-    //	CMesh::ConstVertexIterator vi;
-    //	for(vi = cmesh.vert.begin(), viO = cmeshO.vert.begin(); vi != cmesh.vert.end(); ++vi, ++viO)
-    //	{
-    //		viO->P().Import(vi->P());
-    //		viO->N().Import(vi->cN());
-    //		viO->N().Normalize();
-    //	}
-
-    //	cmeshO.vn = cmesh.vn;
-    //	cmeshO.bbox.Import(cmesh.bbox);
-    //}
-
-    // static void ComputeAPcaNormalsByGrid(CMeshO& cmeshO)
-    //{
-    //	CMesh cmesh;
-    //	ConvertMesh2CMesh<CMeshO>(cmeshO, cmesh);
-
-    //	CMesh::VertexIterator vi;
-    //	for(vi = cmesh.vert.begin(); vi != cmesh.vert.end(); ++vi)
-    //	{
-    //		vi->P()[0] = 0.5;
-    //		vi->N() *= -1;
-    //	}
-
-    //	ConvertCMesh2CMeshO(cmesh, cmeshO);
-    //}
 
     static void ComputeAPcaNormalsByKNN(const VertexIterator &begin, const VertexIterator &end, const unsigned int k,
                                         double radius, const float sigma)

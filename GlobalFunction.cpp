@@ -589,7 +589,7 @@ void GlobalFun::computeEigenWithTheta(CMesh* _samples, double radius)
     }
 }
 
-double GlobalFun::computeEulerDist(Point3f& p1, Point3f& p2)
+double GlobalFun::computeEulerDist(const Point3f& p1, const Point3f& p2)
 {
     double dist2 = (p1 - p2).SquaredNorm();
     if (dist2 < 1e-8 || dist2 > 1e8)
@@ -599,23 +599,24 @@ double GlobalFun::computeEulerDist(Point3f& p1, Point3f& p2)
     return sqrt(dist2);
 }
 
-double GlobalFun::computeEulerDistSquare(Point3f& p1, Point3f& p2)
+double GlobalFun::computeEulerDistSquare(const Point3f& p1, const Point3f& p2)
 {
     return (p1 - p2).SquaredNorm();
 }
 
-double GlobalFun::computeProjDist(Point3f& p1, Point3f& p2, Point3f& normal_of_p1)
+double GlobalFun::computeProjDist(const Point3f &p1, const Point3f &p2, const Point3f &normal_of_p1)
 {
-    return (p2 - p1) * normal_of_p1.Normalize();
+    Point3f tmp(normal_of_p1);
+    return (p2 - p1) * tmp.Normalize();
 }
 
-double GlobalFun::computeProjDistSquare(Point3f& p1, Point3f& p2, Point3f& normal_of_p1)
+double GlobalFun::computeProjDistSquare(const Point3f& p1, const Point3f& p2, const Point3f& normal_of_p1)
 {
     double proj_dist = computeProjDist(p1, p2, normal_of_p1);
     return proj_dist * proj_dist;
 }
 
-double GlobalFun::computePerpendicularDistSquare(Point3f& p1, Point3f& p2, Point3f& normal_of_p1)
+double GlobalFun::computePerpendicularDistSquare(const Point3f& p1, const Point3f& p2, const Point3f& normal_of_p1)
 {
     // Point3f v_p2_p1 = p1-p2;
     // double proj_dist = computeProjDist(p1, p2, normal_of_p1);
@@ -626,15 +627,15 @@ double GlobalFun::computePerpendicularDistSquare(Point3f& p1, Point3f& p2, Point
     return (proj_p - p2).SquaredNorm();
 }
 
-double GlobalFun::computePerpendicularDist(Point3f& p1, Point3f& p2, Point3f& normal_of_p1)
+double GlobalFun::computePerpendicularDist(const Point3f& p1, const Point3f& p2, const Point3f& normal_of_p1)
 {
     return sqrt(computePerpendicularDistSquare(p1, p2, normal_of_p1));
 }
 
-double GlobalFun::computeProjPlusPerpenDist(Point3f& p1, Point3f& p2, Point3f& normal_of_p1)
+double GlobalFun::computeProjPlusPerpenDist(const Point3f& p1, const Point3f& p2, const Point3f& normal_of_p1)
 {
-    normal_of_p1.Normalize();
-    double proj_dist = GlobalFun::computeProjDist(p1, p2, normal_of_p1);
+    Point3f tmp(normal_of_p1);
+    double proj_dist = GlobalFun::computeProjDist(p1, p2, tmp.Normalize() );
 
     if (proj_dist <= 0)
     {

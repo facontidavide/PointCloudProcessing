@@ -1235,7 +1235,7 @@ bool Skeletonization::mergeNearEndsGroupFromP(Point3f p0)
     return false;
 }
 
-void Skeletonization::compareTwoCurvesEnds(Curve& c0, Curve& c1, double& min_dist, double& angle, CONNECT_TYPE& C_Type)
+void Skeletonization::compareTwoCurvesEnds(const Curve& c0, const Curve& c1, double& min_dist, double& angle, CONNECT_TYPE& C_Type)
 {
     if (isTowCurvesTheSame(c0, c1))
     {
@@ -1364,7 +1364,7 @@ void Skeletonization::compareTwoCurvesEnds(Curve& c0, Curve& c1, double& min_dis
     angle = getRealAngeOfTowCurve(c0, c1, C_Type);
 }
 
-double Skeletonization::getRealAngeOfTowCurve(Curve& c0, Curve& c1, CONNECT_TYPE C_Type)
+double Skeletonization::getRealAngeOfTowCurve(const Curve& c0, const Curve& c1, CONNECT_TYPE C_Type)
 {
     double real_angle = 0;
 
@@ -1422,7 +1422,7 @@ double Skeletonization::getRealAngeOfTowCurve(Curve& c0, Curve& c1, CONNECT_TYPE
     return real_angle;
 }
 
-double Skeletonization::getMaxAngleOfTwoPair(vector<Point3f>& dir0, vector<Point3f>& dir1)
+double Skeletonization::getMaxAngleOfTwoPair(const vector<Point3f> &dir0, vector<Point3f>& dir1)
 {
     double max_angle = -1;
     for (int i = 0; i < dir0.size(); i++)
@@ -1442,7 +1442,7 @@ double Skeletonization::getMaxAngleOfTwoPair(vector<Point3f>& dir0, vector<Point
     return max_angle;
 }
 
-bool Skeletonization::isTowCurvesTheSame(Curve& c0, Curve& c1)
+bool Skeletonization::isTowCurvesTheSame(const Curve &c0, const Curve &c1)
 {
     if (c0.size() != c1.size())
     {
@@ -1471,8 +1471,8 @@ bool Skeletonization::isTowCurvesTheSame(Curve& c0, Curve& c1)
 
 Branch Skeletonization::mergeTowBranches(Branch& branch0, Branch& branch1, CONNECT_TYPE C_Type)
 {
-    Curve& c0 = branch0.curve;
-    Curve& c1 = branch1.curve;
+    const Curve& c0 = branch0.curve;
+    const Curve& c1 = branch1.curve;
 
     if (C_Type == UNKNOWN)
     {
@@ -1562,7 +1562,7 @@ Branch Skeletonization::mergeTowBranches(Branch& branch0, Branch& branch1, CONNE
     return new_branch;
 }
 
-Curve Skeletonization::combineTwoCurvesInOrder(Curve& c0, Curve& c1)
+Curve Skeletonization::combineTwoCurvesInOrder(const Curve& c0, const Curve& c1)
 {
     if (isTowCurvesTheSame(c0, c1))
     {
@@ -2628,8 +2628,8 @@ void Skeletonization::reconnectSkeleton()
         {
             Branch& branch = branches[i];
 
-            Point3f& head_P = branch.getHead();
-            Point3f& tail_P = branch.getTail();
+            const Point3f& head_P = branch.getHead();
+            const Point3f& tail_P = branch.getTail();
 
             break_branch_id = -1;
             break_node_id = -1;
@@ -2696,8 +2696,8 @@ void Skeletonization::reconnectSkeleton()
         {
             Branch& branch0 = branches[i];
 
-            Point3f& head0_P = branch0.getHead();
-            Point3f& tail0_P = branch0.getTail();
+            const Point3f& head0_P = branch0.getHead();
+            const Point3f& tail0_P = branch0.getTail();
 
             combine_curve_id0 = i;
             combine_curve_id1 = -1;
@@ -2710,8 +2710,8 @@ void Skeletonization::reconnectSkeleton()
                     continue;
 
                 Branch& branch1 = branches[j];
-                Point3f& head1_P = branch1.getHead();
-                Point3f& tail1_P = branch1.getTail();
+                const Point3f& head1_P = branch1.getHead();
+                const Point3f& tail1_P = branch1.getTail();
 
                 vector<double> dists_head;
                 vector<double> dists_tail;

@@ -91,11 +91,6 @@ Edited Comments and GPL license
 #include <math.h>
 #include <limits>
 
-/// static_assert: implemented as a macro for "assert", but it is separated for clarity.
-/// Should be used for checking integrity constraints that can be tested at complile time,
-/// as the ones involving templated constants in templated classes.
-#define static_assert assert
-
 #ifdef __BORLANDC__
 float sqrtf(float v)
 {
@@ -343,7 +338,7 @@ int IsNAN(T t)
 class VoidType
 {
   public:
-    VoidType(){};
+    VoidType(){}
 };
 
 }  // End vcg namespace

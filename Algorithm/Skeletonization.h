@@ -80,13 +80,13 @@ class Skeletonization : public PointCloudAlgorithm
         T0_T1,
         UNKNOWN
     };
-    void compareTwoCurvesEnds(Curve& c0, Curve& c1, double& min_dist, double& angle, CONNECT_TYPE& C_Type);
-    double getRealAngeOfTowCurve(Curve& c0, Curve& c1, CONNECT_TYPE C_Type);
-    double getMaxAngleOfTwoPair(vector<Point3f>& dir0, vector<Point3f>& dir1);
-    bool isTowCurvesTheSame(Curve& c0, Curve& c1);
+    void compareTwoCurvesEnds(const Curve &c0, const Curve &c1, double& min_dist, double& angle, CONNECT_TYPE& C_Type);
+    double getRealAngeOfTowCurve(const Curve& c0, const Curve& c1, CONNECT_TYPE C_Type);
+    double getMaxAngleOfTwoPair(const vector<Point3f>& dir0, vector<Point3f>& dir1);
+    bool isTowCurvesTheSame(const Curve& c0, const Curve& c1);
 
-    Branch mergeTowBranches(Branch& branch0, Branch& branch1, CONNECT_TYPE C_Type = UNKNOWN);
-    Curve combineTwoCurvesInOrder(Curve& c0, Curve& c1);
+    Branch mergeTowBranches(Branch &branch0, Branch &branch1, CONNECT_TYPE C_Type = UNKNOWN);
+    Curve combineTwoCurvesInOrder(const Curve &c0, const Curve &c1);
     Curve reverseOneCurve(Curve c0);
 
     // do some clean up before increase radius

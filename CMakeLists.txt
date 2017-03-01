@@ -4,6 +4,9 @@ project(PointCloud)
 
 FIND_PACKAGE(Qt4 REQUIRED)
 find_package( Qt4 REQUIRED )
+
+set(QT_USE_QTOPENGL TRUE)
+
 include( ${QT_USE_FILE} )
 add_definitions( ${QT_DEFINITIONS} )
 
@@ -44,9 +47,12 @@ SET( APP_SRC
     plylib.cpp
     trackball.cpp
     trackmode.cpp
-    WLOP.cpp
 
-
+    Algorithm/NormalSmoother.cpp
+    Algorithm/Skeleton.cpp
+    Algorithm/Upsampler.cpp
+    Algorithm/Skeletonization.cpp
+    Algorithm/WLOP.cpp
     )
 
 add_executable(${PROJECT_NAME} ${APP_SRC} ${RES_SRC} ${UI_SRC})
@@ -56,4 +62,5 @@ target_link_libraries(${PROJECT_NAME}
     ${QT_LIBRARIES}
     ${OPENGL_gl_LIBRARY}
     ${GLUT_LIBRARIES}
+    glut GL GLU ann
     )

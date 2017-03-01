@@ -47,13 +47,13 @@ void static __cdecl other_neighbors(CGrid::iterator starta, CGrid::iterator enda
 void static __cdecl find_original_neighbors(CGrid::iterator starta, CGrid::iterator enda, CGrid::iterator startb,
                                             CGrid::iterator endb, double radius);
 
-double computeEulerDist(Point3f& p1, Point3f& p2);
-double computeEulerDistSquare(Point3f& p1, Point3f& p2);
-double computeProjDist(Point3f& p1, Point3f& p2, Point3f& normal_of_p1);
-double computeProjDistSquare(Point3f& p1, Point3f& p2, Point3f& normal_of_p1);
-double computePerpendicularDistSquare(Point3f& p1, Point3f& p2, Point3f& normal_of_p1);
-double computePerpendicularDist(Point3f& p1, Point3f& p2, Point3f& normal_of_p1);
-double computeProjPlusPerpenDist(Point3f& p1, Point3f& p2, Point3f& normal_of_p1);
+double computeEulerDist(const Point3f& p1, const Point3f& p2);
+double computeEulerDistSquare(const Point3f &p1, const Point3f &p2);
+double computeProjDist(const Point3f& p1, const Point3f& p2, const Point3f& normal_of_p1);
+double computeProjDistSquare(const Point3f& p1, const Point3f& p2, const Point3f& normal_of_p1);
+double computePerpendicularDistSquare(const Point3f &p1, const Point3f &p2, const Point3f &normal_of_p1);
+double computePerpendicularDist(const Point3f& p1, const Point3f& p2, const Point3f& normal_of_p1);
+double computeProjPlusPerpenDist(const Point3f& p1, const Point3f& p2, const Point3f& normal_of_p1);
 double getDoubleMAXIMUM();
 vector<int> GetRandomCards(int Max);
 

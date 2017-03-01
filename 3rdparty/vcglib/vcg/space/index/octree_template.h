@@ -703,7 +703,7 @@ class OctreeTemplate
                 }
             }
         }
-    };  // end of ContainedNodes
+    }  // end of ContainedNodes
 
     // Data una bounding-box bb, calcola l'insieme delle foglie il cui
     // bounding-box ha intersezione non nulla con bb; i loro indici

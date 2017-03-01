@@ -40,37 +40,37 @@ class Branch
     {
         return curve[index];
     }
-    int getSize();
-    bool isEmpty();
-    bool isHeadVirtual()
+    int getSize() const;
+    bool isEmpty() const;
+    bool isHeadVirtual() const
     {
         return curve[0].is_skel_virtual;
     }
-    bool isTailVirtual()
+    bool isTailVirtual() const
     {
         return curve[curve.size() - 1].is_skel_virtual;
     }
-    bool isVirtualHeadHealthy();
-    bool isVirtualTailHealthy();
+    bool isVirtualHeadHealthy() const;
+    bool isVirtualTailHealthy() const;
     void rememberVirtualHead();
     void rememberVirtualTail();
 
-    double getNodeAngle(int idx);
-    double getHeadAngle()
+    double getNodeAngle(int idx) const;
+    double getHeadAngle() const
     {
         return getNodeAngle(0);
     }
-    double getTailAngle()
+    double getTailAngle() const
     {
         return getNodeAngle(curve.size() - 1);
     }
 
-    double getNodeLengthEulerDist(int idx);
-    double getNodeLengthEulerDistSquare(int idx);
-    double getHeadLengthEulerDist();
-    double getHeadLengthEulerDistSquare();
-    double getTailLengthEulerDist();
-    double getTailLengthEulerDistSquare();
+    double getNodeLengthEulerDist(int idx) const;
+    double getNodeLengthEulerDistSquare(int idx) const;
+    double getHeadLengthEulerDist() const;
+    double getHeadLengthEulerDistSquare() const;
+    double getTailLengthEulerDist() const;
+    double getTailLengthEulerDistSquare() const;
 
     Point3f getVirtualTailDirection();
     Point3f getTrueTailDirection();

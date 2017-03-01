@@ -5,17 +5,17 @@ void Branch::pushBackCVertex(CVertex& new_v)
     curve.push_back(new_v);
 }
 
-int Branch::getSize()
+int Branch::getSize() const
 {
     return curve.size();
 }
 
-bool Branch::isEmpty()
+bool Branch::isEmpty() const
 {
     return curve.empty();
 }
 
-double Branch::getNodeAngle(int idx)
+double Branch::getNodeAngle(int idx) const
 {
     double angle = -1;
     if (idx < 0 || idx >= curve.size())
@@ -44,7 +44,7 @@ double Branch::getNodeAngle(int idx)
     return angle;
 }
 
-double Branch::getNodeLengthEulerDist(int idx)
+double Branch::getNodeLengthEulerDist(int idx) const
 {
     double length = -1;
     if (idx < 0 || idx >= curve.size())
@@ -62,7 +62,7 @@ double Branch::getNodeLengthEulerDist(int idx)
     }
 }
 
-double Branch::getNodeLengthEulerDistSquare(int idx)
+double Branch::getNodeLengthEulerDistSquare(int idx) const
 {
     double length = -1;
     if (idx < 0 || idx >= curve.size())
@@ -80,22 +80,22 @@ double Branch::getNodeLengthEulerDistSquare(int idx)
     }
 }
 
-double Branch::getHeadLengthEulerDist()
+double Branch::getHeadLengthEulerDist() const
 {
     return getNodeLengthEulerDist(0);
 }
 
-double Branch::getHeadLengthEulerDistSquare()
+double Branch::getHeadLengthEulerDistSquare() const
 {
     return getNodeLengthEulerDistSquare(0);
 }
 
-double Branch::getTailLengthEulerDist()
+double Branch::getTailLengthEulerDist() const
 {
     return getNodeLengthEulerDist(curve.size());
 }
 
-double Branch::getTailLengthEulerDistSquare()
+double Branch::getTailLengthEulerDistSquare() const
 {
     return getNodeLengthEulerDistSquare(curve.size() - 1);
 }
@@ -108,7 +108,7 @@ void Branch::reverseBranch()
     back_up_tail = temp;
 }
 
-bool Branch::isVirtualHeadHealthy()
+bool Branch::isVirtualHeadHealthy() const
 {
     if (!isHeadVirtual())
     {
@@ -138,7 +138,7 @@ bool Branch::isVirtualHeadHealthy()
     }
 }
 
-bool Branch::isVirtualTailHealthy()
+bool Branch::isVirtualTailHealthy() const
 {
     if (!isTailVirtual())
     {
