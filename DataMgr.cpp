@@ -452,8 +452,7 @@ void DataMgr::saveSkeletonAsSkel(QString fileName)
         strStream << "CNN " << branch.curve.size() << endl;
         for (int j = 0; j < branch.curve.size(); j++)
         {
-            strStream << branch.curve[j][0] << "	" << branch.curve[j][1] << "	" << branch.curve[j][2] << "	"
-                      << endl;
+            strStream << branch.curve[j][0] << "	" << branch.curve[j][1] << "	" << branch.curve[j][2] << "	" << endl;
         }
     }
     strStream << endl;

@@ -574,7 +574,7 @@ class QualityOcf : public T
     void ImportData(const LeftV &leftV)
     {
         //			if((*this).Base().QualityEnabled && leftV.Base().QualityEnabled ) // copy the data only if they are
-        //enabled in both vertices
+        // enabled in both vertices
         if ((*this).Base().QualityEnabled &&
             leftV.HasQuality())  // copy the data only if they are enabled in both vertices
             Q() = leftV.cQ();
@@ -713,7 +713,7 @@ class CurvatureOcf : public TT
     void ImportData(const LeftV &leftV)
     {
         //		if((*this).Base().CurvatureEnabled && leftV.Base().CurvatureEnabled ) // WRONG I do not know anything
-        //about leftV!
+        // about leftV!
         if ((*this).Base().CurvatureEnabled && LeftV::IsCurvatureEnabled(&leftV))
         {
             (*this).Base().CuV[(*this).Index()][0] = leftV.cKh();
@@ -821,7 +821,7 @@ class CurvatureDirOcf : public TT
     void ImportData(const LeftV &leftV)
     {
         //		if((*this).Base().CurvatureEnabled && leftV.Base().CurvatureEnabled ) // WRONG I do not know anything
-        //about leftV!
+        // about leftV!
         if ((*this).Base().CurvatureDirEnabled && LeftV::IsCurvatureDirEnabled(&leftV))
         {
             (*this).PD1() = leftV.cPD1();

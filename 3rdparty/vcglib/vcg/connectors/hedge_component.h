@@ -48,14 +48,18 @@ All the Components that can be added to a vertex should be defined in the namesp
 //  T::VertexType *vp=0; return vp; }
 //  inline typename T::VertexType * const & V( const int j ) const {	assert(0);		static typename T::VertexType
 //  *vp=0; return vp; }
-//        inline typename T::VertexType *  cV( const int j ) const {	assert(0);		static typename T::VertexType *vp=0;
+//        inline typename T::VertexType *  cV( const int j ) const {	assert(0);		static typename T::VertexType
+//        *vp=0;
 //        return vp;	}
-//	inline       typename T::CoordType & P( const int j ) 	    {	assert(0);		static typename T::CoordType coord(0,
-//0, 0); return coord;	}
-//	inline const typename T::CoordType & P( const int j ) const {	assert(0);		static typename T::CoordType coord(0,
-//0, 0); return coord;	}
-//	inline const typename T::CoordType &cP( const int j ) const	{	assert(0);		static typename T::CoordType coord(0,
-//0, 0); return coord;	}
+//	inline       typename T::CoordType & P( const int j ) 	    {	assert(0);		static typename T::CoordType
+//coord(0,
+// 0, 0); return coord;	}
+//	inline const typename T::CoordType & P( const int j ) const {	assert(0);		static typename T::CoordType
+//coord(0,
+// 0, 0); return coord;	}
+//	inline const typename T::CoordType &cP( const int j ) const	{	assert(0);		static typename T::CoordType
+//coord(0,
+// 0, 0); return coord;	}
 //	template <class LeftF>
 //	void ImportData(const LeftF & leftF) {T::ImportData(leftF);}
 //  static bool HasVertexRef()   { return false; }

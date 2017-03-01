@@ -185,9 +185,9 @@ void GlobalFun::computeAnnNeigbhors(vector<CVertex>& datapts, vector<CVertex>& q
     knn++;
 
     kdTree = new ANNkd_tree(  // build search structure
-        dataPts,              // the data points
-        nPts,                 // number of points
-        dim);                 // dimension of space
+      dataPts,                // the data points
+      nPts,                   // number of points
+      dim);                   // dimension of space
 
     knn--;
 
@@ -200,11 +200,11 @@ void GlobalFun::computeAnnNeigbhors(vector<CVertex>& datapts, vector<CVertex>& q
         }
 
         kdTree->annkSearch(  // search
-            queryPt,         // query point
-            k,               // number of near neighbors
-            nnIdx,           // nearest neighbors (returned)
-            dists,           // distance (returned)
-            eps);            // error bound
+          queryPt,           // query point
+          k,                 // number of near neighbors
+          nnIdx,             // nearest neighbors (returned)
+          dists,             // distance (returned)
+          eps);              // error bound
 
         for (int k = 1; k < numKnn; k++)
         {

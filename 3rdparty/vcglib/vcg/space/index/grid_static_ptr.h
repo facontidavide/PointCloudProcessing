@@ -254,7 +254,7 @@ class GridStaticPtr : public BasicGrid<FLT>, SpatialIndex<OBJTYPE, FLT>
         //	}
 
         //	fprintf(fp,"Uniform Grid: %d x %d x %d (%d voxels), %.1f%% full, %d links \nNon empty Cell Occupancy
-        //Distribution Avg: %f (%4.0f %4.0f %4.0f) \n",
+        // Distribution Avg: %f (%4.0f %4.0f %4.0f) \n",
         //	siz[0],siz[1],siz[2],grid.size()-1,
         //	double(nentry)*100.0/(grid.size()-1),links.size(),H.Avg(),H.Percentile(.25),H.Percentile(.5),H.Percentile(.75)
         //

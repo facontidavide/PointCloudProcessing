@@ -413,10 +413,10 @@ bool PointDistanceBase(const FaceType &f,                                    ///
 #ifndef NDEBUG
     static int staticCnt = 0;  // small piece of code that sometime check that face normals are really normalized
     if ((staticCnt++ % 100) == 0)
-        assert((f.cN().SquaredNorm() == 0) || (f.cN().SquaredNorm() > 0.9999 &&
-                                               f.cN().SquaredNorm() < 1.0001));  // if you get this assert you have
-                                                                                 // forgot to make a
-                                                                                 // UpdateNormals::PerFaceNormalized(m)
+        assert((f.cN().SquaredNorm() == 0) ||
+               (f.cN().SquaredNorm() > 0.9999 && f.cN().SquaredNorm() < 1.0001));  // if you get this assert you have
+                                                                                   // forgot to make a
+// UpdateNormals::PerFaceNormalized(m)
 #endif
 
     if (f.cN() == Point3<ScalarType>(0, 0, 0))  // to correctly manage the case of degenerate triangles we consider them

@@ -239,13 +239,13 @@ void RichParameterCopyConstructor::visit(RichInt& pd)
 void RichParameterCopyConstructor::visit(RichDouble& pd)
 {
     lastCreated =
-        new RichDouble(pd.name, pd.val->getDouble(), pd.pd->defVal->getDouble(), pd.pd->fieldDesc, pd.pd->tooltip);
+      new RichDouble(pd.name, pd.val->getDouble(), pd.pd->defVal->getDouble(), pd.pd->fieldDesc, pd.pd->tooltip);
 }
 
 void RichParameterCopyConstructor::visit(RichString& pd)
 {
     lastCreated =
-        new RichString(pd.name, pd.val->getString(), pd.pd->defVal->getString(), pd.pd->fieldDesc, pd.pd->tooltip);
+      new RichString(pd.name, pd.val->getString(), pd.pd->defVal->getString(), pd.pd->fieldDesc, pd.pd->tooltip);
 }
 
 void RichParameterCopyConstructor::visit(RichMatrix44f& pd)
@@ -257,13 +257,13 @@ void RichParameterCopyConstructor::visit(RichMatrix44f& pd)
 void RichParameterCopyConstructor::visit(RichPoint3f& pd)
 {
     lastCreated =
-        new RichPoint3f(pd.name, pd.val->getPoint3f(), pd.pd->defVal->getPoint3f(), pd.pd->fieldDesc, pd.pd->tooltip);
+      new RichPoint3f(pd.name, pd.val->getPoint3f(), pd.pd->defVal->getPoint3f(), pd.pd->fieldDesc, pd.pd->tooltip);
 }
 
 void RichParameterCopyConstructor::visit(RichColor& pd)
 {
     lastCreated =
-        new RichColor(pd.name, pd.val->getColor(), pd.pd->defVal->getColor(), pd.pd->fieldDesc, pd.pd->tooltip);
+      new RichColor(pd.name, pd.val->getColor(), pd.pd->defVal->getColor(), pd.pd->fieldDesc, pd.pd->tooltip);
 }
 
 void RichParameterCopyConstructor::visit(RichAbsPerc& pd)

@@ -675,7 +675,7 @@ struct UpdateIndexed
         // bool createFace,hasHEF,hasFHE;
 
         //				typename MeshType::template PerHEdgeAttributeHandle<bool> hV = Allocator<MeshType>::template
-        //AddPerHEdgeAttribute<bool>(m,"");
+        // AddPerHEdgeAttribute<bool>(m,"");
 
         typename MeshType::HEdgeIterator ei;
         typename MeshType::FacePointer fp;

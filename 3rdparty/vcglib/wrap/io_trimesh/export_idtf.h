@@ -577,7 +577,7 @@ class ExporterIDTF
         //
 
         //	//WARNING! IF VERTEX COLOR AND FACE COLOR ARE BOTH CHECKED THE FILTER SAVE ONLY VERTEX COLOR! THIS IS A
-        //DESIGN CHOICE A NOT A BUG!
+        // DESIGN CHOICE A NOT A BUG!
 
         //	std::string vertcol;
         //	if (mask & vcg::tri::io::Mask::IOM_VERTCOLOR)

@@ -194,7 +194,8 @@ inline bool IntersectionLineSphere(const Sphere3<T> &sp, const Line3<T> &li, Poi
 * @param[in]	segment				the segment
 * @param[out]	intersection  the intersection point, meaningful only if the segment intersects the sphere
 * \return			(0, 1 or 2)		the number of intersections between the segment and the sphere.
-*														t1 is a valid intersection only if the returned value is at least
+*														t1 is a valid intersection only if the returned value is at
+*least
 *1;
 *														similarly t2 is valid iff the returned value is 2.
 */
@@ -246,7 +247,8 @@ inline int IntersectionSegmentSphere(const Sphere3<SCALAR_TYPE> &sphere, const S
 * \param[in]	triangle	the input triangle
 * \param[out]	witness		it is the point on the triangle nearest to the center of the sphere (even when there isn't
 * intersection)
-* \param[out] res				if not null, in the first item is stored the minimum distance between the triangle and the
+* \param[out] res				if not null, in the first item is stored the minimum distance between the triangle and
+* the
 * sphere,
 *                       while in the second item is stored the penetration depth
 * \return			true			iff there is an intersection between the sphere and the triangle

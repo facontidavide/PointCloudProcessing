@@ -209,10 +209,10 @@ struct GlCamera
         GetFrustum(camera, sx, dx, bt, tp, f);
         S width = dx - sx;   // right - left = width
         S height = tp - bt;  // top - bottom = height
-        /*glFrustum(
-                    width* p0[0]+ sx, width* p1[0]+ sx,
-                    height* p0[1]+ bt, height* p1[1]+ bt,
-                    nr,fr);*/
+                             /*glFrustum(
+                                         width* p0[0]+ sx, width* p1[0]+ sx,
+                                         height* p0[1]+ bt, height* p1[1]+ bt,
+                                         nr,fr);*/
 
         switch (camera.cameraType)
         {
@@ -224,9 +224,11 @@ struct GlCamera
                 glOrtho(width * p0[0] + sx, width * p1[0] + sx, height * p0[1] + bt, height * p1[1] + bt, nearDist,
                         farDist);
                 break;
-                // case vcg::ISOMETRIC:   IsometricProj(dx-width* p1[0], dx-width* p0[0],		tp-height* p1[1], tp-height*
+                // case vcg::ISOMETRIC:   IsometricProj(dx-width* p1[0], dx-width* p0[0],		tp-height* p1[1],
+                // tp-height*
                 // p0[1],nearDist,farDist);	break;
-                // case vcg::CAVALIERI:   CavalieriProj(dx-width* p1[0], dx-width* p0[0],		tp-height* p1[1], tp-height*
+                // case vcg::CAVALIERI:   CavalieriProj(dx-width* p1[0], dx-width* p0[0],		tp-height* p1[1],
+                // tp-height*
                 // p0[1],nearDist,farDist);	break;
         }
 
@@ -363,7 +365,7 @@ struct GlCamera
 //	//  float t0,t1,t2,sol;
 //
 //	//t0 =
-//1/k*pow((108.0*hyp+12.0*sqrt(3.0)*sqrt((4.0+27.0*hyp*hyp*k)/k))*k*k,0.3333333333333333)/6.0-2.0/pow((108.0*hyp+12.0*sqrt(3.0)*sqrt((4.0+27.0*hyp*hyp*k)/k))*k*k,0.3333333333333333);
+// 1/k*pow((108.0*hyp+12.0*sqrt(3.0)*sqrt((4.0+27.0*hyp*hyp*k)/k))*k*k,0.3333333333333333)/6.0-2.0/pow((108.0*hyp+12.0*sqrt(3.0)*sqrt((4.0+27.0*hyp*hyp*k)/k))*k*k,0.3333333333333333);
 //
 //
 //	//t1 =
@@ -955,7 +957,7 @@ struct GlCamera
 //						y_axis[0],y_axis[1],y_axis[2]);
 //}
 //// Sposta la camera a caso di in maniera che l'angolo di variazione rispetto al punt c passato sia inferiore a
-///RadAngle
+/// RadAngle
 ////
 // void Jitter(Point3<scalar> c, scalar RadAngle)
 //{

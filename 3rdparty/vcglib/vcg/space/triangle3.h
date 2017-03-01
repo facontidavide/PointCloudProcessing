@@ -264,7 +264,7 @@ bool InterpolationParameters2(const Point2<ScalarType> &V1, const Point2<ScalarT
 
 //// Function that computes the barycentric coords of a 2D triangle. Used by the above function.
 //// Algorithm: simply find a base for the frame of the triangle, assuming v3 as origin (matrix T) invert it and apply
-///to P-v3.
+/// to P-v3.
 //
 // template<class ScalarType>
 // bool InterpolationParameters2(const Point2<ScalarType> &V1,

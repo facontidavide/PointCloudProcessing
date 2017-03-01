@@ -1085,7 +1085,7 @@ void Crease(MESH_TYPE &m, typename MESH_TYPE::scalar_type angleRad)
                     newvert.push_back(*(*fi).V(j));
                     typename MESH_TYPE::vertex_pointer curvert = &newvert.back();
                     //				VCTRACE("Starting from face %i edge %i vert %i \n",he.f-m.face.begin(), he.z,
-                    //he.v-m.vert.begin());
+                    // he.v-m.vert.begin());
 
                     // Secondo giro in cui si riempie il vettore SPL con tutte le info per fare i nuovi vertici
                     do

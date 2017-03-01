@@ -1517,7 +1517,7 @@ Roughly speaking, it is the number of holes in a surface.
     }
 
 };  // end class
-    /*@}*/
+/*@}*/
 
 }  // End Namespace Tri
 }  // End Namespace vcg

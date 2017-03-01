@@ -225,7 +225,7 @@ class ExporterU3D
 
         ////if there are textures file that aren't in tga format I have to convert them
         ////I maintain the converted file name (i.e. file_path + originalname without extension + tga) in mesh.textures
-        ///but I have to revert to the original ones
+        /// but I have to revert to the original ones
         ////before the function return.
 
         // QStringList oldtextname;

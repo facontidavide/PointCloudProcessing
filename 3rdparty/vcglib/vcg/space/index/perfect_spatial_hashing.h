@@ -203,9 +203,9 @@ class PerfectSpatialHashing : public vcg::SpatialIndex<OBJECT_TYPE, SCALAR_TYPE>
       protected:
         vcg::Point3i m_Center;          /*!< The cell whose neighboring cells are to be looked up.	*/
         vcg::Point3i m_CurrentNeighbor; /*!< The neighboring cell at the current iteration.					*/
-        int m_CurrentIteration; /*!< The current iteration. */
-        int m_TableSize; /*!< The number of cell in the UniformGrid for each side		*/
-    };                   // end of class NeighboringEntryIterator
+        int m_CurrentIteration;         /*!< The current iteration. */
+        int m_TableSize;                /*!< The number of cell in the UniformGrid for each side		*/
+    };                                  // end of class NeighboringEntryIterator
 
     /************************************************************************/
     /*! \class UniformGrid
@@ -1589,7 +1589,8 @@ class PerfectSpatialHashing : public vcg::SpatialIndex<OBJECT_TYPE, SCALAR_TYPE>
     /*!
     * Try to construct the offset table for a given size
     *	\param[in] offset_table_size  The size of the offset table.
-    *	\return												<CODE>true</CODE> if and only if the construction of the offset table
+    *	\return												<CODE>true</CODE> if and only if the construction of the offset
+    *table
     *succeeds.
     */
     bool OffsetTableConstructionSucceded(const int offset_table_size, vcg::CallBackPos *callback)

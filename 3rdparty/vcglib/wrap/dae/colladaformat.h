@@ -518,7 +518,7 @@ class FloatArrayTag : public XMLLeafTag
 // public:
 //	template<typename MESHTYPE,typename SIMPLEXACCESSOR>
 //	FloatWedgeArrayTag(const QString& id,const int count,const MESHTYPE& m,const
-//AccessorComponentNumberInfo<MESHTYPE,SIMPLEXACCESSOR>& accessor)
+// AccessorComponentNumberInfo<MESHTYPE,SIMPLEXACCESSOR>& accessor)
 //		:XMLLeafTag("float_array")
 //	{
 //		_attributes.push_back(TagAttribute("id",id));
@@ -1041,7 +1041,7 @@ class DocumentManager
         //	if ((texmask) && (m.textures.size() > 1))
         //	{
         //		//there are many textures files - I have to split the mesh in triangular patches that share the same
-        //texture's file.
+        // texture's file.
         //		for(MESHMODELTYPE::ConstFaceIterator itf = m.face.begin();itf != m.face.end();++itf)
         //		{
         //

@@ -100,19 +100,19 @@ class OverlapEstimation
     {
       public:
         int samples;    ///< Number of samples to check to compute the overlap. Higher values get more accurancy but
-                        ///requires more time.
+                        /// requires more time.
         int bestScore;  ///< Score to overcome to paint \c mMov . If overlap estimation is called many times inside a
-                        ///loop, you can set this value in each iteration to paint \c mMov and see only the best overlap
-                        ///achived.
+        /// loop, you can set this value in each iteration to paint \c mMov and see only the best overlap
+        /// achived.
         float consensusDist;  ///< Consensus distance. Lower values should gat more accurancy; high values can lead to
-                              ///performance hit.
+                              /// performance hit.
         float consensusNormalsAngle;  ///< Holds the the consensus angle for normals, in gradients. Lower values
-                                      ///decrease accurancy, particulary for range maps with many peaks and high
-                                      ///frequencies.
+                                      /// decrease accurancy, particulary for range maps with many peaks and high
+        /// frequencies.
         float threshold;  ///< Consensus percentage requested to win consensus. Used to paint \c mMov. If the overlap
-                          ///overcames the \c threshold (and \c bestScore), \c mMov is painted.
+                          /// overcames the \c threshold (and \c bestScore), \c mMov is painted.
         bool normalEqualization;  ///< Allows to use normal equalization sampling in consensus. If set to \c false
-                                  ///uniform sampling is used instead. Uniform sampling is faster but less accurate.
+                                  /// uniform sampling is used instead. Uniform sampling is faster but less accurate.
         bool paint;               ///< Allows painting of \c mMov according to consensus. See Paint() for details.
         void (*log)(int level, const char* f, ...);  ///< Pointer to a log function.
 
@@ -135,8 +135,8 @@ class OverlapEstimation
     MeshType* mMov;                     /** Pointer to mesh \c mMov. */
     vector<vector<int> >* normBuckets;  // structure to hold normals bucketing. Needed for normal equalized sampling
                                         // during consensus
-    MeshGrid* gridFix;              // variable to manage uniform grid
-    MarkerVertex markerFunctorFix;  // variable to manage uniform grid
+    MeshGrid* gridFix;                  // variable to manage uniform grid
+    MarkerVertex markerFunctorFix;      // variable to manage uniform grid
 
   public:
     /** Default constructor. */

@@ -882,18 +882,18 @@ bool HasHOppAdjacency(const TriMesh<ContainerType0, ContainerType1, ContainerTyp
 //		// gcc 4.4: if the expressions assigned to a1 and a2 are replaced in the assert we get a compilation error
 //		// for the macro assert
 //		bool a1 =  TriMesh < ContainerType0 , ContainerType1,   ContainerType2,
-//ContainerType3>::FaceContainer::value_type::HasVFAdjacency();
+// ContainerType3>::FaceContainer::value_type::HasVFAdjacency();
 //		bool a2 =  TriMesh < ContainerType0 , ContainerType1,   ContainerType2,
-//ContainerType3>::VertContainer::value_type::HasVFAdjacency();
+// ContainerType3>::VertContainer::value_type::HasVFAdjacency();
 //		// a1 and a2 are still evaluated but not referenced, this causes a warning
 //		(void)a1;
 //		(void)a2;
 //		assert(a1==a2);
 //
 //		return   vcg::tri::HasPerVertexVFAdjacency<   ContainerType0,   ContainerType1 ,   ContainerType2,
-//ContainerType3>(m) &&
+// ContainerType3>(m) &&
 //						 vcg::tri::HasPerFaceVFAdjacency<   ContainerType0,   ContainerType1 ,   ContainerType2,
-//ContainerType3>(m) ;
+// ContainerType3>(m) ;
 //}
 
 template <class MESH_TYPE>

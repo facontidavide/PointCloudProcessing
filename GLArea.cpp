@@ -165,7 +165,7 @@ void GLArea::paintGL()
             global_paraMgr.drawer.setValue("Normal Line Width", DoubleValue(normal_width * SnapResolutionScale *
                                                                             SnapResolutionScale * snapDrawScal));
             global_paraMgr.drawer.setValue(
-                "Sample Dot Size", DoubleValue(dot_size * SnapResolutionScale * SnapResolutionScale * snapDrawScal));
+              "Sample Dot Size", DoubleValue(dot_size * SnapResolutionScale * SnapResolutionScale * snapDrawScal));
             global_paraMgr.drawer.setValue("Original Dot Size", DoubleValue(original_dot_size * SnapResolutionScale *
                                                                             SnapResolutionScale * snapDrawScal));
         }
@@ -282,13 +282,13 @@ void GLArea::paintGL()
             double original_dot_size = global_paraMgr.drawer.getDouble("Original Dot Size");
 
             global_paraMgr.drawer.setValue(
-                "Normal Line Width",
-                DoubleValue(normal_width / (SnapResolutionScale * SnapResolutionScale * snapDrawScal)));
+              "Normal Line Width",
+              DoubleValue(normal_width / (SnapResolutionScale * SnapResolutionScale * snapDrawScal)));
             global_paraMgr.drawer.setValue(
-                "Sample Dot Size", DoubleValue(dot_size / (SnapResolutionScale * SnapResolutionScale * snapDrawScal)));
+              "Sample Dot Size", DoubleValue(dot_size / (SnapResolutionScale * SnapResolutionScale * snapDrawScal)));
             global_paraMgr.drawer.setValue(
-                "Original Dot Size",
-                DoubleValue(original_dot_size / (SnapResolutionScale * SnapResolutionScale * snapDrawScal)));
+              "Original Dot Size",
+              DoubleValue(original_dot_size / (SnapResolutionScale * SnapResolutionScale * snapDrawScal)));
         }
     }
 PAINT_RETURN:
@@ -799,10 +799,10 @@ void GLArea::pasteTile()
 
     if (snapBuffer.isNull())
         snapBuffer =
-            QImage(tileBuffer.width() * ss.resolution, tileBuffer.height() * ss.resolution, tileBuffer.format());
+          QImage(tileBuffer.width() * ss.resolution, tileBuffer.height() * ss.resolution, tileBuffer.format());
 
     uchar *snapPtr =
-        snapBuffer.bits() + (tileBuffer.bytesPerLine() * tileCol) + ((totalCols * tileRow) * tileBuffer.numBytes());
+      snapBuffer.bits() + (tileBuffer.bytesPerLine() * tileCol) + ((totalCols * tileRow) * tileBuffer.numBytes());
     uchar *tilePtr = tileBuffer.bits();
 
     for (int y = 0; y < tileBuffer.height(); y++)

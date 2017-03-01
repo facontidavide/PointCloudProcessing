@@ -466,7 +466,7 @@ struct EvenPointLoopGeneric
             proj.project(nv);
         }
         else
-        {   //	Inner rule
+        {  //	Inner rule
             //			assert(!he.v->IsB()); border flag no longer updated (useless)
             if (valence)
                 (*valence)[he.V()] = k;

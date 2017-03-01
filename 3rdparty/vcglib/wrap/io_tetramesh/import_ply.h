@@ -208,7 +208,7 @@ class ImporterPLY
     //	const static 	PropDescriptor qf[1]=
     //	{
     //		{"tristrips","vertex_indices", ply::T_INT,  ply::T_INT,  offsetof(LoadPly_TristripAux,v),
-    //1,1,ply::T_INT,ply::T_INT,offsetof(LoadPly_TristripAux,size) },
+    // 1,1,ply::T_INT,ply::T_INT,offsetof(LoadPly_TristripAux,size) },
     //	};
     //	return qf[i];
     //}
@@ -342,8 +342,9 @@ class ImporterPLY
 
         // Se fallisce si prova anche la sintassi di rapidform con index al posto di indices
         //		if( pf.AddToRead(TetraDesc(9))==-1 )
-        //			if(pf.AddToRead(TristripDesc(0))==-1) // Se fallisce tutto si prova a vedere se ci sono tristrip alla
-        //levoy.
+        //			if(pf.AddToRead(TristripDesc(0))==-1) // Se fallisce tutto si prova a vedere se ci sono tristrip
+        //alla
+        // levoy.
         //					{ pi.status = PlyInfo::E_NO_FACE;   return -1; }
 
         // Descrittori facoltativi dei flags

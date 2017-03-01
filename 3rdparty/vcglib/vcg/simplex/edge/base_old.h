@@ -265,7 +265,7 @@ class EDGE_TYPE
         return _n;
 #else
         assert(0);
-        return *(CoordType *)0;
+        return *(CoordType*)0;
 #endif
     }
     /// Return the reference of the normal to the face (if __VCGLIB_EDGE_FN is defined).
@@ -274,7 +274,7 @@ class EDGE_TYPE
 #ifdef __VCGLIB_EDGE_EN
         return _n;
 #else
-        return *(CoordType *)0;
+        return *(CoordType*)0;
 #endif
     }
     /// Return the reference of the normal to the face (if __VCGLIB_EDGE_FN is defined).
@@ -283,7 +283,7 @@ class EDGE_TYPE
 #ifdef __VCGLIB_EDGE_EN
         return _n;
 #else
-        return *(CoordType *)0;
+        return *(CoordType*)0;
 #endif
     }
 
@@ -307,7 +307,7 @@ class EDGE_TYPE
         return _q;
 #else
         assert(0);
-        return *(float *)(0);
+        return *(float*)(0);
 #endif
     }
 
@@ -317,7 +317,7 @@ class EDGE_TYPE
         return _q;
 #else
         assert(0);
-        return *(float *)(0);
+        return *(float*)(0);
 #endif
     }
 
@@ -341,7 +341,7 @@ class EDGE_TYPE
         return _c;
 #else
         assert(0);
-        return *(Color4b *)(0);
+        return *(Color4b*)(0);
 #endif
     }
 
@@ -389,7 +389,7 @@ class EDGE_TYPE
         return ee[j];
 #else
         assert(0);
-        return *(EDGENAME **)(0);
+        return *(EDGENAME**)(0);
         ;
 #endif
     }
@@ -402,7 +402,7 @@ class EDGE_TYPE
         return ee[j];
 #else
         assert(0);
-        return (EDGENAME *)0;
+        return (EDGENAME*)0;
 #endif
     }
     inline EDGENAME*& EEp1(const int j)
@@ -424,7 +424,7 @@ class EDGE_TYPE
         return ee[j];
 #else
         assert(0);  // if you stop here you are probably trying to use FF topology in a face without it
-        return *(EDGENAME **)(0);
+        return *(EDGENAME**)(0);
 #endif
     }
 
@@ -435,7 +435,7 @@ class EDGE_TYPE
         return ee[j];
 #else
         assert(0);  // if you stop here you are probably trying to use FF topology in a face without it
-        return *(EDGENAME **)(0);
+        return *(EDGENAME**)(0);
 #endif
     }
 
@@ -447,7 +447,7 @@ class EDGE_TYPE
         return ev[j];
 #else
         assert(0);  // you are probably trying to use VF topology in a vertex without it
-        return *(EDGENAME **)(0);
+        return *(EDGENAME**)(0);
 #endif
     }
 
@@ -459,7 +459,7 @@ class EDGE_TYPE
         return ev[j];
 #else
         assert(0);
-        return *(EDGENAME **)(0);
+        return *(EDGENAME**)(0);
 #endif
     }
 
@@ -474,7 +474,7 @@ class EDGE_TYPE
         return zs[j];
 #else
         assert(0);
-        return *(char *)0;  // tanto per farlo compilare...
+        return *(char*)0;  // tanto per farlo compilare...
 #endif
     }
 
@@ -486,7 +486,7 @@ class EDGE_TYPE
         return zs[j];
 #else
         assert(0);
-        return *(char *)0;
+        return *(char*)0;
 #endif
     }
 
@@ -662,7 +662,7 @@ class EDGE_TYPE
         assert(!IsD());
         return _flags;
 #else
-        return *(int *)0;
+        return *(int*)0;
 #endif
     }
 
@@ -682,7 +682,7 @@ class EDGE_TYPE
         return _flags;
 #else
         assert(0);
-        return *(int *)0;
+        return *(int*)0;
 #endif
     }
 

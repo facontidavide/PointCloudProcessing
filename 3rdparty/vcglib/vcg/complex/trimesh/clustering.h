@@ -396,8 +396,8 @@ class Clustering
                     st.v[i]->AddFaceVertex(m, *(fi), i);
                 }
                 if ((st.v[0] != st.v[1]) && (st.v[0] != st.v[2]) && (st.v[1] != st.v[2]))
-                {  // if we allow the duplication of faces we sort the vertex only partially (to maintain the original
-                   // face orientation)
+                {   // if we allow the duplication of faces we sort the vertex only partially (to maintain the original
+                    // face orientation)
                     if (DuplicateFaceParam)
                         st.sortOrient();
                     else

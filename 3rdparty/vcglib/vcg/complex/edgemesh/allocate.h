@@ -227,7 +227,7 @@ class Allocator
     }
 
 };  // end class
-    /*@}*/
+/*@}*/
 }  // End Namespace TriMesh
 }  // End Namespace vcg
 

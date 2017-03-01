@@ -94,11 +94,9 @@ inline void convolution(const Image<Channels, SrcScalarType, SrcSafe> &source,
 }
 
 template <int Channels, typename ScalarType, bool Safe>  // get[filter]ed() functions constrain return type to be the
-                                                         // same of the parameter
-                                                         inline Image<Channels, ScalarType, Safe>
-                                                         getConvolved(const Image<Channels, ScalarType, Safe> &image,
-                                                                      const ScalarType *matrix, int matrix_width,
-                                                                      int matrix_height)
+// same of the parameter
+inline Image<Channels, ScalarType, Safe> getConvolved(const Image<Channels, ScalarType, Safe> &image,
+                                                      const ScalarType *matrix, int matrix_width, int matrix_height)
 {
     Image<Channels, ScalarType, Safe> i;
     convolution(image, i, matrix, matrix_width, matrix_height);
@@ -126,9 +124,8 @@ inline void boxFilter(const Image<Channels, SrcScalarType, SrcSafe> &source,
 }
 
 template <int Channels, typename ScalarType, bool Safe>  // get[filter]ed() functions constrain return type to be the
-                                                         // same of the parameter
-                                                         inline Image<Channels, ScalarType, Safe> getBoxFiltered(
-                                                           const Image<Channels, ScalarType, Safe> &image, int radius)
+// same of the parameter
+inline Image<Channels, ScalarType, Safe> getBoxFiltered(const Image<Channels, ScalarType, Safe> &image, int radius)
 {
     Image<Channels, ScalarType, Safe> i;
     boxFilter(image, i, radius);
@@ -178,10 +175,9 @@ inline void GaussianSmooth(const Image<Channels, SrcScalarType, SrcSafe> &source
 }
 
 template <int Channels, typename ScalarType, bool Safe>  // get[filter]ed() functions constrain return type to be the
-                                                         // same of the parameter
-                                                         inline Image<Channels, ScalarType, Safe> getGaussianSmoothed(
-                                                           const Image<Channels, ScalarType, Safe> &image,
-                                                           const int radius)
+// same of the parameter
+inline Image<Channels, ScalarType, Safe> getGaussianSmoothed(const Image<Channels, ScalarType, Safe> &image,
+                                                             const int radius)
 {
     Image<Channels, ScalarType, Safe> i;
     GaussianSmooth(image, i, radius);
@@ -207,9 +203,8 @@ inline void LaplacianFilter(const Image<Channels, SrcScalarType, SrcSafe> &sourc
 }
 
 template <int Channels, typename ScalarType, bool Safe>  // get[filter]ed() functions constrain return type to be the
-                                                         // same of the parameter
-                                                         inline Image<Channels, ScalarType, Safe> getLaplacianFiltered(
-                                                           const Image<Channels, ScalarType, Safe> &image)
+// same of the parameter
+inline Image<Channels, ScalarType, Safe> getLaplacianFiltered(const Image<Channels, ScalarType, Safe> &image)
 {
     Image<Channels, ScalarType, Safe> i;
     LaplacianFilter(image, i);
@@ -264,9 +259,8 @@ inline void LoGFilter(const Image<Channels, SrcScalarType, SrcSafe> &source,
 }
 
 template <int Channels, typename ScalarType, bool Safe>  // get[filter]ed() functions constrain return type to be the
-                                                         // same of the parameter
-                                                         inline Image<Channels, ScalarType, Safe> getLoGFiltered(
-                                                           const Image<Channels, ScalarType, Safe> &image, int radius)
+// same of the parameter
+inline Image<Channels, ScalarType, Safe> getLoGFiltered(const Image<Channels, ScalarType, Safe> &image, int radius)
 {
     Image<Channels, ScalarType, Safe> i;
     LoGFilter(image, i, radius);
@@ -320,10 +314,9 @@ inline void DoGFilter(const Image<Channels, SrcScalarType, SrcSafe> &source,
 }
 
 template <int Channels, typename ScalarType, bool Safe>  // get[filter]ed() functions constrain return type to be the
-                                                         // same of the parameter
-                                                         inline Image<Channels, ScalarType, Safe>
-                                                         getDoGFiltered(const Image<Channels, ScalarType, Safe> &image,
-                                                                        int radius1, int radius2)
+// same of the parameter
+inline Image<Channels, ScalarType, Safe> getDoGFiltered(const Image<Channels, ScalarType, Safe> &image, int radius1,
+                                                        int radius2)
 {
     Image<Channels, ScalarType, Safe> i;
     DoGFilter(image, i, radius1, radius2);
@@ -356,10 +349,9 @@ inline void UnsharpMask(const Image<Channels, SrcScalarType, SrcSafe> &source,
 }
 
 template <int Channels, typename ScalarType, bool Safe>  // get[filter]ed() functions constrain return type to be the
-                                                         // same of the parameter
-                                                         inline Image<Channels, ScalarType, Safe> getUnsharpMasked(
-                                                           const Image<Channels, ScalarType, Safe> &image, int radius,
-                                                           float factor)
+// same of the parameter
+inline Image<Channels, ScalarType, Safe> getUnsharpMasked(const Image<Channels, ScalarType, Safe> &image, int radius,
+                                                          float factor)
 {
     Image<Channels, ScalarType, Safe> i;
     UnsharpMask(image, i, radius, factor);
@@ -420,9 +412,8 @@ inline void medianFilter(const Image<Channels, SrcScalarType, SrcSafe> &source,
 }
 
 template <int Channels, typename ScalarType, bool Safe>  // get[filter]ed() functions constrain return type to be the
-                                                         // same of the parameter
-                                                         inline Image<Channels, ScalarType, Safe> getMedianFiltered(
-                                                           const Image<Channels, ScalarType, Safe> &image, int radius)
+// same of the parameter
+inline Image<Channels, ScalarType, Safe> getMedianFiltered(const Image<Channels, ScalarType, Safe> &image, int radius)
 {
     Image<Channels, ScalarType, Safe> i;
     medianFilter(image, i, radius);

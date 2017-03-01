@@ -56,8 +56,8 @@ class AdvancingFront
     std::list<FrontEdge> front;
     std::list<FrontEdge> deads;
     std::vector<int> nb;  // number of fronts a vertex is into,
-    // this is used for the Visited and Border flags
-    // but adding topology may not be needed anymore
+                          // this is used for the Visited and Border flags
+                          // but adding topology may not be needed anymore
 
   public:
     MESH &mesh;  // this structure will be filled by the algorithm
