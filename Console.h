@@ -8,23 +8,23 @@
 #include <string>
 using namespace std;
 
-//CConsoleOutput类主要为了在QT中添加控制台功能
+// CConsoleOutput类主要为了在QT中添加控制台功能
 class CConsoleOutput
 {
-public:
-	//output information in console 
-	static void Destory();
-	static CConsoleOutput * Instance();
-public:
-	virtual ~CConsoleOutput();
+  public:
+    // output information in console
+    static void Destory();
+    static CConsoleOutput* Instance();
 
-protected:
-	CConsoleOutput();
+  public:
+    virtual ~CConsoleOutput();
 
-private:
-	static CConsoleOutput* m_instance;
-	FILE *file;
+  protected:
+    CConsoleOutput();
+
+  private:
+    static CConsoleOutput* m_instance;
+    FILE* file;
 };
 
 #endif
-

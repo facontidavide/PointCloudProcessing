@@ -3,125 +3,119 @@
 
 #include <QtGui/QMainWindow>
 #include "Algorithm/normal_extrapolation.h"
-#include "ui_mainwindow.h"
 #include "GLArea.h"
-#include "UI/std_para_dlg.h"
-#include "UI/dlg_wlop_para.h"
 #include "ParameterMgr.h"
+#include "UI/dlg_wlop_para.h"
+#include "UI/std_para_dlg.h"
 #include "calculationthread.h"
+#include "ui_mainwindow.h"
 
-
-
-//MainWindow类主要用来消息响应
+// MainWindow类主要用来消息响应
 class MainWindow : public QMainWindow
 {
-	Q_OBJECT
+    Q_OBJECT
 
-public:
-	MainWindow(QWidget *parent = 0, Qt::WFlags flags = 0);
-	~MainWindow();
-private:
-	void init();
-	void initWidgets();
-	void initConnect();
-	void iniStatusBar();
-	void createActionGroups();
+  public:
+    MainWindow(QWidget *parent = 0, Qt::WFlags flags = 0);
+    ~MainWindow();
 
+  private:
+    void init();
+    void initWidgets();
+    void initConnect();
+    void iniStatusBar();
+    void createActionGroups();
 
-private slots:
-	void updateStatusBar();
-	void dropEvent ( QDropEvent * event );
-	void dragEnterEvent(QDragEnterEvent *);
+  private slots:
+    void updateStatusBar();
+    void dropEvent(QDropEvent *event);
+    void dragEnterEvent(QDragEnterEvent *);
 
-	void openFile();
-	void saveFile();
-	void downSample();
-	void subSample();
-	void normalizeData();
-	void clearData();
-	void saveSnapshot();
-	void openImage();
-	void saveView();
-	void saveSkel();
-  void getQianSample();
+    void openFile();
+    void saveFile();
+    void downSample();
+    void subSample();
+    void normalizeData();
+    void clearData();
+    void saveSnapshot();
+    void openImage();
+    void saveView();
+    void saveSkel();
+    void getQianSample();
 
-	void showWLopDlg();
-	void showNormalDlg();
-	void showSkeletonDlg();
-	void showUpsampleDlg();
-	
+    void showWLopDlg();
+    void showNormalDlg();
+    void showSkeletonDlg();
+    void showUpsampleDlg();
 
-	void autoPlaySkeleton();
-	void stepPlaySkeleton();
-	void jumpPlaySkeleton();
-	void initialSampling();
-	void setStop();
+    void autoPlaySkeleton();
+    void stepPlaySkeleton();
+    void jumpPlaySkeleton();
+    void initialSampling();
+    void setStop();
 
-	void removePickPoints();
+    void removePickPoints();
 
-	
+  private slots:
+    void runWLop();
 
-private slots:
-	void runWLop();
+  public slots:
+    void runPCA_Normal();
+    void reorientateNormal();
 
-public slots:
-	void runPCA_Normal();
-	void reorientateNormal();
+  private slots:
+    void lightOnOff(bool _val);
+    void showOriginal(bool _val);
+    void showSamples(bool _val);
+    void showNormals(bool _val);
+    void showSkeleton(bool _val);
+    void cullPoints(bool _val);
+    void showNormalColor(bool _val);
+    void showNeighborhoodBall(bool _val);
+    void showAllNeighborhoodBall(bool _val);
+    void showIndividualColor(bool _val);
+    void setSnapshotEachIteration(bool _val);
+    void setNoSnapshotWithRadius(bool _val);
+    void showColorfulBranches(bool _val);
 
-private slots:
-	void lightOnOff(bool _val);
-	void showOriginal(bool _val);
-	void showSamples(bool _val);
-	void showNormals(bool _val);
-  void showSkeleton(bool _val);
-	void cullPoints(bool _val);
-	void showNormalColor(bool _val);
-	void showNeighborhoodBall(bool _val);
-	void showAllNeighborhoodBall(bool _val);
-	void showIndividualColor(bool _val);
-	void setSnapshotEachIteration(bool _val);
-	void setNoSnapshotWithRadius(bool _val);
-  void showColorfulBranches(bool _val);
+    void setSmapleType(QAction *action);
+    void setOriginalType(QAction *action);
 
-	void setSmapleType(QAction * action);
-	void setOriginalType(QAction * action);
+  private slots:
+    void sampleColor();
+    void originalColor();
+    void backGroundColor();
+    void normalColor();
+    void featureColor();
 
+    void ambientColor();
+    void diffuseColor();
+    void specularColor();
+    void recomputeQuad();
 
-private slots:
-	void sampleColor();
-	void originalColor();
-	void backGroundColor();
-	void normalColor();
-	void featureColor();
+  private:
+    GLArea *area;
+    CalculationThread calculation_thread;
 
-	void ambientColor();
-	void diffuseColor();
-	void specularColor();
-	void recomputeQuad();
+    QString strTitle;
+    QLabel *original_size_label;
+    QLabel *sample_size_lable;
+    QLabel *downSample_num_label;
+    QLabel *radius_label;
+    QLabel *error_label;
+    QLabel *iteration_label;
 
-private:
-	GLArea* area;
-	CalculationThread calculation_thread;
+    ParameterMgr *paras;
+    StdParaDlg *paraDlg_Skeleton;
+    StdParaDlg *paraDlg_Upsample;
+    StdParaDlg *paraDlg_WLOP;
+    StdParaDlg *paraDlg_Normal;
 
-	QString strTitle;
-	QLabel * original_size_label;
-	QLabel * sample_size_lable;
-	QLabel * downSample_num_label;
-	QLabel * radius_label;
-	QLabel * error_label;
-  QLabel * iteration_label;
+    QActionGroup *sample_draw_type;
+    QActionGroup *original_draw_type;
 
-	ParameterMgr * paras;
-	StdParaDlg * paraDlg_Skeleton;
-	StdParaDlg * paraDlg_Upsample;
-	StdParaDlg * paraDlg_WLOP;
-	StdParaDlg * paraDlg_Normal;
-
-	QActionGroup * sample_draw_type;
-	QActionGroup * original_draw_type;
-
-private:
-	Ui::mainwindowClass ui;
+  private:
+    Ui::mainwindowClass ui;
 };
 
-#endif // MAINWINDOW_H
+#endif  // MAINWINDOW_H

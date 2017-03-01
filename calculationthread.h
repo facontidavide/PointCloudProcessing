@@ -8,21 +8,21 @@ class GLArea;
 
 class CalculationThread : public QThread
 {
-	Q_OBJECT
+    Q_OBJECT
 
-public:
-	CalculationThread();
-	~CalculationThread();
+  public:
+    CalculationThread();
+    ~CalculationThread();
 
-	void run(void);
-	void stop(void);
-	void setArea(GLArea* area);
+    void run(void);
+    void stop(void);
+    void setArea(GLArea* area);
 
-signals:
-	void update();
-private:
-	GLArea* area;
-	
+  signals:
+    void update();
+
+  private:
+    GLArea* area;
 };
 
-#endif // CALCULATIONTHREAD_H
+#endif  // CALCULATIONTHREAD_H
