@@ -48,6 +48,12 @@ SET( APP_SRC
     trackball.cpp
     trackmode.cpp
 
+    UI/dlg_normal_para.cpp
+    UI/dlg_skeleton_para.cpp
+    UI/dlg_upsampling_para.cpp
+    UI/dlg_wlop_para.cpp
+    UI/std_para_dlg.cpp
+
     Algorithm/NormalSmoother.cpp
     Algorithm/Skeleton.cpp
     Algorithm/Upsampler.cpp

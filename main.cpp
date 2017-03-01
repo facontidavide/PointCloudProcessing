@@ -1,11 +1,11 @@
 #include <QtGui/QApplication>
-#include "Console.h"
+//#include "Console.h"
 #include "mainwindow.h"
 
-//函数入口，一般不做修改
+
 int main(int argc, char *argv[])
 {
-    CConsoleOutput::Instance();
+   // CConsoleOutput::Instance();
     // QApplication app(argc, argv);
     QApplication::setStyle(QStyleFactory::create("cleanlooks"));
     /*
