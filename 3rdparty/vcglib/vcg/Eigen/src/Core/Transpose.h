@@ -37,83 +37,96 @@
   *
   * \sa MatrixBase::transpose(), MatrixBase::adjoint()
   */
-template<typename MatrixType>
+template <typename MatrixType>
 struct ei_traits<Transpose<MatrixType> >
 {
-  typedef typename MatrixType::Scalar Scalar;
-  typedef typename ei_nested<MatrixType>::type MatrixTypeNested;
-  typedef typename ei_unref<MatrixTypeNested>::type _MatrixTypeNested;
-  enum {
-    RowsAtCompileTime = MatrixType::ColsAtCompileTime,
-    ColsAtCompileTime = MatrixType::RowsAtCompileTime,
-    MaxRowsAtCompileTime = MatrixType::MaxColsAtCompileTime,
-    MaxColsAtCompileTime = MatrixType::MaxRowsAtCompileTime,
-    Flags = ((int(_MatrixTypeNested::Flags) ^ RowMajorBit)
-          & ~(LowerTriangularBit | UpperTriangularBit))
-          | (int(_MatrixTypeNested::Flags)&UpperTriangularBit ? LowerTriangularBit : 0)
-          | (int(_MatrixTypeNested::Flags)&LowerTriangularBit ? UpperTriangularBit : 0),
-    CoeffReadCost = _MatrixTypeNested::CoeffReadCost
-  };
+    typedef typename MatrixType::Scalar Scalar;
+    typedef typename ei_nested<MatrixType>::type MatrixTypeNested;
+    typedef typename ei_unref<MatrixTypeNested>::type _MatrixTypeNested;
+    enum
+    {
+        RowsAtCompileTime = MatrixType::ColsAtCompileTime,
+        ColsAtCompileTime = MatrixType::RowsAtCompileTime,
+        MaxRowsAtCompileTime = MatrixType::MaxColsAtCompileTime,
+        MaxColsAtCompileTime = MatrixType::MaxRowsAtCompileTime,
+        Flags = ((int(_MatrixTypeNested::Flags) ^ RowMajorBit) & ~(LowerTriangularBit | UpperTriangularBit)) |
+                (int(_MatrixTypeNested::Flags) & UpperTriangularBit ? LowerTriangularBit : 0) |
+                (int(_MatrixTypeNested::Flags) & LowerTriangularBit ? UpperTriangularBit : 0),
+        CoeffReadCost = _MatrixTypeNested::CoeffReadCost
+    };
 };
 
-template<typename MatrixType> class Transpose
-  : public MatrixBase<Transpose<MatrixType> >
+template <typename MatrixType>
+class Transpose : public MatrixBase<Transpose<MatrixType> >
 {
   public:
-
     EIGEN_GENERIC_PUBLIC_INTERFACE(Transpose)
 
-    inline Transpose(const MatrixType& matrix) : m_matrix(matrix) {}
+    inline Transpose(const MatrixType& matrix) : m_matrix(matrix)
+    {
+    }
 
     EIGEN_INHERIT_ASSIGNMENT_OPERATORS(Transpose)
 
-    inline int rows() const { return m_matrix.cols(); }
-    inline int cols() const { return m_matrix.rows(); }
-    inline int nonZeros() const { return m_matrix.nonZeros(); }
-    inline int stride(void) const { return m_matrix.stride(); }
+    inline int rows() const
+    {
+        return m_matrix.cols();
+    }
+    inline int cols() const
+    {
+        return m_matrix.rows();
+    }
+    inline int nonZeros() const
+    {
+        return m_matrix.nonZeros();
+    }
+    inline int stride(void) const
+    {
+        return m_matrix.stride();
+    }
 
     inline Scalar& coeffRef(int row, int col)
     {
-      return m_matrix.const_cast_derived().coeffRef(col, row);
+        return m_matrix.const_cast_derived().coeffRef(col, row);
     }
 
     inline const Scalar coeff(int row, int col) const
     {
-      return m_matrix.coeff(col, row);
+        return m_matrix.coeff(col, row);
     }
 
     inline const Scalar coeff(int index) const
     {
-      return m_matrix.coeff(index);
+        return m_matrix.coeff(index);
     }
 
     inline Scalar& coeffRef(int index)
     {
-      return m_matrix.const_cast_derived().coeffRef(index);
+        return m_matrix.const_cast_derived().coeffRef(index);
     }
 
-    template<int LoadMode>
+    template <int LoadMode>
     inline const PacketScalar packet(int row, int col) const
     {
-      return m_matrix.template packet<LoadMode>(col, row);
+        return m_matrix.template packet<LoadMode>(col, row);
     }
 
-    template<int LoadMode>
+    template <int LoadMode>
     inline void writePacket(int row, int col, const PacketScalar& x)
     {
-      m_matrix.const_cast_derived().template writePacket<LoadMode>(col, row, x);
+        m_matrix.const_cast_derived().template writePacket<LoadMode>(col, row, x);
     }
 
-    template<int LoadMode>
+    template <int LoadMode>
     inline const PacketScalar packet(int index) const
     {
-      return m_matrix.template packet<LoadMode>(index);
+        return m_matrix.template packet<LoadMode>(index);
     }
 
-    template<int LoadMode>
+    template <int LoadMode>
     inline void writePacket(int index, const PacketScalar& x)
     {
-      m_matrix.const_cast_derived().template writePacket<LoadMode>(index, x);
+        m_matrix.const_cast_derived().template writePacket<LoadMode>(index, x);
     }
 
   protected:
@@ -139,11 +152,10 @@ template<typename MatrixType> class Transpose
   * \endcode
   *
   * \sa transposeInPlace(), adjoint() */
-template<typename Derived>
-inline Transpose<Derived>
-MatrixBase<Derived>::transpose()
+template <typename Derived>
+inline Transpose<Derived> MatrixBase<Derived>::transpose()
 {
-  return derived();
+    return derived();
 }
 
 /** This is the const version of transpose().
@@ -151,11 +163,10 @@ MatrixBase<Derived>::transpose()
   * Make sure you read the warning for transpose() !
   *
   * \sa transposeInPlace(), adjoint() */
-template<typename Derived>
-inline const Transpose<Derived>
-MatrixBase<Derived>::transpose() const
+template <typename Derived>
+inline const Transpose<Derived> MatrixBase<Derived>::transpose() const
 {
-  return derived();
+    return derived();
 }
 
 /** \returns an expression of the adjoint (i.e. conjugate transpose) of *this.
@@ -173,36 +184,39 @@ MatrixBase<Derived>::transpose() const
   * \endcode
   *
   * \sa transpose(), conjugate(), class Transpose, class ei_scalar_conjugate_op */
-template<typename Derived>
-inline const typename MatrixBase<Derived>::AdjointReturnType
-MatrixBase<Derived>::adjoint() const
+template <typename Derived>
+inline const typename MatrixBase<Derived>::AdjointReturnType MatrixBase<Derived>::adjoint() const
 {
-  return conjugate().nestByValue();
+    return conjugate().nestByValue();
 }
 
 /***************************************************************************
 * "in place" transpose implementation
 ***************************************************************************/
 
-template<typename MatrixType,
-  bool IsSquare = (MatrixType::RowsAtCompileTime == MatrixType::ColsAtCompileTime) && MatrixType::RowsAtCompileTime!=Dynamic>
+template <typename MatrixType, bool IsSquare = (MatrixType::RowsAtCompileTime == MatrixType::ColsAtCompileTime) &&
+                                               MatrixType::RowsAtCompileTime != Dynamic>
 struct ei_inplace_transpose_selector;
 
-template<typename MatrixType>
-struct ei_inplace_transpose_selector<MatrixType,true> { // square matrix
-  static void run(MatrixType& m) {
-    m.template part<StrictlyUpperTriangular>().swap(m.transpose());
-  }
+template <typename MatrixType>
+struct ei_inplace_transpose_selector<MatrixType, true>
+{  // square matrix
+    static void run(MatrixType& m)
+    {
+        m.template part<StrictlyUpperTriangular>().swap(m.transpose());
+    }
 };
 
-template<typename MatrixType>
-struct ei_inplace_transpose_selector<MatrixType,false> { // non square matrix
-  static void run(MatrixType& m) {
-    if (m.rows()==m.cols())
-      m.template part<StrictlyUpperTriangular>().swap(m.transpose());
-    else
-      m = m.transpose().eval();
-  }
+template <typename MatrixType>
+struct ei_inplace_transpose_selector<MatrixType, false>
+{  // non square matrix
+    static void run(MatrixType& m)
+    {
+        if (m.rows() == m.cols())
+            m.template part<StrictlyUpperTriangular>().swap(m.transpose());
+        else
+            m = m.transpose().eval();
+    }
 };
 
 /** This is the "in place" version of transpose: it transposes \c *this.
@@ -219,10 +233,10 @@ struct ei_inplace_transpose_selector<MatrixType,false> { // non square matrix
   * \note if the matrix is not square, then \c *this must be a resizable matrix.
   *
   * \sa transpose(), adjoint() */
-template<typename Derived>
+template <typename Derived>
 inline void MatrixBase<Derived>::transposeInPlace()
 {
-  ei_inplace_transpose_selector<Derived>::run(derived());
+    ei_inplace_transpose_selector<Derived>::run(derived());
 }
 
-#endif // EIGEN_TRANSPOSE_H
+#endif  // EIGEN_TRANSPOSE_H

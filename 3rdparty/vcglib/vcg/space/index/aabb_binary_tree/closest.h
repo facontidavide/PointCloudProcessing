@@ -8,7 +8,7 @@
 *                                                                    \      *
 * All rights reserved.                                                      *
 *                                                                           *
-* This program is free software; you can redistribute it and/or modify      *   
+* This program is free software; you can redistribute it and/or modify      *
 * it under the terms of the GNU General Public License as published by      *
 * the Free Software Foundation; either version 2 of the License, or         *
 * (at your option) any later version.                                       *
@@ -45,110 +45,125 @@ First Commit.
 
 /***************************************************************************/
 
-namespace vcg {
-
+namespace vcg
+{
 template <class TREETYPE>
-class AABBBinaryTreeClosest {
-public:
-	typedef AABBBinaryTreeClosest<TREETYPE> ClassType;
-	typedef TREETYPE TreeType;
-	typedef typename TreeType::ScalarType ScalarType;
-	typedef typename TreeType::CoordType CoordType;
-	typedef typename TreeType::NodeType NodeType;
-	typedef typename TreeType::ObjPtr ObjPtr;
+class AABBBinaryTreeClosest
+{
+  public:
+    typedef AABBBinaryTreeClosest<TREETYPE> ClassType;
+    typedef TREETYPE TreeType;
+    typedef typename TreeType::ScalarType ScalarType;
+    typedef typename TreeType::CoordType CoordType;
+    typedef typename TreeType::NodeType NodeType;
+    typedef typename TreeType::ObjPtr ObjPtr;
 
-	template <class OBJPOINTDISTANCEFUNCT>
-	static inline ObjPtr Closest(TreeType & tree, OBJPOINTDISTANCEFUNCT & getPointDistance, const CoordType & p, const ScalarType & maxDist, ScalarType & minDist, CoordType & q) {
-		typedef OBJPOINTDISTANCEFUNCT ObjPointDistanceFunct;
-		typedef std::vector<NodeType *> NodePtrVector;
-		typedef typename NodePtrVector::const_iterator NodePtrVector_ci;
+    template <class OBJPOINTDISTANCEFUNCT>
+    static inline ObjPtr Closest(TreeType &tree, OBJPOINTDISTANCEFUNCT &getPointDistance, const CoordType &p,
+                                 const ScalarType &maxDist, ScalarType &minDist, CoordType &q)
+    {
+        typedef OBJPOINTDISTANCEFUNCT ObjPointDistanceFunct;
+        typedef std::vector<NodeType *> NodePtrVector;
+        typedef typename NodePtrVector::const_iterator NodePtrVector_ci;
 
-		NodeType * pRoot = tree.pRoot;
+        NodeType *pRoot = tree.pRoot;
 
-		if (pRoot == 0) {
-			return (0);
-		}
+        if (pRoot == 0)
+        {
+            return (0);
+        }
 
-		NodePtrVector clist1;
-		NodePtrVector clist2;
-		NodePtrVector leaves;
+        NodePtrVector clist1;
+        NodePtrVector clist2;
+        NodePtrVector leaves;
 
-		NodePtrVector * candidates = &clist1;
-		NodePtrVector * newCandidates = &clist2;
+        NodePtrVector *candidates = &clist1;
+        NodePtrVector *newCandidates = &clist2;
 
-		clist1.reserve(tree.pObjects.size());
-		clist2.reserve(tree.pObjects.size());
-		leaves.reserve(tree.pObjects.size());
+        clist1.reserve(tree.pObjects.size());
+        clist2.reserve(tree.pObjects.size());
+        leaves.reserve(tree.pObjects.size());
 
-		clist1.resize(0);
-		clist2.resize(0);
-		leaves.resize(0);
+        clist1.resize(0);
+        clist2.resize(0);
+        leaves.resize(0);
 
-		ScalarType minMaxDist = maxDist * maxDist;
+        ScalarType minMaxDist = maxDist * maxDist;
 
-		candidates->push_back(pRoot);
+        candidates->push_back(pRoot);
 
-		while (!candidates->empty()) {
-			newCandidates->resize(0);
+        while (!candidates->empty())
+        {
+            newCandidates->resize(0);
 
-			for (NodePtrVector_ci bv=candidates->begin(); bv!=candidates->end(); ++bv) {
-				const CoordType dc = Abs(p - (*bv)->boxCenter);
-				const ScalarType maxDist = (dc + (*bv)->boxHalfDims).SquaredNorm();
-				(*bv)->ScalarValue() = LowClampToZero(dc - (*bv)->boxHalfDims).SquaredNorm();
-				if (maxDist < minMaxDist) {
-					minMaxDist = maxDist;
-				}
-			}
+            for (NodePtrVector_ci bv = candidates->begin(); bv != candidates->end(); ++bv)
+            {
+                const CoordType dc = Abs(p - (*bv)->boxCenter);
+                const ScalarType maxDist = (dc + (*bv)->boxHalfDims).SquaredNorm();
+                (*bv)->ScalarValue() = LowClampToZero(dc - (*bv)->boxHalfDims).SquaredNorm();
+                if (maxDist < minMaxDist)
+                {
+                    minMaxDist = maxDist;
+                }
+            }
 
-			for (NodePtrVector_ci ci=candidates->begin(); ci!=candidates->end(); ++ci) {
-				if ((*ci)->ScalarValue() < minMaxDist) {
-					if ((*ci)->IsLeaf()) {
-						leaves.push_back(*ci);
-					}
-					else {
-						if ((*ci)->children[0] != 0) {
-							newCandidates->push_back((*ci)->children[0]);
-						}
-						if ((*ci)->children[1] != 0) {
-							newCandidates->push_back((*ci)->children[1]);
-						}
-					}
-				}
-			}
-			NodePtrVector * cSwap = candidates;
-			candidates = newCandidates;
-			newCandidates = cSwap;
-		}
+            for (NodePtrVector_ci ci = candidates->begin(); ci != candidates->end(); ++ci)
+            {
+                if ((*ci)->ScalarValue() < minMaxDist)
+                {
+                    if ((*ci)->IsLeaf())
+                    {
+                        leaves.push_back(*ci);
+                    }
+                    else
+                    {
+                        if ((*ci)->children[0] != 0)
+                        {
+                            newCandidates->push_back((*ci)->children[0]);
+                        }
+                        if ((*ci)->children[1] != 0)
+                        {
+                            newCandidates->push_back((*ci)->children[1]);
+                        }
+                    }
+                }
+            }
+            NodePtrVector *cSwap = candidates;
+            candidates = newCandidates;
+            newCandidates = cSwap;
+        }
 
-		clist1.clear();
-		clist2.clear();
+        clist1.clear();
+        clist2.clear();
 
-		ObjPtr closestObject = 0;
-		CoordType closestPoint;
-		ScalarType closestDist = math::Sqrt(minMaxDist) + std::numeric_limits<ScalarType>::epsilon();
-		ScalarType closestDistSq = closestDist * closestDist;
+        ObjPtr closestObject = 0;
+        CoordType closestPoint;
+        ScalarType closestDist = math::Sqrt(minMaxDist) + std::numeric_limits<ScalarType>::epsilon();
+        ScalarType closestDistSq = closestDist * closestDist;
 
+        for (NodePtrVector_ci ci = leaves.begin(); ci != leaves.end(); ++ci)
+        {
+            if ((*ci)->ScalarValue() < closestDistSq)
+            {
+                for (typename TreeType::ObjPtrVectorConstIterator si = (*ci)->oBegin; si != (*ci)->oEnd; ++si)
+                {
+                    if (getPointDistance(*(*si), p, closestDist, closestPoint))
+                    {
+                        closestDistSq = closestDist * closestDist;
+                        closestObject = (*si);
+                        q = closestPoint;
+                        minDist = closestDist;
+                    }
+                }
+            }
+        }
 
-		for (NodePtrVector_ci ci=leaves.begin(); ci!=leaves.end(); ++ci) {
-			if ((*ci)->ScalarValue() < closestDistSq) {
-				for (typename TreeType::ObjPtrVectorConstIterator si=(*ci)->oBegin; si!=(*ci)->oEnd; ++si) {
-					if (getPointDistance(*(*si), p, closestDist, closestPoint)) {
-						closestDistSq = closestDist * closestDist;
-						closestObject = (*si);
-            q = closestPoint;
-            minDist = closestDist;
-					}
-				}
-			}
-		}
+        leaves.clear();
 
-		leaves.clear();
-
-		return (closestObject);
-	}
-
+        return (closestObject);
+    }
 };
 
-} // end namespace vcg
+}  // end namespace vcg
 
-#endif // #ifndef __VCGLIB_AABBBINARYTREE_CLOSEST_H
+#endif  // #ifndef __VCGLIB_AABBBINARYTREE_CLOSEST_H

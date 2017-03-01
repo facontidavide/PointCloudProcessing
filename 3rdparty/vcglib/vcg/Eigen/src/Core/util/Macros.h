@@ -32,9 +32,9 @@
 #define EIGEN_MAJOR_VERSION 0
 #define EIGEN_MINOR_VERSION 3
 
-#define EIGEN_VERSION_AT_LEAST(x,y,z) (EIGEN_WORLD_VERSION>x || (EIGEN_WORLD_VERSION>=x && \
-                                      (EIGEN_MAJOR_VERSION>y || (EIGEN_MAJOR_VERSION>=y && \
-                                                                 EIGEN_MINOR_VERSION>=z))))
+#define EIGEN_VERSION_AT_LEAST(x, y, z)                                                                                \
+    (EIGEN_WORLD_VERSION > x || (EIGEN_WORLD_VERSION >= x &&                                                           \
+                                 (EIGEN_MAJOR_VERSION > y || (EIGEN_MAJOR_VERSION >= y && EIGEN_MINOR_VERSION >= z))))
 
 // if the compiler is GNUC, disable 16 byte alignment on exotic archs that probably don't need it, and on which
 // it may be extra trouble to get aligned memory allocation to work (example: on ARM, overloading new[] is a PITA
@@ -42,17 +42,16 @@
 // if the compiler is not GNUC, just cross fingers that the architecture isn't too exotic, because we don't want
 // to keep track of all the different preprocessor symbols for all compilers.
 #if !defined(__GNUC__) || defined(__i386__) || defined(__x86_64__) || defined(__ppc__) || defined(__ia64__)
-  #define EIGEN_ARCH_WANTS_ALIGNMENT 1
+#define EIGEN_ARCH_WANTS_ALIGNMENT 1
 #else
-  #ifdef EIGEN_VECTORIZE
-    #error Vectorization enabled, but the architecture is not listed among those for which we require 16 byte alignment. If you added vectorization for another architecture, you also need to edit this list.
-  #endif
-  #define EIGEN_ARCH_WANTS_ALIGNMENT 0
-  #ifndef EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
-    #define EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
-  #endif
+#ifdef EIGEN_VECTORIZE
+#error Vectorization enabled, but the architecture is not listed among those for which we require 16 byte alignment. If you added vectorization for another architecture, you also need to edit this list.
 #endif
-
+#define EIGEN_ARCH_WANTS_ALIGNMENT 0
+#ifndef EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
+#define EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
+#endif
+#endif
 
 #ifdef EIGEN_DEFAULT_TO_ROW_MAJOR
 #define EIGEN_DEFAULT_MATRIX_STORAGE_ORDER_OPTION RowMajor
@@ -74,7 +73,7 @@
   * Typically for a single-threaded application you would set that to 25% of the size of your CPU caches in bytes
   */
 #ifndef EIGEN_TUNE_FOR_CPU_CACHE_SIZE
-#define EIGEN_TUNE_FOR_CPU_CACHE_SIZE (sizeof(float)*256*256)
+#define EIGEN_TUNE_FOR_CPU_CACHE_SIZE (sizeof(float) * 256 * 256)
 #endif
 
 // FIXME this should go away quickly
@@ -82,26 +81,26 @@
 #error EIGEN_TUNE_FOR_L2_CACHE_SIZE is now called EIGEN_TUNE_FOR_CPU_CACHE_SIZE.
 #endif
 
-#define USING_PART_OF_NAMESPACE_EIGEN \
-EIGEN_USING_MATRIX_TYPEDEFS \
-using Eigen::Matrix; \
-using Eigen::MatrixBase; \
-using Eigen::ei_random; \
-using Eigen::ei_real; \
-using Eigen::ei_imag; \
-using Eigen::ei_conj; \
-using Eigen::ei_abs; \
-using Eigen::ei_abs2; \
-using Eigen::ei_sqrt; \
-using Eigen::ei_exp; \
-using Eigen::ei_log; \
-using Eigen::ei_sin; \
-using Eigen::ei_cos;
+#define USING_PART_OF_NAMESPACE_EIGEN                                                                                  \
+    EIGEN_USING_MATRIX_TYPEDEFS                                                                                        \
+    using Eigen::Matrix;                                                                                               \
+    using Eigen::MatrixBase;                                                                                           \
+    using Eigen::ei_random;                                                                                            \
+    using Eigen::ei_real;                                                                                              \
+    using Eigen::ei_imag;                                                                                              \
+    using Eigen::ei_conj;                                                                                              \
+    using Eigen::ei_abs;                                                                                               \
+    using Eigen::ei_abs2;                                                                                              \
+    using Eigen::ei_sqrt;                                                                                              \
+    using Eigen::ei_exp;                                                                                               \
+    using Eigen::ei_log;                                                                                               \
+    using Eigen::ei_sin;                                                                                               \
+    using Eigen::ei_cos;
 
 #ifdef NDEBUG
-# ifndef EIGEN_NO_DEBUG
-#  define EIGEN_NO_DEBUG
-# endif
+#ifndef EIGEN_NO_DEBUG
+#define EIGEN_NO_DEBUG
+#endif
 #endif
 
 #ifndef ei_assert
@@ -128,9 +127,10 @@ using Eigen::ei_cos;
 // which should be inlined even in debug mode.
 // FIXME with the always_inline attribute,
 // gcc 3.4.x reports the following compilation error:
-//   Eval.h:91: sorry, unimplemented: inlining failed in call to 'const Eigen::Eval<Derived> Eigen::MatrixBase<Scalar, Derived>::eval() const'
+//   Eval.h:91: sorry, unimplemented: inlining failed in call to 'const Eigen::Eval<Derived> Eigen::MatrixBase<Scalar,
+//   Derived>::eval() const'
 //    : function body not available
-#if EIGEN_GNUC_AT_LEAST(4,0)
+#if EIGEN_GNUC_AT_LEAST(4, 0)
 #define EIGEN_ALWAYS_INLINE_ATTRIB __attribute__((always_inline))
 #else
 #define EIGEN_ALWAYS_INLINE_ATTRIB
@@ -189,62 +189,64 @@ using Eigen::ei_cos;
 // needed to define it here as escaping characters in CMake add_definition's argument seems very problematic.
 #define EIGEN_DOCS_IO_FORMAT IOFormat(3, AlignCols, " ", "\n", "", "")
 
-#define EIGEN_INHERIT_ASSIGNMENT_OPERATOR(Derived, Op) \
-template<typename OtherDerived> \
-EIGEN_STRONG_INLINE Derived& operator Op(const Eigen::MatrixBase<OtherDerived>& other) \
-{ \
-  return Base::operator Op(other.derived()); \
-} \
-EIGEN_STRONG_INLINE Derived& operator Op(const Derived& other) \
-{ \
-  return Base::operator Op(other); \
-}
+#define EIGEN_INHERIT_ASSIGNMENT_OPERATOR(Derived, Op)                                                                 \
+    template <typename OtherDerived>                                                                                   \
+    EIGEN_STRONG_INLINE Derived& operator Op(const Eigen::MatrixBase<OtherDerived>& other)                             \
+    {                                                                                                                  \
+        return Base::operator Op(other.derived());                                                                     \
+    }                                                                                                                  \
+    EIGEN_STRONG_INLINE Derived& operator Op(const Derived& other)                                                     \
+    {                                                                                                                  \
+        return Base::operator Op(other);                                                                               \
+    }
 
-#define EIGEN_INHERIT_SCALAR_ASSIGNMENT_OPERATOR(Derived, Op) \
-template<typename Other> \
-EIGEN_STRONG_INLINE Derived& operator Op(const Other& scalar) \
-{ \
-  return Base::operator Op(scalar); \
-}
+#define EIGEN_INHERIT_SCALAR_ASSIGNMENT_OPERATOR(Derived, Op)                                                          \
+    template <typename Other>                                                                                          \
+    EIGEN_STRONG_INLINE Derived& operator Op(const Other& scalar)                                                      \
+    {                                                                                                                  \
+        return Base::operator Op(scalar);                                                                              \
+    }
 
-#define EIGEN_INHERIT_ASSIGNMENT_OPERATORS(Derived) \
-EIGEN_INHERIT_ASSIGNMENT_OPERATOR(Derived, =) \
-EIGEN_INHERIT_ASSIGNMENT_OPERATOR(Derived, +=) \
-EIGEN_INHERIT_ASSIGNMENT_OPERATOR(Derived, -=) \
-EIGEN_INHERIT_SCALAR_ASSIGNMENT_OPERATOR(Derived, *=) \
-EIGEN_INHERIT_SCALAR_ASSIGNMENT_OPERATOR(Derived, /=)
+#define EIGEN_INHERIT_ASSIGNMENT_OPERATORS(Derived)                                                                    \
+    EIGEN_INHERIT_ASSIGNMENT_OPERATOR(Derived, =)                                                                      \
+    EIGEN_INHERIT_ASSIGNMENT_OPERATOR(Derived, +=)                                                                     \
+    EIGEN_INHERIT_ASSIGNMENT_OPERATOR(Derived, -=)                                                                     \
+    EIGEN_INHERIT_SCALAR_ASSIGNMENT_OPERATOR(Derived, *=)                                                              \
+    EIGEN_INHERIT_SCALAR_ASSIGNMENT_OPERATOR(Derived, /=)
 
-#define _EIGEN_GENERIC_PUBLIC_INTERFACE(Derived, BaseClass) \
-typedef BaseClass Base; \
-typedef typename Eigen::ei_traits<Derived>::Scalar Scalar; \
-typedef typename Eigen::NumTraits<Scalar>::Real RealScalar; \
-typedef typename Base::PacketScalar PacketScalar; \
-typedef typename Eigen::ei_nested<Derived>::type Nested; \
-enum { RowsAtCompileTime = Eigen::ei_traits<Derived>::RowsAtCompileTime, \
-       ColsAtCompileTime = Eigen::ei_traits<Derived>::ColsAtCompileTime, \
-       MaxRowsAtCompileTime = Eigen::ei_traits<Derived>::MaxRowsAtCompileTime, \
-       MaxColsAtCompileTime = Eigen::ei_traits<Derived>::MaxColsAtCompileTime, \
-       Flags = Eigen::ei_traits<Derived>::Flags, \
-       CoeffReadCost = Eigen::ei_traits<Derived>::CoeffReadCost, \
-       SizeAtCompileTime = Base::SizeAtCompileTime, \
-       MaxSizeAtCompileTime = Base::MaxSizeAtCompileTime, \
-       IsVectorAtCompileTime = Base::IsVectorAtCompileTime };
+#define _EIGEN_GENERIC_PUBLIC_INTERFACE(Derived, BaseClass)                                                            \
+    typedef BaseClass Base;                                                                                            \
+    typedef typename Eigen::ei_traits<Derived>::Scalar Scalar;                                                         \
+    typedef typename Eigen::NumTraits<Scalar>::Real RealScalar;                                                        \
+    typedef typename Base::PacketScalar PacketScalar;                                                                  \
+    typedef typename Eigen::ei_nested<Derived>::type Nested;                                                           \
+    enum                                                                                                               \
+    {                                                                                                                  \
+        RowsAtCompileTime = Eigen::ei_traits<Derived>::RowsAtCompileTime,                                              \
+        ColsAtCompileTime = Eigen::ei_traits<Derived>::ColsAtCompileTime,                                              \
+        MaxRowsAtCompileTime = Eigen::ei_traits<Derived>::MaxRowsAtCompileTime,                                        \
+        MaxColsAtCompileTime = Eigen::ei_traits<Derived>::MaxColsAtCompileTime,                                        \
+        Flags = Eigen::ei_traits<Derived>::Flags,                                                                      \
+        CoeffReadCost = Eigen::ei_traits<Derived>::CoeffReadCost,                                                      \
+        SizeAtCompileTime = Base::SizeAtCompileTime,                                                                   \
+        MaxSizeAtCompileTime = Base::MaxSizeAtCompileTime,                                                             \
+        IsVectorAtCompileTime = Base::IsVectorAtCompileTime                                                            \
+    };
 
-#define EIGEN_GENERIC_PUBLIC_INTERFACE(Derived) \
-_EIGEN_GENERIC_PUBLIC_INTERFACE(Derived, Eigen::MatrixBase<Derived>)
+#define EIGEN_GENERIC_PUBLIC_INTERFACE(Derived) _EIGEN_GENERIC_PUBLIC_INTERFACE(Derived, Eigen::MatrixBase<Derived>)
 
-#define EIGEN_ENUM_MIN(a,b) (((int)a <= (int)b) ? (int)a : (int)b)
-#define EIGEN_ENUM_MAX(a,b) (((int)a >= (int)b) ? (int)a : (int)b)
+#define EIGEN_ENUM_MIN(a, b) (((int)a <= (int)b) ? (int)a : (int)b)
+#define EIGEN_ENUM_MAX(a, b) (((int)a >= (int)b) ? (int)a : (int)b)
 
 // just an empty macro !
 #define EIGEN_EMPTY
 
 // concatenate two tokens
-#define EIGEN_CAT2(a,b) a ## b
-#define EIGEN_CAT(a,b) EIGEN_CAT2(a,b)
+#define EIGEN_CAT2(a, b) a##b
+#define EIGEN_CAT(a, b) EIGEN_CAT2(a, b)
 
 // convert a token to a string
 #define EIGEN_MAKESTRING2(a) #a
 #define EIGEN_MAKESTRING(a) EIGEN_MAKESTRING2(a)
 
-#endif // EIGEN_MACROS_H
+#endif  // EIGEN_MACROS_H

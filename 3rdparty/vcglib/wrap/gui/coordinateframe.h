@@ -43,14 +43,13 @@ first version
 #ifndef COORDINATEFRAME_H
 #define COORDINATEFRAME_H
 
-
 #include <vcg/math/similarity.h>
 #include <vcg/space/color4.h>
 
 #include <QGLWidget>
 
-namespace vcg {
-
+namespace vcg
+{
 /*!
   @brief The CoordinateFrame class.
 
@@ -58,65 +57,67 @@ namespace vcg {
 */
 class CoordinateFrame
 {
-public:
-  // functions:
-  /*!
-    @brief The constructor.
+  public:
+    // functions:
+    /*!
+      @brief The constructor.
 
-    Initialize the CoordinateFrame data.
-    @param size the distance from the origin to the endpoint of the arrows.
-  */
-  CoordinateFrame(float size);
+      Initialize the CoordinateFrame data.
+      @param size the distance from the origin to the endpoint of the arrows.
+    */
+    CoordinateFrame(float size);
 
-  /*!
-    @brief The destructor.
+    /*!
+      @brief The destructor.
 
-    The destructor.
-  */
-  virtual ~CoordinateFrame() {}
+      The destructor.
+    */
+    virtual ~CoordinateFrame()
+    {
+    }
 
-  /*!
-    @brief Render the coordinate frame.
+    /*!
+      @brief Render the coordinate frame.
 
-    @param glw the GL widget.
-  */
-  virtual void Render(QGLWidget* glw,QPainter* p = NULL);
-  // data
+      @param glw the GL widget.
+    */
+    virtual void Render(QGLWidget *glw, QPainter *p = NULL);
+    // data
 
-  /// The color used for the ticks, the ticks values and the head of the arrows.
-  Color4b basecolor;
+    /// The color used for the ticks, the ticks values and the head of the arrows.
+    Color4b basecolor;
 
-  /// The color of the X axis and label.
-  Color4b xcolor;
+    /// The color of the X axis and label.
+    Color4b xcolor;
 
-  /// The color of the Y axis and label.
-  Color4b ycolor;
+    /// The color of the Y axis and label.
+    Color4b ycolor;
 
-  /// The color of the Z axis and label.
-  Color4b zcolor;
+    /// The color of the Z axis and label.
+    Color4b zcolor;
 
-  /// The distance from the origin to the endpoint of the arrows.
-  float size;
+    /// The distance from the origin to the endpoint of the arrows.
+    float size;
 
-  /// The width of the lines.
-  float linewidth;
+    /// The width of the lines.
+    float linewidth;
 
-  /// The font used for the labels and the ticks values.
-  QFont font;
+    /// The font used for the labels and the ticks values.
+    QFont font;
 
-  /// The flag that enables axes rendering.
-  bool drawaxis;
+    /// The flag that enables axes rendering.
+    bool drawaxis;
 
-  /// The flag that enables lablels rendering.
-  bool drawlabels;
+    /// The flag that enables lablels rendering.
+    bool drawlabels;
 
-  /// The flag that enables ticks values rendering.
-  bool drawvalues;
+    /// The flag that enables ticks values rendering.
+    bool drawvalues;
 
-  // useful functions:
-  static void drawTickedLine(const Point3d &, const Point3d &, float, float,float);
-  static float calcSlope(const Point3d &, const Point3d &, float, int , double *, double *, GLint *);
-  static float niceRound(float);
+    // useful functions:
+    static void drawTickedLine(const Point3d &, const Point3d &, float, float, float);
+    static float calcSlope(const Point3d &, const Point3d &, float, int, double *, double *, GLint *);
+    static float niceRound(float);
 };
 
 /*!
@@ -124,109 +125,114 @@ public:
 
   This class extends the coordinate frame with the ability of being programmatically rototranslated.
 */
-class MovableCoordinateFrame: public CoordinateFrame
+class MovableCoordinateFrame : public CoordinateFrame
 {
+  public:
+    /*!
+      @brief The constructor.
 
-public:
-  /*!
-    @brief The constructor.
+      Initialize the MovableCoordinateFrame data.
+      @param size the distance from the origin to the endpoint of the arrows.
+    */
+    MovableCoordinateFrame(float);
 
-    Initialize the MovableCoordinateFrame data.
-    @param size the distance from the origin to the endpoint of the arrows.
-  */
-  MovableCoordinateFrame(float);
+    /*!
+      @brief The destructor.
 
-  /*!
-    @brief The destructor.
+      The destructor.
+    */
+    virtual ~MovableCoordinateFrame()
+    {
+    }
 
-    The destructor.
-  */
-  virtual ~MovableCoordinateFrame(){}
+    /*!
+      @brief Render the movable coordinate frame in its position.
 
-  /*!
-    @brief Render the movable coordinate frame in its position.
+      @param glw the GL widget.
+    */
+    virtual void Render(QGLWidget *glw);
 
-    @param glw the GL widget.
-  */
-  virtual void Render(QGLWidget* glw);
+    /*!
+      @brief Reset the position and/or the rotation of the coordinate frame.
 
-  /*!
-    @brief Reset the position and/or the rotation of the coordinate frame.
+      @param reset_position set to true to reset the position.
+      @param reset_alignment set to true to reset the rotation.
+    */
+    virtual void Reset(bool reset_position, bool reset_alignment);
 
-    @param reset_position set to true to reset the position.
-    @param reset_alignment set to true to reset the rotation.
-  */
-  virtual void Reset(bool reset_position,bool reset_alignment);
+    /*!
+      @brief Set the position of the coordinate frame.
 
-  /*!
-    @brief Set the position of the coordinate frame.
+      @param new_position the new position of the coordinate frame.
+    */
+    virtual void SetPosition(const Point3f new_position);
 
-    @param new_position the new position of the coordinate frame.
-  */
-  virtual void SetPosition(const Point3f new_position);
+    /*!
+      @brief Set the rotation of the coordinate frame.
 
-  /*!
-    @brief Set the rotation of the coordinate frame.
+      @param new_rotation the new rotation of the coordinate frame.
+    */
+    virtual void SetRotation(const Quaternionf rotation);
 
-    @param new_rotation the new rotation of the coordinate frame.
-  */
-  virtual void SetRotation(const Quaternionf rotation);
+    /*!
+      @brief Get the position of the coordinate frame.
 
-  /*!
-    @brief Get the position of the coordinate frame.
+      @return the position of the coordinate frame.
+    */
+    virtual Point3f GetPosition();
 
-    @return the position of the coordinate frame.
-  */
-  virtual Point3f GetPosition();
+    /*!
+      @brief Get the rotation of the coordinate frame.
 
-  /*!
-    @brief Get the rotation of the coordinate frame.
+      @return the rotation of the coordinate frame.
+    */
+    virtual Quaternionf GetRotation();
 
-    @return the rotation of the coordinate frame.
-  */
-  virtual Quaternionf GetRotation();
+    /*!
+      @brief Computes the transformation matrix relative to the current rototranslation.
 
-  /*!
-    @brief Computes the transformation matrix relative to the current rototranslation.
+      @param m is set to the transformation matrix.
+    */
+    virtual void GetTransform(Matrix44f &m);
 
-    @param m is set to the transformation matrix.
-  */
-  virtual void GetTransform(Matrix44f &m);
+    /*!
+      @brief Rotates the coordinate frame wrt itself.
 
-  /*!
-    @brief Rotates the coordinate frame wrt itself.
+      @param angle the angle of the rotation, in degrees.
+      @param axis the axis of the rotation.
+    */
+    virtual void Rot(float angle, const Point3f axis);
 
-    @param angle the angle of the rotation, in degrees.
-    @param axis the axis of the rotation.
-  */
-  virtual void Rot(float angle,const Point3f axis);
+    /*!
+      @brief Align the coordinate frame to one or two directions.
 
-  /*!
-    @brief Align the coordinate frame to one or two directions.
+      If the primary direction of alignment is null this function does nothing, otherwise two rotations are performed:
+      the first rotation aligns the axis named axis_1 to the primary direction of alignment, the second rotation never
+      moves axis_1 away from the primary direction.
 
-    If the primary direction of alignment is null this function does nothing, otherwise two rotations are performed: the first rotation aligns the axis named axis_1 to the primary direction of alignment, the second rotation never moves axis_1 away from the primary direction.
+      If the secondary direction of alignment is not null and is not parallel to the primary direction the axis named
+      axis_2 is rotated as much as possible to be aligned to secondary direction.
 
-    If the secondary direction of alignment is not null and is not parallel to the primary direction the axis named axis_2 is rotated as much as possible to be aligned to secondary direction.
+      If the secondary direction of alignment is null the axis named axis_2 is rotated as much as possible to be
+      realigned to its old direction, if this is impossible the remaining axis is used.
 
-    If the secondary direction of alignment is null the axis named axis_2 is rotated as much as possible to be realigned to its old direction, if this is impossible the remaining axis is used.
+      @param primary the primary direction of alignment.
+      @param secondary the secondary direction of alignment.
+      @param axis_1 the name of the axis to align to the primary direction, must be a char choosen from 'X', 'Y' and 'Z'
+      @param axis_2 the name of the axis to align to the secondary direction, must be different from axis_1 and must be
+      a char choosen from 'X', 'Y', 'Z' and ' '; if the char is ' ' the axis is choosen automatically.
+    */
+    virtual void AlignWith(const Point3f primary, const Point3f secondary, const char axis_1, const char axis_2);
 
-    @param primary the primary direction of alignment.
-    @param secondary the secondary direction of alignment.
-    @param axis_1 the name of the axis to align to the primary direction, must be a char choosen from 'X', 'Y' and 'Z'
-    @param axis_2 the name of the axis to align to the secondary direction, must be different from axis_1 and must be a char choosen from 'X', 'Y', 'Z' and ' '; if the char is ' ' the axis is choosen automatically.
-  */
-  virtual void AlignWith(const Point3f primary, const Point3f secondary, const char axis_1, const char axis_2);
+  protected:
+    // data:
+    Point3f position;
+    Quaternionf rotation;
 
-protected:
-  // data:
-  Point3f position;
-  Quaternionf rotation;
-
-  // functions: 
-  virtual void Move(const Similarityf);
-  void RotateToAlign(const Point3f, const Point3f);
-
+    // functions:
+    virtual void Move(const Similarityf);
+    void RotateToAlign(const Point3f, const Point3f);
 };
 
-}//namespace
+}  // namespace
 #endif /*COORDINATEFRAME_H*/

@@ -8,7 +8,7 @@
 *                                                                    \      *
 * All rights reserved.                                                      *
 *                                                                           *
-* This program is free software; you can redistribute it and/or modify      *   
+* This program is free software; you can redistribute it and/or modify      *
 * it under the terms of the GNU General Public License as published by      *
 * the Free Software Foundation; either version 2 of the License, or         *
 * (at your option) any later version.                                       *
@@ -37,45 +37,46 @@ creation
 
 #include <vcg/space/box3.h>
 
-namespace vcg {
-namespace vrt {
-
+namespace vcg
+{
+namespace vrt
+{
 /** \addtogroup vertexmesh */
 /*@{*/
 
 template <class VERTEX_CONTAINER>
 class UpdateBoundingBase
 {
+  public:
+    typedef typename VERTEX_CONTAINER::value_type VertexType;
+    typedef typename VERTEX_CONTAINER::value_type *VertexPointer;
+    typedef typename VERTEX_CONTAINER::iterator VertexIterator;
+    typedef typename VERTEX_CONTAINER::value_type::ScalarType ScalarType;
 
-public:
-	typedef typename VERTEX_CONTAINER::value_type   VertexType;
-	typedef typename VERTEX_CONTAINER::value_type*  VertexPointer;
-	typedef typename VERTEX_CONTAINER::iterator		VertexIterator;
-	typedef typename VERTEX_CONTAINER::value_type::ScalarType	ScalarType;
+    static Box3<ScalarType> Box(VERTEX_CONTAINER &vert)
+    {
+        Box3<ScalarType> res;
+        res.SetNull();
+        VertexIterator vi;
+        for (vi = vert.begin(); vi != vert.end(); ++vi)
+            if (!(*vi).IsD())
+                res.Add((*vi).P());
+        return res;
+    }
 
-	static Box3<ScalarType> Box(VERTEX_CONTAINER &vert)
-	{
-		Box3<ScalarType> res; res.SetNull();
-		VertexIterator vi;
-		for(vi= vert.begin();vi!= vert.end();++vi)
-			if( !(*vi).IsD() )	res.Add((*vi).P());
-		return res;
-	}
-
-}; // end class UpdateBoundingBase
+};  // end class UpdateBoundingBase
 
 template <class VMType>
-class UpdateBounding: public UpdateBoundingBase<typename VMType::VertexContainer> 
+class UpdateBounding : public UpdateBoundingBase<typename VMType::VertexContainer>
 {
-	public:
-	static void Box(VMType &vm)
-	{
-		vm.bbox = UpdateBoundingBase<VMType::VertexContainer>::Box(vm.vert);
-	}
+  public:
+    static void Box(VMType &vm)
+    {
+        vm.bbox = UpdateBoundingBase<VMType::VertexContainer>::Box(vm.vert);
+    }
 };
 
-}	// End namespace vert
-}	// End namespace vcg
-
+}  // End namespace vert
+}  // End namespace vcg
 
 #endif

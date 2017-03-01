@@ -8,7 +8,7 @@
 *                                                                    \      *
 * All rights reserved.                                                      *
 *                                                                           *
-* This program is free software; you can redistribute it and/or modify      *   
+* This program is free software; you can redistribute it and/or modify      *
 * it under the terms of the GNU General Public License as published by      *
 * the Free Software Foundation; either version 2 of the License, or         *
 * (at your option) any later version.                                       *
@@ -31,10 +31,11 @@ $Log: position.h,v $
 
 //#include <vcg/space/plane.h>
 
-namespace vcg {
-namespace tri {
-
-/// \ingroup trimesh 
+namespace vcg
+{
+namespace tri
+{
+/// \ingroup trimesh
 
 /// \headerfile texture.h vcg/complex/trimesh/update/texture.h
 
@@ -42,64 +43,63 @@ namespace tri {
 template <class ComputeMeshType>
 class UpdateTexture
 {
+  public:
+    typedef ComputeMeshType MeshType;
+    typedef typename MeshType::ScalarType ScalarType;
+    typedef typename MeshType::VertexType VertexType;
+    typedef typename MeshType::VertexPointer VertexPointer;
+    typedef typename MeshType::VertexIterator VertexIterator;
+    typedef typename MeshType::FaceType FaceType;
+    typedef typename MeshType::FacePointer FacePointer;
+    typedef typename MeshType::FaceIterator FaceIterator;
 
-public:
-typedef ComputeMeshType MeshType; 
-typedef typename MeshType::ScalarType     ScalarType;
-typedef typename MeshType::VertexType     VertexType;
-typedef typename MeshType::VertexPointer  VertexPointer;
-typedef typename MeshType::VertexIterator VertexIterator;
-typedef typename MeshType::FaceType       FaceType;
-typedef typename MeshType::FacePointer    FacePointer;
-typedef typename MeshType::FaceIterator   FaceIterator;
+    static void WedgeTexFromPlanar(ComputeMeshType &m, Plane3<ScalarType> &pl)
+    {
+        FaceIterator fi;
+        for (fi = m.face.begin(); fi != m.face.end(); ++fi)
+            if (!(*fi).IsD())
+            {
+            }
+    }
 
-static void WedgeTexFromPlanar(ComputeMeshType &m, Plane3<ScalarType> &pl)
-{
-	FaceIterator fi;
-	for(fi=m.face.begin();fi!=m.face.end();++fi)
-	        if(!(*fi).IsD()) 
-							{
-							
-							}											
-}
+    static void WedgeTexFromCamera(ComputeMeshType &m, Plane3<ScalarType> &pl)
+    {
+    }
 
-static void WedgeTexFromCamera(ComputeMeshType &m, Plane3<ScalarType> &pl)
-{
-	
-}
+    /// Currently texture coords are kept for ALL the triangles of a mesh. The texture id is stored with each face.
+    /// if a given face should not have tex coord it has the default -1 value for texture ID.
+    /// This function will add an new fake texture, add that to the list of textures and change all the -1 id to that
+    /// value.
+    static void WedgeTexRemoveNull(ComputeMeshType &m, const std::string &texturename)
+    {
+        bool found = false;
 
+        FaceIterator fi;
+        // first loop lets check that there are -1 indexed textured face
+        for (fi = m.face.begin(); fi != m.face.end(); ++fi)
+            if (!(*fi).IsD())
+                if ((*fi).WT(0).N() == -1)
+                    found = true;
 
-/// Currently texture coords are kept for ALL the triangles of a mesh. The texture id is stored with each face. 
-/// if a given face should not have tex coord it has the default -1 value for texture ID.
-/// This function will add an new fake texture, add that to the list of textures and change all the -1 id to that value.
-static void WedgeTexRemoveNull(ComputeMeshType &m, const std::string &texturename)
-{
-	bool found=false;
-	
-	FaceIterator fi;
-	// first loop lets check that there are -1 indexed textured face
-	for(fi=m.face.begin();fi!=m.face.end();++fi)
-		if(!(*fi).IsD()) if((*fi).WT(0).N()==-1) found = true;
-	
-	if(!found) return;
-	m.textures.push_back(texturename);
-	
-	int nullId=m.textures.size()-1;
-	
-	for(fi=m.face.begin();fi!=m.face.end();++fi)
-		if(!(*fi).IsD()) if((*fi).WT(0).N()==-1)		
-		{
-			(*fi).WT(0).N() = nullId;
-			(*fi).WT(1).N() = nullId;
-			(*fi).WT(2).N() = nullId;			
-		}											
-			
-}
+        if (!found)
+            return;
+        m.textures.push_back(texturename);
 
-}; // end class
+        int nullId = m.textures.size() - 1;
 
-}	// End namespace
-}	// End namespace
+        for (fi = m.face.begin(); fi != m.face.end(); ++fi)
+            if (!(*fi).IsD())
+                if ((*fi).WT(0).N() == -1)
+                {
+                    (*fi).WT(0).N() = nullId;
+                    (*fi).WT(1).N() = nullId;
+                    (*fi).WT(2).N() = nullId;
+                }
+    }
 
+};  // end class
+
+}  // End namespace
+}  // End namespace
 
 #endif

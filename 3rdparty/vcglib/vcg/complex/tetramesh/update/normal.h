@@ -8,7 +8,7 @@
 *                                                                    \      *
 * All rights reserved.                                                      *
 *                                                                           *
-* This program is free software; you can redistribute it and/or modify      *   
+* This program is free software; you can redistribute it and/or modify      *
 * it under the terms of the GNU General Public License as published by      *
 * the Free Software Foundation; either version 2 of the License, or         *
 * (at your option) any later version.                                       *
@@ -56,16 +56,17 @@ Written some documentation and added to the trimes doxygen module
 #ifndef __VCG_TETRA_UPDATE_NORMALS
 #define __VCG_TETRA_UPDATE_NORMALS
 
-#include<vcg\complex\tetramesh\update\triconvert.h>
-#include<vcg\simplex\face\face.h>
-#include<vcg\complex\trimesh\base.h>
-#include<vcg\complex\trimesh\update\normal.h>
-#include<vcg\simplex\tetrahedron\pos.h>
-#include<vector>
+#include <vcg\complex\tetramesh\update\triconvert.h>
+#include <vcg\complex\trimesh\base.h>
+#include <vcg\complex\trimesh\update\normal.h>
+#include <vcg\simplex\face\face.h>
+#include <vcg\simplex\tetrahedron\pos.h>
+#include <vector>
 
-namespace vcg {
-namespace tetra {
-
+namespace vcg
+{
+namespace tetra
+{
 /** \addtogroup tetramesh */
 /*@{*/
 
@@ -74,106 +75,107 @@ namespace tetra {
 template <class ComputeMeshType>
 class UpdateNormals
 {
+  public:
+    typedef ComputeMeshType TetraMeshType;
+    typedef typename TetraMeshType::VertexType VertexType;
+    typedef typename TetraMeshType::VertexPointer VertexPointer;
+    typedef typename TetraMeshType::VertexIterator VertexIterator;
+    typedef typename TetraMeshType::TetraType TetraType;
+    typedef typename TetraMeshType::TetraPointer TetraPointer;
+    typedef typename TetraMeshType::TetraIterator TetraIterator;
+    typedef typename VertexType::NormalType NormalType;
 
-public:
-typedef ComputeMeshType TetraMeshType; 
-typedef typename TetraMeshType::VertexType     VertexType;
-typedef typename TetraMeshType::VertexPointer  VertexPointer;
-typedef typename TetraMeshType::VertexIterator VertexIterator;
-typedef typename TetraMeshType::TetraType      TetraType;
-typedef typename TetraMeshType::TetraPointer   TetraPointer;
-typedef typename TetraMeshType::TetraIterator  TetraIterator;
-typedef typename VertexType::NormalType		   NormalType;
+    typedef vcg::Face<VertexType, vcg::DUMMYEDGETYPE, vcg::DUMMYFACETYPE> FaceTemp;
+    typedef vcg::tri::TriMesh<std::vector<VertexType>, std::vector<FaceTemp> > TriMeshTemp;
 
-typedef vcg::Face<VertexType,vcg::DUMMYEDGETYPE,vcg::DUMMYFACETYPE> FaceTemp;
-typedef vcg::tri::TriMesh< std::vector<VertexType>,std::vector<FaceTemp> > TriMeshTemp;
+    /// Calculates the vertex normal (if stored in the current face type)
+    static void PerTetraFace(TetraMeshType &m)
+    {
+        if (!m.HasPerTetraNormal())
+            return;
+        TetraIterator t;
+        for (t = m.tetra.begin(); t != m.tetra.end(); ++t)
+            if (!(*t).IsD())
+                (*t).ComputeNormal();
+    }
 
-/// Calculates the vertex normal (if stored in the current face type)
-static void PerTetraFace(TetraMeshType &m)
-{
-	if( !m.HasPerTetraNormal()) return;
-	TetraIterator t;
-	for(t=m.tetra.begin();t!=m.tetra.end();++t)
-			if( !(*t).IsD() )	(*t).ComputeNormal();
-}
+    /// Calculates the vertex normal of a vertex.
+    static void PerVertex(VertexType *v)
+    {
+        if (!VertexType::HasNormal())
+            return;
 
-/// Calculates the vertex normal of a vertex.
-static void PerVertex(VertexType *v)
-{
- 
- if( !VertexType::HasNormal()) return;
+        VTIterator<TetraType> VTi = VTIterator<TetraType>(v->VTb(), v->VTi());
+        NormalType Norm = NormalType(0, 0, 0);
+        int iter = 0;
+        while (!VTi.End())
+        {
+            // take the tree faces on the vertex's tetrahedron
+            for (int j = 0; j < 3; j++)
+            {
+                int f = Tetra::FofV(VTi.Vi(), j);
+                if (VTi.Vt()->IsBorderF(f))
+                {
+                    iter++;
+                    Norm += VTi.Vt()->N(f);
+                }
+            }
+            ++VTi;
+        }
+        Norm /= (float)iter;
+        v->N() = Norm.Normalize();
+    }
 
- VTIterator<TetraType> VTi=VTIterator<TetraType>(v->VTb(),v->VTi());
- NormalType  Norm=NormalType(0,0,0);
- int iter=0;
- while (!VTi.End())
- {
-   //take the tree faces on the vertex's tetrahedron
-   for (int j=0;j<3;j++)
-   {
-    int f=Tetra::FofV(VTi.Vi(),j);
-    if (VTi.Vt()->IsBorderF(f))
-      {
-        iter++; 
-        Norm+=VTi.Vt()->N(f);
-      }
-   }
-  ++VTi;
- }
- Norm/=(float)iter;
- v->N()=Norm.Normalize();
-}
+    /// Calculates the vertex normal. Without exploiting or touching face normals
+    /// The normal of a vertex v is the weigthed average of the normals of the faces incident on v.
+    static void PerVertex(TetraMeshType &m)
+    {
+        if (!m.HasPerVertexNormal())
+            return;
+        _ClearNormal(m);
+        TriMeshTemp tri_mesh = TriMeshTemp();
+        TriConverter<TetraMeshType, TriMeshTemp> tric = TriConverter<TetraMeshType, TriMeshTemp>();
+        tric.Convert(m.tetra, tri_mesh);
+        vcg::tri::UpdateNormals<TriMeshTemp> UNT = vcg::tri::UpdateNormals<TriMeshTemp>();
+        UNT.PerVertexNormalized(tri_mesh);
+    }
 
-/// Calculates the vertex normal. Without exploiting or touching face normals
-/// The normal of a vertex v is the weigthed average of the normals of the faces incident on v.
-static void PerVertex(TetraMeshType &m)
-{
- 
- if( !m.HasPerVertexNormal()) return;
- _ClearNormal(m);
- TriMeshTemp tri_mesh=TriMeshTemp();
- TriConverter <TetraMeshType,TriMeshTemp>tric=TriConverter<TetraMeshType,TriMeshTemp>();
- tric.Convert(m.tetra,tri_mesh);
- vcg::tri::UpdateNormals<TriMeshTemp> UNT=vcg::tri::UpdateNormals<TriMeshTemp>();
- UNT.PerVertexNormalized(tri_mesh);
-}
-private:
-static void _ClearNormal(TetraMeshType &m)
-{
- if( !m.HasPerVertexNormal()) return;
- VertexIterator vi;
- for(vi=m.vert.begin();vi!=m.vert.end();++vi)
-   if( !(*vi).IsD() && (*vi).IsRW() )
-     (*vi).N() = VertexType::NormalType(0,0,0);
-}
+  private:
+    static void _ClearNormal(TetraMeshType &m)
+    {
+        if (!m.HasPerVertexNormal())
+            return;
+        VertexIterator vi;
+        for (vi = m.vert.begin(); vi != m.vert.end(); ++vi)
+            if (!(*vi).IsD() && (*vi).IsRW())
+                (*vi).N() = VertexType::NormalType(0, 0, 0);
+    }
 
-///// Calculates both vertex and face normals.
-///// The normal of a vertex v is the weigthed average of the normals of the faces incident on v.
-//static void PerVertexPerFace(ComputeTetraMeshType &m)
-//{
-// if( !m.HasPerVertexNormal() || !m.HasPerFaceNormal()) return;
-// 
-// 
-//}
-//
-//
-//static void PerFaceNormalized(ComputeTetraMeshType &m)
-//{
-//	
-//}
-//
-//
-///// Calculates the vertex normal
-//static void PerVertexNormalized(ComputeTetraMeshType &m)
-//{
-//  
-//}
+    ///// Calculates both vertex and face normals.
+    ///// The normal of a vertex v is the weigthed average of the normals of the faces incident on v.
+    // static void PerVertexPerFace(ComputeTetraMeshType &m)
+    //{
+    // if( !m.HasPerVertexNormal() || !m.HasPerFaceNormal()) return;
+    //
+    //
+    //}
+    //
+    //
+    // static void PerFaceNormalized(ComputeTetraMeshType &m)
+    //{
+    //
+    //}
+    //
+    //
+    ///// Calculates the vertex normal
+    // static void PerVertexNormalized(ComputeTetraMeshType &m)
+    //{
+    //
+    //}
 
+};  // end class
 
-}; // end class
-
-}	// End namespace
-}	// End namespace
-
+}  // End namespace
+}  // End namespace
 
 #endif

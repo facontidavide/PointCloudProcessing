@@ -5,14 +5,14 @@
 
 class Implicit
 {
-public:
-	Implicit() {};
+  public:
+    Implicit(){};
 
-	virtual ~Implicit() {};
+    virtual ~Implicit(){};
 
-	virtual float V(int x, int y, int z) const = 0;
+    virtual float V(int x, int y, int z) const = 0;
 
-	virtual vcg::Point3f N(float x, float y, float z) const = 0;
+    virtual vcg::Point3f N(float x, float y, float z) const = 0;
 };
 
-#endif // __EXTRS_IMPLICIT
+#endif  // __EXTRS_IMPLICIT

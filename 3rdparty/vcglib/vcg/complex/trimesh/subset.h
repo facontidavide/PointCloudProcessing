@@ -8,7 +8,7 @@
 *                                                                    \      *
 * All rights reserved.                                                      *
 *                                                                           *
-* This program is free software; you can redistribute it and/or modify      *   
+* This program is free software; you can redistribute it and/or modify      *
 * it under the terms of the GNU General Public License as published by      *
 * the Free Software Foundation; either version 2 of the License, or         *
 * (at your option) any later version.                                       *
@@ -56,116 +56,107 @@ Added History Info
 
 ****************************************************************************/
 
-
 #ifndef __VCGLIB_TRISUBSET
 #define __VCGLIB_TRISUBSET
 
 #include <vcg/complex/trimesh/update/flag.h>
 
-namespace vcg {
-namespace tri {
-
-
+namespace vcg
+{
+namespace tri
+{
 template <class I_MESH_TYPE>
 struct InsertedV
 {
-  typedef I_MESH_TYPE IMeshType; 
-  typedef typename IMeshType::VertexPointer  VertexPointer;
-  typedef typename IMeshType::FacePointer  FacePointer;
+    typedef I_MESH_TYPE IMeshType;
+    typedef typename IMeshType::VertexPointer VertexPointer;
+    typedef typename IMeshType::FacePointer FacePointer;
 
-  InsertedV(VertexPointer _v, FacePointer _f, int _z)
-	: v(_v), f(_f), z(_z)
-  {}
-  
-  VertexPointer v;
-  FacePointer f;
-  int z;
-  
-  bool operator < (const InsertedV & o) const
-  {
-    return (v<o.v);
-  }
-  
-  bool operator ==(const InsertedV & o)
-  {
-    return (v==o.v);
-  }
-  
-  bool operator !=(const InsertedV & o)
-  {
-    return (v!=o.v);
-  }
+    InsertedV(VertexPointer _v, FacePointer _f, int _z) : v(_v), f(_f), z(_z)
+    {
+    }
+
+    VertexPointer v;
+    FacePointer f;
+    int z;
+
+    bool operator<(const InsertedV& o) const
+    {
+        return (v < o.v);
+    }
+
+    bool operator==(const InsertedV& o)
+    {
+        return (v == o.v);
+    }
+
+    bool operator!=(const InsertedV& o)
+    {
+        return (v != o.v);
+    }
 };
-
 
 //  This function build a nesh from a subset of faces of another.
 //	  @param : subSet, stl vector of face poitners.
 //             m,  output mesh mesh.
 
-
 template <class S_MESH_TYPE, class STL_CONT>
-void SubSet(S_MESH_TYPE & m, STL_CONT & subSet)
+void SubSet(S_MESH_TYPE& m, STL_CONT& subSet)
 {
-  std::vector< InsertedV<S_MESH_TYPE> > newVertices;
-  typename STL_CONT::const_iterator pfi;
-  typename S_MESH_TYPE::VertexIterator vi;
-  typename S_MESH_TYPE::FaceIterator fi;
-  typedef typename S_MESH_TYPE::VertexType S_VertexType;
-  std::vector<typename S_MESH_TYPE::VertexPointer> redirect;
+    std::vector<InsertedV<S_MESH_TYPE> > newVertices;
+    typename STL_CONT::const_iterator pfi;
+    typename S_MESH_TYPE::VertexIterator vi;
+    typename S_MESH_TYPE::FaceIterator fi;
+    typedef typename S_MESH_TYPE::VertexType S_VertexType;
+    std::vector<typename S_MESH_TYPE::VertexPointer> redirect;
 
-  
-	fi = vcg::tri::Allocator<S_MESH_TYPE>::AddFaces(m,subSet.size());
-  for(pfi=subSet.begin(); pfi!=subSet.end(); ++pfi)
-  {		
-		assert(!(*pfi)->IsD());
-		(*fi).ImportData(**pfi);
-		for(int ii = 0 ; ii < (*fi).VN(); ++ii)
-			(*fi).V(ii) = (S_VertexType*)(void*)(*pfi)->V(ii);
-		++fi;
-  }
-  
+    fi = vcg::tri::Allocator<S_MESH_TYPE>::AddFaces(m, subSet.size());
+    for (pfi = subSet.begin(); pfi != subSet.end(); ++pfi)
+    {
+        assert(!(*pfi)->IsD());
+        (*fi).ImportData(**pfi);
+        for (int ii = 0; ii < (*fi).VN(); ++ii)
+            (*fi).V(ii) = (S_VertexType*)(void*)(*pfi)->V(ii);
+        ++fi;
+    }
 
-  for(fi=m.face.begin(); fi!=m.face.end(); ++fi)
-	 for(int ii = 0 ; ii < (*fi).VN(); ++ii)
-		newVertices.push_back(InsertedV<S_MESH_TYPE>((*fi).V(ii), &(*fi),ii));
-  
-  sort(newVertices.begin(), newVertices.end());
-  
-  typename std::vector< InsertedV<S_MESH_TYPE> >::iterator curr, next;
-  int pos=0;
-  curr=next=newVertices.begin();
-  while(next!=newVertices.end())
-  {
-    if((*curr)!=(*next))
-	  pos++;
-	(*next).f->V((*next).z)=(typename S_MESH_TYPE::VertexPointer)pos;
-	curr=next;
-	next++;
-  }
-  
-  typename std::vector< InsertedV<S_MESH_TYPE> >::iterator newE=unique(newVertices.begin(), newVertices.end());
-	
-	vi = vcg::tri::Allocator<S_MESH_TYPE>::AddVertices(m,newE-newVertices.begin());
-	for(curr=newVertices.begin(); curr!=newE; ++curr,++vi)
-		(*vi).ImportData(*((*curr).v));
+    for (fi = m.face.begin(); fi != m.face.end(); ++fi)
+        for (int ii = 0; ii < (*fi).VN(); ++ii)
+            newVertices.push_back(InsertedV<S_MESH_TYPE>((*fi).V(ii), &(*fi), ii));
 
-	for(vi=m.vert.begin(); vi!=m.vert.end(); ++vi)
-		redirect.push_back(&(*vi));
+    sort(newVertices.begin(), newVertices.end());
 
-	for(fi=m.face.begin(); fi!=m.face.end(); ++fi)
-		{		
-		  for(int ii = 0 ; ii < (*fi).VN(); ++ii)
-			(*fi).V(ii)=redirect[(size_t)(*fi).V(ii)];
-		}
-	m.vn=(int)m.vert.size();
-	m.fn=(int)m.face.size();
+    typename std::vector<InsertedV<S_MESH_TYPE> >::iterator curr, next;
+    int pos = 0;
+    curr = next = newVertices.begin();
+    while (next != newVertices.end())
+    {
+        if ((*curr) != (*next))
+            pos++;
+        (*next).f->V((*next).z) = (typename S_MESH_TYPE::VertexPointer)pos;
+        curr = next;
+        next++;
+    }
+
+    typename std::vector<InsertedV<S_MESH_TYPE> >::iterator newE = unique(newVertices.begin(), newVertices.end());
+
+    vi = vcg::tri::Allocator<S_MESH_TYPE>::AddVertices(m, newE - newVertices.begin());
+    for (curr = newVertices.begin(); curr != newE; ++curr, ++vi)
+        (*vi).ImportData(*((*curr).v));
+
+    for (vi = m.vert.begin(); vi != m.vert.end(); ++vi)
+        redirect.push_back(&(*vi));
+
+    for (fi = m.face.begin(); fi != m.face.end(); ++fi)
+    {
+        for (int ii = 0; ii < (*fi).VN(); ++ii)
+            (*fi).V(ii) = redirect[(size_t)(*fi).V(ii)];
+    }
+    m.vn = (int)m.vert.size();
+    m.fn = (int)m.face.size();
 }
 
-
-} // End Namespace TriMesh
-} // End Namespace vcg
-
+}  // End Namespace TriMesh
+}  // End Namespace vcg
 
 #endif
-
-

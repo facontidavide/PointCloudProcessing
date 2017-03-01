@@ -27,41 +27,45 @@
 #include <climits>
 
 #include <vcg/math/base.h>
-#include <vcg/math/random_generator.h>
-#include <vcg/math/legendre.h>
 #include <vcg/math/factorial.h>
+#include <vcg/math/legendre.h>
+#include <vcg/math/random_generator.h>
 
-namespace vcg{
-namespace math{
-
+namespace vcg
+{
+namespace math
+{
 template <typename ScalarType>
-class DummyPolarFunctor{
-	public:
-		inline ScalarType operator()(ScalarType theta, ScalarType phi) {return ScalarType(0);}
+class DummyPolarFunctor
+{
+  public:
+    inline ScalarType operator()(ScalarType theta, ScalarType phi)
+    {
+        return ScalarType(0);
+    }
 };
-
 
 template <typename ScalarType, int MAX_BAND = 4>
 class ScalingFactor
 {
-private :
+  private:
+    ScalarType k_factor[MAX_BAND][MAX_BAND];
 
-	ScalarType k_factor[MAX_BAND][MAX_BAND];
+    static ScalingFactor sf;
 
-	static ScalingFactor sf;
+    ScalingFactor()
+    {
+        for (unsigned l = 0; l < MAX_BAND; ++l)
+            for (unsigned m = 0; m <= l; ++m)
+                k_factor[l][m] =
+                  Sqrt(((2.0 * l + 1.0) * Factorial<ScalarType>(l - m)) / (4.0 * M_PI * Factorial<ScalarType>(l + m)));
+    }
 
-	ScalingFactor()
-	{
-		for (unsigned l = 0; l < MAX_BAND; ++l)
-			for (unsigned m = 0; m <= l; ++m)
-				k_factor[l][m] = Sqrt( ( (2.0*l + 1.0) * Factorial<ScalarType>(l-m) ) / (4.0 * M_PI * Factorial<ScalarType>(l + m)) );
-	}
-
-public :
-	static ScalarType K(unsigned l, unsigned m)
-	{
-		return sf.k_factor[l][m];
-	}
+  public:
+    static ScalarType K(unsigned l, unsigned m)
+    {
+        return sf.k_factor[l][m];
+    }
 };
 
 template <typename ScalarType, int MAX_BAND>
@@ -74,126 +78,130 @@ ScalingFactor<ScalarType, MAX_BAND> ScalingFactor<ScalarType, MAX_BAND>::sf;
  * for positive m only.
  */
 template <typename ScalarType, int MAX_BAND = 4>
-class SphericalHarmonics{
+class SphericalHarmonics
+{
+  private:
+    static DynamicLegendre<ScalarType, MAX_BAND> legendre;
 
-private :
+    static ScalarType scaling_factor(unsigned l, unsigned m)
+    {
+        return ScalingFactor<ScalarType, MAX_BAND>::K(l, m);
+    }
 
-	static DynamicLegendre<ScalarType, MAX_BAND> legendre;
+    inline static ScalarType complex_spherical_harmonic_re(unsigned l, unsigned m, ScalarType theta, ScalarType phi)
+    {
+        return scaling_factor(l, m) * legendre.AssociatedPolynomial(l, m, Cos(theta), Sin(theta)) * Cos(m * phi);
+    }
 
-	static ScalarType scaling_factor(unsigned l, unsigned m)
-	{
-		return ScalingFactor<ScalarType, MAX_BAND>::K(l,m);
-	}
+    inline static ScalarType complex_spherical_harmonic_im(unsigned l, unsigned m, ScalarType theta, ScalarType phi)
+    {
+        return scaling_factor(l, m) * legendre.AssociatedPolynomial(l, m, Cos(theta), Sin(theta)) * Sin(m * phi);
+    }
 
-	inline static ScalarType complex_spherical_harmonic_re(unsigned l, unsigned m, ScalarType theta, ScalarType phi)
-	{
-		return scaling_factor(l, m) * legendre.AssociatedPolynomial(l, m, Cos(theta), Sin(theta)) * Cos(m * phi);
-	}
+    ScalarType coefficients[MAX_BAND * MAX_BAND];
 
-	inline static ScalarType complex_spherical_harmonic_im(unsigned l, unsigned m, ScalarType theta, ScalarType phi)
-	{
-		return scaling_factor(l, m) * legendre.AssociatedPolynomial(l, m, Cos(theta), Sin(theta)) * Sin(m * phi);
-	}
+  public:
+    /**
+     * Returns the Real Spherical Harmonic Function
+     *
+     * l is any positive integer,
+     * m is such that -l <= m <= l
+     * theta is inside [0, PI]
+     * phi is inside [0, 2*PI]
+     */
+    static ScalarType Real(unsigned l, int m, ScalarType theta, ScalarType phi)
+    {
+        assert((int)-l <= m && m <= (int)l && theta >= 0.0 && theta <= (ScalarType)M_PI && phi >= 0.0 &&
+               phi <= (ScalarType)(2.0 * M_PI));
 
-	ScalarType coefficients[MAX_BAND * MAX_BAND];
+        if (m > 0)
+            return SQRT_TWO * complex_spherical_harmonic_re(l, m, theta, phi);
 
-public :
+        else if (m == 0)
+            return scaling_factor(l, 0) * legendre.Polynomial(l, Cos(theta));
 
-	/**
-	 * Returns the Real Spherical Harmonic Function
-	 *
-	 * l is any positive integer,
-	 * m is such that -l <= m <= l
-	 * theta is inside [0, PI]
-	 * phi is inside [0, 2*PI]
-	 */
-	static ScalarType Real(unsigned l, int m, ScalarType theta, ScalarType phi)
-	{
-		assert((int)-l <= m && m <= (int)l && theta >= 0.0 && theta <= (ScalarType)M_PI && phi >= 0.0 && phi <= (ScalarType)(2.0 * M_PI));
+        else
+            return SQRT_TWO * complex_spherical_harmonic_im(l, -m, theta, phi);
+    }
 
-		if (m > 0) return SQRT_TWO * complex_spherical_harmonic_re(l, m, theta, phi);
+    template <typename PolarFunctor>
+    static SphericalHarmonics Project(PolarFunctor* fun, unsigned n_samples)
+    {
+        const ScalarType weight = 4 * M_PI;
 
-		else if (m == 0) return scaling_factor(l, 0) * legendre.Polynomial(l, Cos(theta));
+        unsigned sqrt_n_samples = (unsigned int)Sqrt((int)n_samples);
+        unsigned actual_n_samples = sqrt_n_samples * sqrt_n_samples;
+        unsigned n_coeff = MAX_BAND * MAX_BAND;
 
-		else return SQRT_TWO * complex_spherical_harmonic_im(l, -m, theta, phi);
-	}
+        ScalarType one_over_n = 1.0 / (ScalarType)sqrt_n_samples;
 
-	template <typename PolarFunctor>
-	static SphericalHarmonics Project(PolarFunctor * fun, unsigned n_samples)
-	{
-		const ScalarType weight = 4 * M_PI;
+        MarsenneTwisterRNG rand;
+        SphericalHarmonics sph;
 
-		unsigned sqrt_n_samples = (unsigned int) Sqrt((int)n_samples);
-		unsigned actual_n_samples = sqrt_n_samples * sqrt_n_samples;
-		unsigned n_coeff = MAX_BAND * MAX_BAND;
+        int i = 0;
 
-		ScalarType one_over_n = 1.0/(ScalarType)sqrt_n_samples;
+        for (unsigned k = 0; k < n_coeff; k++)
+            sph.coefficients[k] = 0;
 
-		MarsenneTwisterRNG rand;
-		SphericalHarmonics sph;
+        for (unsigned a = 0; a < sqrt_n_samples; ++a)
+        {
+            for (unsigned b = 0; b < sqrt_n_samples; ++b)
+            {
+                ScalarType x = (a + ScalarType(rand.generate01())) * one_over_n;
+                ScalarType y = (b + ScalarType(rand.generate01())) * one_over_n;
 
-		int i = 0;
+                ScalarType theta = 2.0 * Acos(Sqrt(1.0 - x));
+                ScalarType phi = 2.0 * M_PI * y;
 
-		for (unsigned k = 0; k < n_coeff; k++ ) sph.coefficients[k] = 0;
+                for (int l = 0; l < (int)MAX_BAND; ++l)
+                {
+                    for (int m = -l; m <= l; ++m)
+                    {
+                        int index = l * (l + 1) + m;
+                        sph.coefficients[index] += (*fun)(theta, phi) * Real(l, m, theta, phi);
+                    }
+                }
+                i++;
+            }
+        }
 
-		for (unsigned a = 0; a < sqrt_n_samples; ++a )
-		{
-			for (unsigned b = 0; b < sqrt_n_samples; ++b)
-			{
-				ScalarType x = (a + ScalarType(rand.generate01())) * one_over_n;
-				ScalarType y = (b + ScalarType(rand.generate01())) * one_over_n;
+        ScalarType factor = weight / actual_n_samples;
+        for (i = 0; i < (int)n_coeff; ++i)
+        {
+            sph.coefficients[i] *= factor;
+        }
 
-				ScalarType theta = 2.0 * Acos(Sqrt(1.0 - x));
-				ScalarType phi = 2.0 * M_PI * y;
+        return sph;
+    }
 
-				for (int l = 0; l < (int)MAX_BAND; ++l)
-				{
-					for (int m = -l; m <= l; ++m)
-					{
-						int index = l * (l+1) + m;
-						sph.coefficients[index] += (*fun)(theta, phi) * Real(l, m, theta, phi);
-					}
-				}
-				i++;
-			}
-		}
+    static SphericalHarmonics Wrap(ScalarType* _coefficients)
+    {
+        SphericalHarmonics sph;
+        for (int i = 0; i < (int)MAX_BAND * MAX_BAND; ++i)
+            sph.coefficients[i] = _coefficients[i];
+        return sph;
+    }
 
-		ScalarType factor = weight / actual_n_samples;
-		for(i = 0; i < (int)n_coeff; ++i)
-		{
-			sph.coefficients[i] *= factor;
-		}
+    ScalarType operator()(ScalarType theta, ScalarType phi)
+    {
+        ScalarType f = 0;
 
-		return sph;
-	}
+        for (int l = 0; l < MAX_BAND; ++l)
+        {
+            for (int m = -l; m <= l; ++m)
+            {
+                int index = l * (l + 1) + m;
+                f += (coefficients[index] * Real(l, m, theta, phi));
+            }
+        }
 
-	static SphericalHarmonics Wrap(ScalarType * _coefficients)
-	{
-		SphericalHarmonics sph;
-                for(int i = 0; i < (int) MAX_BAND *  MAX_BAND; ++i) sph.coefficients[i] = _coefficients[i];
-		return sph;
-	}
-
-	ScalarType operator()(ScalarType theta, ScalarType phi)
-	{
-		ScalarType f = 0;
-
-		for (int l = 0; l < MAX_BAND; ++l)
-		{
-			for (int m = -l; m <= l; ++m)
-			{
-				int index = l * (l+1) + m;
-				f += (coefficients[index] * Real(l, m, theta, phi));
-			}
-		}
-
-		return f;
-	}
+        return f;
+    }
 };
 
 template <typename ScalarType, int MAX_BAND>
 DynamicLegendre<ScalarType, MAX_BAND> SphericalHarmonics<ScalarType, MAX_BAND>::legendre;
-
-}} //namespace vcg::math
+}
+}  // namespace vcg::math
 
 #endif

@@ -18,7 +18,7 @@
 #ifndef _GETOPT_H
 #define _GETOPT_H 1
 
-#ifdef	__cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -78,38 +78,34 @@ extern int optopt;
 
 struct option
 {
-#if	__STDC__
-  const char *name;
+#if __STDC__
+    const char *name;
 #else
-  char *name;
+    char *name;
 #endif
-  /* has_arg can't be an enum because some compilers complain about
-     type mismatches in all the code that assumes it is an int.  */
-  int has_arg;
-  int *flag;
-  int val;
+    /* has_arg can't be an enum because some compilers complain about
+       type mismatches in all the code that assumes it is an int.  */
+    int has_arg;
+    int *flag;
+    int val;
 };
 
 /* Names for the values of the `has_arg' field of `struct option'.  */
 
-#define	no_argument		0
-#define required_argument	1
-#define optional_argument	2
+#define no_argument 0
+#define required_argument 1
+#define optional_argument 2
 
-extern int getopt (int argc, char *const *argv, const char *shortopts);
-extern int getopt_long (int argc, char *const *argv, const char *shortopts,
-		        const struct option *longopts, int *longind);
-extern int getopt_long_only (int argc, char *const *argv,
-			     const char *shortopts,
-		             const struct option *longopts, int *longind);
+extern int getopt(int argc, char *const *argv, const char *shortopts);
+extern int getopt_long(int argc, char *const *argv, const char *shortopts, const struct option *longopts, int *longind);
+extern int getopt_long_only(int argc, char *const *argv, const char *shortopts, const struct option *longopts,
+                            int *longind);
 
 /* Internal only.  Users should not call this directly.  */
-extern int _getopt_internal (int argc, char *const *argv,
-			     const char *shortopts,
-		             const struct option *longopts, int *longind,
-			     int long_only);
+extern int _getopt_internal(int argc, char *const *argv, const char *shortopts, const struct option *longopts,
+                            int *longind, int long_only);
 
-#ifdef	__cplusplus
+#ifdef __cplusplus
 }
 #endif
 

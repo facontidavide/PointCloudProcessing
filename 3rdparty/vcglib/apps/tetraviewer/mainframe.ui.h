@@ -10,73 +10,52 @@
 ** destructor.
 *****************************************************************************/
 
-
-#include <qfiledialog.h> 
-#include <qdir.h> 
-#include <qmessagebox.h> 
+#include <qdir.h>
+#include <qfiledialog.h>
+#include <qmessagebox.h>
 
 extern void openTetraMesh(const char *);
 
 void MainFrame::fileNew()
 {
-
 }
-
 
 void MainFrame::fileOpen()
 {
-	 QString filename = QFileDialog::getOpenFileName(
-              "",
-              "Tetrahedral Meshes File (*.ts *.ply)",
-              this,
-              "open file dialog"
-              "Choose a TS Tetrahedral mesh file" );
-	if (filename!=NULL)
-	{
-		const char *path=filename.ascii();
-		openTetraMesh(path);
-	}
+    QString filename = QFileDialog::getOpenFileName("", "Tetrahedral Meshes File (*.ts *.ply)", this,
+                                                    "open file dialog"
+                                                    "Choose a TS Tetrahedral mesh file");
+    if (filename != NULL)
+    {
+        const char *path = filename.ascii();
+        openTetraMesh(path);
+    }
 }
-
 
 void MainFrame::fileSave()
 {
-
 }
-
 
 void MainFrame::fileSaveAs()
 {
-
 }
-
-
 
 void MainFrame::fileExit()
 {
-	
 }
-
 
 void MainFrame::helpIndex()
 {
-
 }
-
 
 void MainFrame::helpContents()
 {
-
 }
-
 
 void MainFrame::helpAbout()
 {
-
 }
-
 
 void MainFrame::setWire()
 {
-
 }

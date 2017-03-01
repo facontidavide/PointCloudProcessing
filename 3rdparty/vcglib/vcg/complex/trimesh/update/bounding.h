@@ -8,7 +8,7 @@
 *                                                                    \      *
 * All rights reserved.                                                      *
 *                                                                           *
-* This program is free software; you can redistribute it and/or modify      *   
+* This program is free software; you can redistribute it and/or modify      *
 * it under the terms of the GNU General Public License as published by      *
 * the Free Software Foundation; either version 2 of the License, or         *
 * (at your option) any later version.                                       *
@@ -22,7 +22,6 @@
 ****************************************************************************/
 
 // marco: removed types FaceType, FacePointer, FaceIterator to allow the use of this method from vertex meshes
-
 
 /****************************************************************************
   History
@@ -51,44 +50,42 @@ Initial commit
 #ifndef __VCG_TRI_UPDATE_BOUNDING
 #define __VCG_TRI_UPDATE_BOUNDING
 
-namespace vcg {
-namespace tri {
-
-/// \ingroup trimesh 
+namespace vcg
+{
+namespace tri
+{
+/// \ingroup trimesh
 
 /// \headerfile bounding.h vcg/complex/trimesh/update/bounding.h
 
 /// \brief Management, updating and computation of per-vertex and per-face normals.
-/** 
+/**
 This class is used to compute or update the normals that can be stored in the vertex or face component of a mesh.
 */
 
 template <class ComputeMeshType>
 class UpdateBounding
 {
+  public:
+    typedef ComputeMeshType MeshType;
+    typedef typename MeshType::VertexType VertexType;
+    typedef typename MeshType::VertexPointer VertexPointer;
+    typedef typename MeshType::VertexIterator VertexIterator;
 
-public:
-typedef ComputeMeshType MeshType; 
-typedef typename MeshType::VertexType     VertexType;
-typedef typename MeshType::VertexPointer  VertexPointer;
-typedef typename MeshType::VertexIterator VertexIterator;
+    /// \brief Calculates the bounding box of the \code <ComputeMeshType> \endcode m
 
-/// \brief Calculates the bounding box of the \code <ComputeMeshType> \endcode m
+    static void Box(ComputeMeshType &m)
+    {
+        m.bbox.SetNull();
+        VertexIterator vi;
+        for (vi = m.vert.begin(); vi != m.vert.end(); ++vi)
+            if (!(*vi).IsD())
+                m.bbox.Add((*vi).cP());
+    }
 
-static void Box(ComputeMeshType &m)
-{
-	m.bbox.SetNull();
-	VertexIterator vi;
-	for(vi = m.vert.begin(); vi != m.vert.end(); ++vi)
-		if( !(*vi).IsD() )	m.bbox.Add((*vi).cP());
+};  // end class
 
-}
-
-
-}; // end class
-
-}	// End namespace
-}	// End namespace
-
+}  // End namespace
+}  // End namespace
 
 #endif

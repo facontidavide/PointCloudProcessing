@@ -8,7 +8,7 @@
 *                                                                    \      *
 * All rights reserved.                                                      *
 *                                                                           *
-* This program is free software; you can redistribute it and/or modify      *   
+* This program is free software; you can redistribute it and/or modify      *
 * it under the terms of the GNU General Public License as published by      *
 * the Free Software Foundation; either version 2 of the License, or         *
 * (at your option) any later version.                                       *
@@ -31,8 +31,8 @@ cvs problem during frist committ. repeated
 #ifndef WINDOW_H_POS_DEMO
 #define WINDOW_H_POS_DEMO
 
-#include <QWidget>
 #include <QPushButton>
+#include <QWidget>
 
 class QSlider;
 class GLWidget;
@@ -41,14 +41,14 @@ class Window : public QWidget
 {
     Q_OBJECT
 
-public:
+  public:
     Window();
 
-private:
-		QPushButton *createButton(const char *changedSignal, const char *setterSlot);
+  private:
+    QPushButton *createButton(const char *changedSignal, const char *setterSlot);
 
     GLWidget *glWidget;
-		QPushButton * fvButton,*feButton,*ffButton,*neButton,*ldButton,*nbButton,*vfButton;
-};												 
-													 
+    QPushButton *fvButton, *feButton, *ffButton, *neButton, *ldButton, *nbButton, *vfButton;
+};
+
 #endif

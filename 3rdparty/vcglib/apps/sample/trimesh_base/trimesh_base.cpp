@@ -21,26 +21,26 @@
 *                                                                           *
 ****************************************************************************/
 
-#include<vcg/simplex/vertex/base.h>
-#include<vcg/simplex/vertex/component.h>
+#include <vcg/simplex/vertex/base.h>
+#include <vcg/simplex/vertex/component.h>
 
 #include <vcg/complex/used_types.h>
 
-#include<vcg/simplex/face/base.h>
-#include<vcg/simplex/face/component.h>
+#include <vcg/simplex/face/base.h>
+#include <vcg/simplex/face/component.h>
 
-#include<vcg/simplex/face/topology.h>
-#include<vcg/complex/trimesh/base.h>
+#include <vcg/complex/trimesh/base.h>
+#include <vcg/simplex/face/topology.h>
 
 // input output
-#include<wrap/io_trimesh/import.h>
-#include<wrap/io_trimesh/export.h>
+#include <wrap/io_trimesh/export.h>
+#include <wrap/io_trimesh/import.h>
 
 // topology computation
-#include<vcg/complex/trimesh/update/topology.h>
+#include <vcg/complex/trimesh/update/topology.h>
 
 // normals
-#include<vcg/complex/trimesh/update/normal.h>
+#include <vcg/complex/trimesh/update/normal.h>
 
 using namespace vcg;
 using namespace std;
@@ -48,36 +48,44 @@ using namespace std;
 class MyEdge;
 class MyFace;
 class MyVertex;
-struct MyUsedTypes : public UsedTypes<	Use<MyVertex>   ::AsVertexType,
-                                        Use<MyEdge>     ::AsEdgeType,
-                                        Use<MyFace>     ::AsFaceType>{};
-
-class MyVertex  : public Vertex<MyUsedTypes, vertex::Coord3f, vertex::Normal3f, vertex::BitFlags  >{};
-class MyFace    : public Face< MyUsedTypes, face::FFAdj,  face::VertexRef, face::BitFlags > {};
-class MyEdge    : public Edge<MyUsedTypes>{};
-class MyMesh    : public tri::TriMesh< vector<MyVertex>, vector<MyFace> , vector<MyEdge>  > {};
-
-int main( int argc, char **argv )
+struct MyUsedTypes : public UsedTypes<Use<MyVertex>::AsVertexType, Use<MyEdge>::AsEdgeType, Use<MyFace>::AsFaceType>
 {
-  if(argc<2)
-  {
-    printf("Usage trimesh_base <meshfilename.ply>\n");
-    return -1;
-  }
+};
 
-  MyMesh m;
+class MyVertex : public Vertex<MyUsedTypes, vertex::Coord3f, vertex::Normal3f, vertex::BitFlags>
+{
+};
+class MyFace : public Face<MyUsedTypes, face::FFAdj, face::VertexRef, face::BitFlags>
+{
+};
+class MyEdge : public Edge<MyUsedTypes>
+{
+};
+class MyMesh : public tri::TriMesh<vector<MyVertex>, vector<MyFace>, vector<MyEdge> >
+{
+};
 
-  if(tri::io::ImporterPLY<MyMesh>::Open(m,argv[1])!=0)
-  {
-    printf("Error reading file  %s\n",argv[1]);
-    exit(0);
-  }
+int main(int argc, char **argv)
+{
+    if (argc < 2)
+    {
+        printf("Usage trimesh_base <meshfilename.ply>\n");
+        return -1;
+    }
 
-  tri::UpdateTopology<MyMesh>::FaceFace(m);
-  tri::UpdateFlags<MyMesh>::FaceBorderFromFF(m);
-  tri::UpdateNormals<MyMesh>::PerVertexNormalized(m);
-  printf("Input mesh  vn:%i fn:%i\n",m.vn,m.fn);
-  printf( "Mesh has %i vert and %i faces\n", m.vn, m.fn );
+    MyMesh m;
 
-  return 0;
+    if (tri::io::ImporterPLY<MyMesh>::Open(m, argv[1]) != 0)
+    {
+        printf("Error reading file  %s\n", argv[1]);
+        exit(0);
+    }
+
+    tri::UpdateTopology<MyMesh>::FaceFace(m);
+    tri::UpdateFlags<MyMesh>::FaceBorderFromFF(m);
+    tri::UpdateNormals<MyMesh>::PerVertexNormalized(m);
+    printf("Input mesh  vn:%i fn:%i\n", m.vn, m.fn);
+    printf("Mesh has %i vert and %i faces\n", m.vn, m.fn);
+
+    return 0;
 }

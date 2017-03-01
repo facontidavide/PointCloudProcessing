@@ -39,143 +39,172 @@
   *
   * \sa class Translation, class Transform
   */
-template<typename _Scalar, int _Dim>
+template <typename _Scalar, int _Dim>
 class Scaling
 {
-public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF_VECTORIZABLE_FIXED_SIZE(_Scalar,_Dim)
-  /** dimension of the space */
-  enum { Dim = _Dim };
-  /** the scalar type of the coefficients */
-  typedef _Scalar Scalar;
-  /** corresponding vector type */
-  typedef Matrix<Scalar,Dim,1> VectorType;
-  /** corresponding linear transformation matrix type */
-  typedef Matrix<Scalar,Dim,Dim> LinearMatrixType;
-  /** corresponding translation type */
-  typedef Translation<Scalar,Dim> TranslationType;
-  /** corresponding affine transformation type */
-  typedef Transform<Scalar,Dim> TransformType;
+  public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF_VECTORIZABLE_FIXED_SIZE(_Scalar, _Dim)
+    /** dimension of the space */
+    enum
+    {
+        Dim = _Dim
+    };
+    /** the scalar type of the coefficients */
+    typedef _Scalar Scalar;
+    /** corresponding vector type */
+    typedef Matrix<Scalar, Dim, 1> VectorType;
+    /** corresponding linear transformation matrix type */
+    typedef Matrix<Scalar, Dim, Dim> LinearMatrixType;
+    /** corresponding translation type */
+    typedef Translation<Scalar, Dim> TranslationType;
+    /** corresponding affine transformation type */
+    typedef Transform<Scalar, Dim> TransformType;
 
-protected:
+  protected:
+    VectorType m_coeffs;
 
-  VectorType m_coeffs;
+  public:
+    /** Default constructor without initialization. */
+    Scaling()
+    {
+    }
+    /** Constructs and initialize a uniform scaling transformation */
+    explicit inline Scaling(const Scalar& s)
+    {
+        m_coeffs.setConstant(s);
+    }
+    /** 2D only */
+    inline Scaling(const Scalar& sx, const Scalar& sy)
+    {
+        ei_assert(Dim == 2);
+        m_coeffs.x() = sx;
+        m_coeffs.y() = sy;
+    }
+    /** 3D only */
+    inline Scaling(const Scalar& sx, const Scalar& sy, const Scalar& sz)
+    {
+        ei_assert(Dim == 3);
+        m_coeffs.x() = sx;
+        m_coeffs.y() = sy;
+        m_coeffs.z() = sz;
+    }
+    /** Constructs and initialize the scaling transformation from a vector of scaling coefficients */
+    explicit inline Scaling(const VectorType& coeffs) : m_coeffs(coeffs)
+    {
+    }
 
-public:
+    const VectorType& coeffs() const
+    {
+        return m_coeffs;
+    }
+    VectorType& coeffs()
+    {
+        return m_coeffs;
+    }
 
-  /** Default constructor without initialization. */
-  Scaling() {}
-  /** Constructs and initialize a uniform scaling transformation */
-  explicit inline Scaling(const Scalar& s) { m_coeffs.setConstant(s); }
-  /** 2D only */
-  inline Scaling(const Scalar& sx, const Scalar& sy)
-  {
-    ei_assert(Dim==2);
-    m_coeffs.x() = sx;
-    m_coeffs.y() = sy;
-  }
-  /** 3D only */
-  inline Scaling(const Scalar& sx, const Scalar& sy, const Scalar& sz)
-  {
-    ei_assert(Dim==3);
-    m_coeffs.x() = sx;
-    m_coeffs.y() = sy;
-    m_coeffs.z() = sz;
-  }
-  /** Constructs and initialize the scaling transformation from a vector of scaling coefficients */
-  explicit inline Scaling(const VectorType& coeffs) : m_coeffs(coeffs) {}
+    /** Concatenates two scaling */
+    inline Scaling operator*(const Scaling& other) const
+    {
+        return Scaling(coeffs().cwise() * other.coeffs());
+    }
 
-  const VectorType& coeffs() const { return m_coeffs; }
-  VectorType& coeffs() { return m_coeffs; }
+    /** Concatenates a scaling and a translation */
+    inline TransformType operator*(const TranslationType& t) const;
 
-  /** Concatenates two scaling */
-  inline Scaling operator* (const Scaling& other) const
-  { return Scaling(coeffs().cwise() * other.coeffs()); }
+    /** Concatenates a scaling and an affine transformation */
+    inline TransformType operator*(const TransformType& t) const;
 
-  /** Concatenates a scaling and a translation */
-  inline TransformType operator* (const TranslationType& t) const;
+    /** Concatenates a scaling and a linear transformation matrix */
+    // TODO returns an expression
+    inline LinearMatrixType operator*(const LinearMatrixType& other) const
+    {
+        return coeffs().asDiagonal() * other;
+    }
 
-  /** Concatenates a scaling and an affine transformation */
-  inline TransformType operator* (const TransformType& t) const;
+    /** Concatenates a linear transformation matrix and a scaling */
+    // TODO returns an expression
+    friend inline LinearMatrixType operator*(const LinearMatrixType& other, const Scaling& s)
+    {
+        return other * s.coeffs().asDiagonal();
+    }
 
-  /** Concatenates a scaling and a linear transformation matrix */
-  // TODO returns an expression
-  inline LinearMatrixType operator* (const LinearMatrixType& other) const
-  { return coeffs().asDiagonal() * other; }
+    template <typename Derived>
+    inline LinearMatrixType operator*(const RotationBase<Derived, Dim>& r) const
+    {
+        return *this * r.toRotationMatrix();
+    }
 
-  /** Concatenates a linear transformation matrix and a scaling */
-  // TODO returns an expression
-  friend inline LinearMatrixType operator* (const LinearMatrixType& other, const Scaling& s)
-  { return other * s.coeffs().asDiagonal(); }
+    /** Applies scaling to vector */
+    inline VectorType operator*(const VectorType& other) const
+    {
+        return coeffs().asDiagonal() * other;
+    }
 
-  template<typename Derived>
-  inline LinearMatrixType operator*(const RotationBase<Derived,Dim>& r) const
-  { return *this * r.toRotationMatrix(); }
+    /** \returns the inverse scaling */
+    inline Scaling inverse() const
+    {
+        return Scaling(coeffs().cwise().inverse());
+    }
 
-  /** Applies scaling to vector */
-  inline VectorType operator* (const VectorType& other) const
-  { return coeffs().asDiagonal() * other; }
+    inline Scaling& operator=(const Scaling& other)
+    {
+        m_coeffs = other.m_coeffs;
+        return *this;
+    }
 
-  /** \returns the inverse scaling */
-  inline Scaling inverse() const
-  { return Scaling(coeffs().cwise().inverse()); }
+    /** \returns \c *this with scalar type casted to \a NewScalarType
+      *
+      * Note that if \a NewScalarType is equal to the current scalar type of \c *this
+      * then this function smartly returns a const reference to \c *this.
+      */
+    template <typename NewScalarType>
+    inline typename ei_cast_return_type<Scaling, Scaling<NewScalarType, Dim> >::type cast() const
+    {
+        return typename ei_cast_return_type<Scaling, Scaling<NewScalarType, Dim> >::type(*this);
+    }
 
-  inline Scaling& operator=(const Scaling& other)
-  {
-    m_coeffs = other.m_coeffs;
-    return *this;
-  }
+    /** Copy constructor with scalar type conversion */
+    template <typename OtherScalarType>
+    inline explicit Scaling(const Scaling<OtherScalarType, Dim>& other)
+    {
+        m_coeffs = other.coeffs().template cast<Scalar>();
+    }
 
-  /** \returns \c *this with scalar type casted to \a NewScalarType
-    *
-    * Note that if \a NewScalarType is equal to the current scalar type of \c *this
-    * then this function smartly returns a const reference to \c *this.
-    */
-  template<typename NewScalarType>
-  inline typename ei_cast_return_type<Scaling,Scaling<NewScalarType,Dim> >::type cast() const
-  { return typename ei_cast_return_type<Scaling,Scaling<NewScalarType,Dim> >::type(*this); }
-
-  /** Copy constructor with scalar type conversion */
-  template<typename OtherScalarType>
-  inline explicit Scaling(const Scaling<OtherScalarType,Dim>& other)
-  { m_coeffs = other.coeffs().template cast<Scalar>(); }
-
-  /** \returns \c true if \c *this is approximately equal to \a other, within the precision
-    * determined by \a prec.
-    *
-    * \sa MatrixBase::isApprox() */
-  bool isApprox(const Scaling& other, typename NumTraits<Scalar>::Real prec = precision<Scalar>()) const
-  { return m_coeffs.isApprox(other.m_coeffs, prec); }
-
+    /** \returns \c true if \c *this is approximately equal to \a other, within the precision
+      * determined by \a prec.
+      *
+      * \sa MatrixBase::isApprox() */
+    bool isApprox(const Scaling& other, typename NumTraits<Scalar>::Real prec = precision<Scalar>()) const
+    {
+        return m_coeffs.isApprox(other.m_coeffs, prec);
+    }
 };
 
 /** \addtogroup Geometry_Module */
 //@{
 typedef Scaling<float, 2> Scaling2f;
-typedef Scaling<double,2> Scaling2d;
+typedef Scaling<double, 2> Scaling2d;
 typedef Scaling<float, 3> Scaling3f;
-typedef Scaling<double,3> Scaling3d;
+typedef Scaling<double, 3> Scaling3d;
 //@}
 
-template<typename Scalar, int Dim>
-inline typename Scaling<Scalar,Dim>::TransformType
-Scaling<Scalar,Dim>::operator* (const TranslationType& t) const
+template <typename Scalar, int Dim>
+inline typename Scaling<Scalar, Dim>::TransformType Scaling<Scalar, Dim>::operator*(const TranslationType& t) const
 {
-  TransformType res;
-  res.matrix().setZero();
-  res.linear().diagonal() = coeffs();
-  res.translation() = m_coeffs.cwise() * t.vector();
-  res(Dim,Dim) = Scalar(1);
-  return res;
+    TransformType res;
+    res.matrix().setZero();
+    res.linear().diagonal() = coeffs();
+    res.translation() = m_coeffs.cwise() * t.vector();
+    res(Dim, Dim) = Scalar(1);
+    return res;
 }
 
-template<typename Scalar, int Dim>
-inline typename Scaling<Scalar,Dim>::TransformType
-Scaling<Scalar,Dim>::operator* (const TransformType& t) const
+template <typename Scalar, int Dim>
+inline typename Scaling<Scalar, Dim>::TransformType Scaling<Scalar, Dim>::operator*(const TransformType& t) const
 {
-  TransformType res = t;
-  res.prescale(m_coeffs);
-  return res;
+    TransformType res = t;
+    res.prescale(m_coeffs);
+    return res;
 }
 
-#endif // EIGEN_SCALING_H
+#endif  // EIGEN_SCALING_H

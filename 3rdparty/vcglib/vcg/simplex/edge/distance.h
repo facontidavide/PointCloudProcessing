@@ -8,7 +8,7 @@
 *                                                                    \      *
 * All rights reserved.                                                      *
 *                                                                           *
-* This program is free software; you can redistribute it and/or modify      *   
+* This program is free software; you can redistribute it and/or modify      *
 * it under the terms of the GNU General Public License as published by      *
 * the Free Software Foundation; either version 2 of the License, or         *
 * (at your option) any later version.                                       *
@@ -33,55 +33,58 @@
 #include <vcg/space/point3.h>
 #include <vcg/space/segment3.h>
 
+namespace vcg
+{
+namespace edge
+{
+/*Point edge distance*/
 
-namespace vcg {
-	namespace edge{
-	/*Point edge distance*/
+template <class EdgeType>
+bool PointDistance(const EdgeType &e, const vcg::Point3<typename EdgeType::ScalarType> &q,
+                   typename EdgeType::ScalarType &dist, vcg::Point3<typename EdgeType::ScalarType> &p)
+{
+    vcg::Segment3<typename EdgeType::ScalarType> s;
+    s.P0() = e.V(0)->P();
+    s.P1() = e.V(1)->P();
+    typename EdgeType::CoordType nearest;
+    nearest = vcg::ClosestPoint<typename EdgeType::ScalarType>(s, q);
+    typename EdgeType::ScalarType d = (q - nearest).Norm();
+    if (d < dist)
+    {
+        dist = d;
+        p = nearest;
+        return true;
+    }
+    else
+        return false;
+}
 
-	template <class EdgeType>
-	bool PointDistance(	const EdgeType &e, 
-							const vcg::Point3<typename EdgeType::ScalarType> & q, 
-							typename EdgeType::ScalarType & dist, 
-							vcg::Point3<typename EdgeType::ScalarType> & p )
-	{
-		vcg::Segment3<typename EdgeType::ScalarType> s;
-		s.P0()=e.V(0)->P();
-		s.P1()=e.V(1)->P();
-		typename EdgeType::CoordType nearest;
-		nearest=vcg::ClosestPoint<typename EdgeType::ScalarType>(s,q);
-		typename EdgeType::ScalarType d=(q-nearest).Norm();
-		if (d<dist){
-			dist=d;
-			p=nearest;
-			return true;
-		}
-		else 
-			return false;
-	}
+template <class S>
+class PointDistanceFunctor
+{
+  public:
+    typedef S ScalarType;
+    typedef Point3<ScalarType> QueryType;
+    static inline const Point3<ScalarType> &Pos(const QueryType &qt)
+    {
+        return qt;
+    }
 
-	template <class S>
-	class PointDistanceFunctor {
-	public:
-		typedef S ScalarType;
-		typedef Point3<ScalarType> QueryType;
-		static inline const Point3<ScalarType> &  Pos(const QueryType & qt)  {return qt;}
-	
-		template <class EDGETYPE, class SCALARTYPE>
-		inline bool operator () (const EDGETYPE & e, const Point3<SCALARTYPE> & p, SCALARTYPE & minDist, Point3<SCALARTYPE> & q) {
-			const Point3<typename EDGETYPE::ScalarType> fp = Point3<typename EDGETYPE::ScalarType>::Construct(p);
-			Point3<typename EDGETYPE::ScalarType> fq;
-			typename EDGETYPE::ScalarType md = (typename EDGETYPE::ScalarType)(minDist);
-			const bool ret = vcg::edge::PointDistance(e, fp, md, fq);
-			minDist = (SCALARTYPE)(md);
-			q = Point3<SCALARTYPE>::Construct(fq);
-			return (ret);
-		}
-	};
+    template <class EDGETYPE, class SCALARTYPE>
+    inline bool operator()(const EDGETYPE &e, const Point3<SCALARTYPE> &p, SCALARTYPE &minDist, Point3<SCALARTYPE> &q)
+    {
+        const Point3<typename EDGETYPE::ScalarType> fp = Point3<typename EDGETYPE::ScalarType>::Construct(p);
+        Point3<typename EDGETYPE::ScalarType> fq;
+        typename EDGETYPE::ScalarType md = (typename EDGETYPE::ScalarType)(minDist);
+        const bool ret = vcg::edge::PointDistance(e, fp, md, fq);
+        minDist = (SCALARTYPE)(md);
+        q = Point3<SCALARTYPE>::Construct(fq);
+        return (ret);
+    }
+};
 
-}	 // end namespace edge
-	
-}	 // end namespace vcg
+}  // end namespace edge
 
+}  // end namespace vcg
 
 #endif
-

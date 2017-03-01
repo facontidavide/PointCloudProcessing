@@ -36,913 +36,933 @@
 
 class FrameBufferSemantic
 {
-public:
-	typedef enum
-	{
-		COLOR,
-		DEPTH,
-		STENCIL
-	} FBSType;
+  public:
+    typedef enum { COLOR, DEPTH, STENCIL } FBSType;
 
-	virtual FBSType Semantic(void) const = 0;
-	virtual bool ValidateFormat(GLenum format) const = 0;
+    virtual FBSType Semantic(void) const = 0;
+    virtual bool ValidateFormat(GLenum format) const = 0;
 
-	static bool ValidateFormat(FBSType type, GLenum format)
-	{
-		switch (type)
-		{
-			case COLOR   : return FrameBufferSemantic::ValidateColor(format);
-			case DEPTH   : return FrameBufferSemantic::ValidateDepth(format);
-			case STENCIL : return FrameBufferSemantic::ValidateStencil(format);
-			default      : return false;
-		}
-	}
+    static bool ValidateFormat(FBSType type, GLenum format)
+    {
+        switch (type)
+        {
+            case COLOR:
+                return FrameBufferSemantic::ValidateColor(format);
+            case DEPTH:
+                return FrameBufferSemantic::ValidateDepth(format);
+            case STENCIL:
+                return FrameBufferSemantic::ValidateStencil(format);
+            default:
+                return false;
+        }
+    }
 
-	static bool ValidateColor(GLenum type)
-	{
-		return true;
-	}
+    static bool ValidateColor(GLenum type)
+    {
+        return true;
+    }
 
-	static bool ValidateDepth(GLenum type)
-	{
-		return  true;
-	}
+    static bool ValidateDepth(GLenum type)
+    {
+        return true;
+    }
 
-	static bool ValidateStencil(GLenum type)
-	{
-		return true;
-	}
+    static bool ValidateStencil(GLenum type)
+    {
+        return true;
+    }
 };
 
 class Texture : public GLObject, public Bindable, public FrameBufferSemantic
 {
-public:
-	Texture(void) : GLObject(), Bindable(), FrameBufferSemantic()
-	{
-		this->format = GL_NONE;
-	}
+  public:
+    Texture(void) : GLObject(), Bindable(), FrameBufferSemantic()
+    {
+        this->format = GL_NONE;
+    }
 
-	void Gen(void)
-	{
-		this->Del();
-		glGenTextures(1, &(this->objectID));
-	}
+    void Gen(void)
+    {
+        this->Del();
+        glGenTextures(1, &(this->objectID));
+    }
 
-	void Del(void)
-	{
-		if (this->objectID == 0) return;
-		glDeleteTextures(1, &(this->objectID));
-		this->objectID = 0;
-	}
+    void Del(void)
+    {
+        if (this->objectID == 0)
+            return;
+        glDeleteTextures(1, &(this->objectID));
+        this->objectID = 0;
+    }
 
-	GLenum Format(void) const
-	{
-		return this->format;
-	}
+    GLenum Format(void) const
+    {
+        return this->format;
+    }
 
-	virtual GLint Dimensions(void) const = 0;
+    virtual GLint Dimensions(void) const = 0;
 
-	virtual GLsizei Size(const unsigned int i) const = 0;
+    virtual GLsizei Size(const unsigned int i) const = 0;
 
-	virtual GLenum Target(void) const = 0;
+    virtual GLenum Target(void) const = 0;
 
-protected:
-	GLenum format;
+  protected:
+    GLenum format;
 
-	void DoBind(void)
-	{
-		glBindTexture(this->Target(), this->objectID);
-	}
+    void DoBind(void)
+    {
+        glBindTexture(this->Target(), this->objectID);
+    }
 
-	void DoUnbind(void)
-	{
-		glBindTexture(this->Target(), 0);
-	}
+    void DoUnbind(void)
+    {
+        glBindTexture(this->Target(), 0);
+    }
 };
 
 class ColorTexture : public virtual Texture
 {
-public:
-	ColorTexture(void) : Texture()
-	{
-	}
+  public:
+    ColorTexture(void) : Texture()
+    {
+    }
 
-	FrameBufferSemantic::FBSType Semantic(void) const
-	{
-		return FrameBufferSemantic::COLOR;
-	}
+    FrameBufferSemantic::FBSType Semantic(void) const
+    {
+        return FrameBufferSemantic::COLOR;
+    }
 
-	bool ValidateFormat(GLenum format) const
-	{
-		return FrameBufferSemantic::ValidateColor(format);
-	}
+    bool ValidateFormat(GLenum format) const
+    {
+        return FrameBufferSemantic::ValidateColor(format);
+    }
 };
 
 class DepthTexture : public virtual Texture
 {
-public:
-	DepthTexture(void) : Texture()
-	{
-	}
+  public:
+    DepthTexture(void) : Texture()
+    {
+    }
 
-	FrameBufferSemantic::FBSType Semantic(void) const
-	{
-		return FrameBufferSemantic::DEPTH;
-	}
+    FrameBufferSemantic::FBSType Semantic(void) const
+    {
+        return FrameBufferSemantic::DEPTH;
+    }
 
-	bool ValidateFormat(GLenum format) const
-	{
-		return FrameBufferSemantic::ValidateDepth(format);
-	}
+    bool ValidateFormat(GLenum format) const
+    {
+        return FrameBufferSemantic::ValidateDepth(format);
+    }
 };
 
 class StencilTexture : public virtual Texture
 {
-public:
-	StencilTexture(void) : Texture()
-	{
-	}
+  public:
+    StencilTexture(void) : Texture()
+    {
+    }
 
-	FrameBufferSemantic::FBSType Semantic(void) const
-	{
-		return FrameBufferSemantic::STENCIL;
-	}
+    FrameBufferSemantic::FBSType Semantic(void) const
+    {
+        return FrameBufferSemantic::STENCIL;
+    }
 
-	bool ValidateFormat(GLenum format) const
-	{
-		return FrameBufferSemantic::ValidateStencil(format);
-	}
+    bool ValidateFormat(GLenum format) const
+    {
+        return FrameBufferSemantic::ValidateStencil(format);
+    }
 };
 
 class Texture1D : public virtual Texture
 {
-public:
-	Texture1D(void) : Texture()
-	{
-		this->dims[0] = 0;
-		this->wraps[0] = GL_CLAMP_TO_EDGE;
-	}
+  public:
+    Texture1D(void) : Texture()
+    {
+        this->dims[0] = 0;
+        this->wraps[0] = GL_CLAMP_TO_EDGE;
+    }
 
-	GLsizei Width(void) const
-	{
-		return this->dims[0];
-	}
+    GLsizei Width(void) const
+    {
+        return this->dims[0];
+    }
 
-	GLint Dimensions(void) const
-	{
-		return 1;
-	}
+    GLint Dimensions(void) const
+    {
+        return 1;
+    }
 
-	GLsizei Size(const unsigned int i) const
-	{
-		if (i > 0) return 0;
-		return this->dims[0];
-	}
+    GLsizei Size(const unsigned int i) const
+    {
+        if (i > 0)
+            return 0;
+        return this->dims[0];
+    }
 
-	GLenum Target(void) const
-	{
-		return GL_TEXTURE_1D;
-	}
+    GLenum Target(void) const
+    {
+        return GL_TEXTURE_1D;
+    }
 
-	bool Set(GLint level, GLint internalFormat, GLsizei width, GLint border, GLenum format, GLenum type, const GLvoid * pixels)
-	{
-		if (!this->ValidateFormat(internalFormat)) return false;
+    bool Set(GLint level, GLint internalFormat, GLsizei width, GLint border, GLenum format, GLenum type,
+             const GLvoid *pixels)
+    {
+        if (!this->ValidateFormat(internalFormat))
+            return false;
 
-		this->Bind();
+        this->Bind();
 
-		glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexImage1D(GL_TEXTURE_1D, level, internalFormat, width, border, format, type, pixels);
+        glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexImage1D(GL_TEXTURE_1D, level, internalFormat, width, border, format, type, pixels);
 
-		this->Unbind();
+        this->Unbind();
 
-		this->format = internalFormat;
-		this->dims[0] = width;
+        this->format = internalFormat;
+        this->dims[0] = width;
 
-		return true;
-	}
+        return true;
+    }
 
-protected:
-	GLsizei dims[1];
-	GLenum wraps[1];
+  protected:
+    GLsizei dims[1];
+    GLenum wraps[1];
 };
 
 class Texture2D : public virtual Texture
 {
-public:
-	Texture2D(void) : Texture()
-	{
-		this->dims[0] = 0;
-		this->dims[1] = 0;
-	}
+  public:
+    Texture2D(void) : Texture()
+    {
+        this->dims[0] = 0;
+        this->dims[1] = 0;
+    }
 
-	GLsizei Width(void) const
-	{
-		return this->dims[0];
-	}
+    GLsizei Width(void) const
+    {
+        return this->dims[0];
+    }
 
-	GLsizei Height(void) const
-	{
-		return this->dims[1];
-	}
+    GLsizei Height(void) const
+    {
+        return this->dims[1];
+    }
 
-	GLint Dimensions(void) const
-	{
-		return 2;
-	}
+    GLint Dimensions(void) const
+    {
+        return 2;
+    }
 
-	GLsizei Size(const unsigned int i) const
-	{
-		if (i > 1) return 0;
-		return this->dims[i];
-	}
+    GLsizei Size(const unsigned int i) const
+    {
+        if (i > 1)
+            return 0;
+        return this->dims[i];
+    }
 
-	GLenum Target(void) const
-	{
-		return GL_TEXTURE_2D;
-	}
+    GLenum Target(void) const
+    {
+        return GL_TEXTURE_2D;
+    }
 
-	bool Set(GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid * pixels)
-	{
-		if (!this->ValidateFormat(internalFormat)) return false;
+    bool Set(GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type,
+             const GLvoid *pixels)
+    {
+        if (!this->ValidateFormat(internalFormat))
+            return false;
 
-		this->Bind();
+        this->Bind();
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, border, format, type, pixels);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, border, format, type, pixels);
 
-		this->Unbind();
+        this->Unbind();
 
-		this->format = internalFormat;
-		this->dims[0] = width;
-		this->dims[1] = height;
+        this->format = internalFormat;
+        this->dims[0] = width;
+        this->dims[1] = height;
 
-		return true;
-	}
+        return true;
+    }
 
-protected:
-	GLsizei dims[2];
+  protected:
+    GLsizei dims[2];
 
-	void DoBind(void)
-	{
-		glBindTexture(GL_TEXTURE_2D, this->objectID);
-	}
+    void DoBind(void)
+    {
+        glBindTexture(GL_TEXTURE_2D, this->objectID);
+    }
 
-	void DoUnbind(void)
-	{
-		glBindTexture(GL_TEXTURE_2D, 0);
-	}
+    void DoUnbind(void)
+    {
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
 };
 
 class Texture3D : public virtual Texture
 {
-public:
-	Texture3D(void) : Texture()
-	{
-		this->dims[0] = 0;
-		this->dims[1] = 0;
-		this->dims[2] = 0;
-	}
+  public:
+    Texture3D(void) : Texture()
+    {
+        this->dims[0] = 0;
+        this->dims[1] = 0;
+        this->dims[2] = 0;
+    }
 
-	GLsizei Width(void) const
-	{
-		return this->dims[0];
-	}
+    GLsizei Width(void) const
+    {
+        return this->dims[0];
+    }
 
-	GLsizei Height(void) const
-	{
-		return this->dims[1];
-	}
+    GLsizei Height(void) const
+    {
+        return this->dims[1];
+    }
 
-	GLsizei Depth(void) const
-	{
-		return this->dims[2];
-	}
+    GLsizei Depth(void) const
+    {
+        return this->dims[2];
+    }
 
-	GLint Dimensions(void) const
-	{
-		return 3;
-	}
+    GLint Dimensions(void) const
+    {
+        return 3;
+    }
 
-	GLsizei Size(const unsigned int i) const
-	{
-		if (i > 2) return 0;
-		return this->dims[i];
-	}
+    GLsizei Size(const unsigned int i) const
+    {
+        if (i > 2)
+            return 0;
+        return this->dims[i];
+    }
 
-	GLenum Target(void) const
-	{
-		return GL_TEXTURE_3D;
-	}
+    GLenum Target(void) const
+    {
+        return GL_TEXTURE_3D;
+    }
 
-	bool Set(GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const GLvoid * pixels)
-	{
-		if (!this->ValidateFormat(internalFormat)) return false;
+    bool Set(GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLsizei depth, GLint border,
+             GLenum format, GLenum type, const GLvoid *pixels)
+    {
+        if (!this->ValidateFormat(internalFormat))
+            return false;
 
-		this->Bind();
+        this->Bind();
 
-		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexImage3D(GL_TEXTURE_3D, 0, internalFormat, width, height, depth, border, format, type, pixels);
+        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexImage3D(GL_TEXTURE_3D, 0, internalFormat, width, height, depth, border, format, type, pixels);
 
-		this->Unbind();
+        this->Unbind();
 
-		this->format = internalFormat;
-		this->dims[0] = width;
-		this->dims[1] = height;
-		this->dims[2] = depth;
+        this->format = internalFormat;
+        this->dims[0] = width;
+        this->dims[1] = height;
+        this->dims[2] = depth;
 
-		return true;
-	}
+        return true;
+    }
 
-protected:
-	GLsizei dims[3];
+  protected:
+    GLsizei dims[3];
 
-	void DoBind(void)
-	{
-		glBindTexture(GL_TEXTURE_3D, this->objectID);
-	}
+    void DoBind(void)
+    {
+        glBindTexture(GL_TEXTURE_3D, this->objectID);
+    }
 
-	void DoUnbind(void)
-	{
-		glBindTexture(GL_TEXTURE_3D, 0);
-	}
+    void DoUnbind(void)
+    {
+        glBindTexture(GL_TEXTURE_3D, 0);
+    }
 };
 
 class ColorTexture1D : public virtual ColorTexture, public virtual Texture1D
 {
-public:
-	ColorTexture1D(void) : ColorTexture(), Texture1D()
-	{
-	}
+  public:
+    ColorTexture1D(void) : ColorTexture(), Texture1D()
+    {
+    }
 };
 
 class ColorTexture2D : public virtual ColorTexture, public virtual Texture2D
 {
-public:
-	ColorTexture2D(void) : ColorTexture(), Texture2D()
-	{
-	}
+  public:
+    ColorTexture2D(void) : ColorTexture(), Texture2D()
+    {
+    }
 };
 
 class ColorTexture3D : public virtual ColorTexture, public virtual Texture3D
 {
-public:
-	ColorTexture3D(void) : ColorTexture(), Texture3D()
-	{
-	}
+  public:
+    ColorTexture3D(void) : ColorTexture(), Texture3D()
+    {
+    }
 };
 
 class DepthTexture2D : public virtual DepthTexture, public virtual Texture2D
 {
-public:
-	DepthTexture2D(void) : DepthTexture(), Texture2D()
-	{
-	}
+  public:
+    DepthTexture2D(void) : DepthTexture(), Texture2D()
+    {
+    }
 };
 
 class StencilTexture2D : public virtual StencilTexture, public virtual Texture2D
 {
-public:
-	StencilTexture2D(void) : StencilTexture(), Texture2D()
-	{
-	}
+  public:
+    StencilTexture2D(void) : StencilTexture(), Texture2D()
+    {
+    }
 };
 
 class FrameBuffer;
 
 class RenderTarget : public GLObject, public Bindable, public FrameBufferSemantic
 {
-friend class FrameBuffer;
+    friend class FrameBuffer;
 
-public:
-	typedef enum
-	{
-		BUFFER,
-		TEXTURE
-	} RTStorageType;
+  public:
+    typedef enum { BUFFER, TEXTURE } RTStorageType;
 
-	RenderTarget(void) : GLObject(), Bindable(), FrameBufferSemantic()
-	{
-		this->frameBuffer = 0;
-	}
+    RenderTarget(void) : GLObject(), Bindable(), FrameBufferSemantic()
+    {
+        this->frameBuffer = 0;
+    }
 
-	bool Attach(FrameBuffer * fb);
+    bool Attach(FrameBuffer *fb);
 
-	bool Detach(void);
+    bool Detach(void);
 
-	FrameBuffer * GetFrameBuffer(void)
-	{
-		return this->frameBuffer;
-	}
+    FrameBuffer *GetFrameBuffer(void)
+    {
+        return this->frameBuffer;
+    }
 
-	const FrameBuffer * GetFrameBuffer(void) const
-	{
-		return this->frameBuffer;
-	}
+    const FrameBuffer *GetFrameBuffer(void) const
+    {
+        return this->frameBuffer;
+    }
 
-	virtual GLsizei Width(void) const = 0;
-	virtual GLsizei Height(void) const = 0;
-	virtual GLenum Format(void) const = 0;
+    virtual GLsizei Width(void) const = 0;
+    virtual GLsizei Height(void) const = 0;
+    virtual GLenum Format(void) const = 0;
 
-	virtual GLenum Attachment(void) const = 0;
+    virtual GLenum Attachment(void) const = 0;
 
-	virtual bool ValidateAttachment(GLenum attachment) const = 0;
+    virtual bool ValidateAttachment(GLenum attachment) const = 0;
 
-	virtual RTStorageType StorageType(void) const = 0;
+    virtual RTStorageType StorageType(void) const = 0;
 
-protected:
-	FrameBuffer * frameBuffer;
+  protected:
+    FrameBuffer *frameBuffer;
 
-	virtual bool BindToFB(void) = 0;
+    virtual bool BindToFB(void) = 0;
 };
 
 class BufferRenderTarget : public virtual RenderTarget
 {
-public:
-	BufferRenderTarget(void) : RenderTarget()
-	{
-		this->width = 0;
-		this->height = 0;
-		this->format = GL_NONE;
-	}
+  public:
+    BufferRenderTarget(void) : RenderTarget()
+    {
+        this->width = 0;
+        this->height = 0;
+        this->format = GL_NONE;
+    }
 
-	void Gen(void)
-	{
-		this->Del();
-		glGenRenderbuffersEXT(1, &(this->objectID));
-	}
+    void Gen(void)
+    {
+        this->Del();
+        glGenRenderbuffersEXT(1, &(this->objectID));
+    }
 
-	void Del(void)
-	{
-		if (this->objectID == 0) return;
-		glDeleteRenderbuffersEXT(1, &(this->objectID));
-		this->objectID = 0;
-	}
+    void Del(void)
+    {
+        if (this->objectID == 0)
+            return;
+        glDeleteRenderbuffersEXT(1, &(this->objectID));
+        this->objectID = 0;
+    }
 
-	GLsizei Width(void) const
-	{
-		return this->width;
-	}
+    GLsizei Width(void) const
+    {
+        return this->width;
+    }
 
-	GLsizei Height(void) const
-	{
-		return this->height;
-	}
+    GLsizei Height(void) const
+    {
+        return this->height;
+    }
 
-	GLenum Format(void) const
-	{
-		return this->format;
-	}
+    GLenum Format(void) const
+    {
+        return this->format;
+    }
 
-	RTStorageType StorageType(void) const
-	{
-		return RenderTarget::BUFFER;
-	}
+    RTStorageType StorageType(void) const
+    {
+        return RenderTarget::BUFFER;
+    }
 
-	bool Set(GLenum format, GLsizei width, GLsizei height)
-	{
-		if (!this->ValidateFormat(format)) return false;
+    bool Set(GLenum format, GLsizei width, GLsizei height)
+    {
+        if (!this->ValidateFormat(format))
+            return false;
 
-		this->Bind();
+        this->Bind();
 
-		glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, format, width, height);
+        glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, format, width, height);
 
-		this->Unbind();
+        this->Unbind();
 
-		this->format = format;
-		this->width = width;
-		this->height = height;
+        this->format = format;
+        this->width = width;
+        this->height = height;
 
-		return true;
-	}
+        return true;
+    }
 
-	bool BindToFB(void)
-	{
-		if (this->frameBuffer == 0) return false;
-		glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, this->Attachment(), GL_RENDERBUFFER_EXT, this->objectID);
+    bool BindToFB(void)
+    {
+        if (this->frameBuffer == 0)
+            return false;
+        glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, this->Attachment(), GL_RENDERBUFFER_EXT, this->objectID);
 
-		return true;
-	}
+        return true;
+    }
 
-protected:
-	GLenum format;
-	GLsizei width;
-	GLsizei height;
+  protected:
+    GLenum format;
+    GLsizei width;
+    GLsizei height;
 
-	void DoBind(void)
-	{
-		glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, this->objectID);
-	}
+    void DoBind(void)
+    {
+        glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, this->objectID);
+    }
 
-	void DoUnbind(void)
-	{
-		glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
-	}
+    void DoUnbind(void)
+    {
+        glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
+    }
 };
 
 class TextureRenderTarget : public virtual RenderTarget
 {
-public:
-	TextureRenderTarget(void) : RenderTarget()
-	{
-		this->tex = 0;
-		this->level = 0;
-	}
+  public:
+    TextureRenderTarget(void) : RenderTarget()
+    {
+        this->tex = 0;
+        this->level = 0;
+    }
 
-	void Gen(void)
-	{
-	}
+    void Gen(void)
+    {
+    }
 
-	void Del(void)
-	{
-	}
+    void Del(void)
+    {
+    }
 
-	GLsizei Width(void) const
-	{
-		if (this->tex == 0) return 0;
-		return this->tex->Width();
-	}
+    GLsizei Width(void) const
+    {
+        if (this->tex == 0)
+            return 0;
+        return this->tex->Width();
+    }
 
-	GLsizei Height(void) const
-	{
-		if (this->tex == 0) return 0;
-		return this->tex->Height();
-	}
+    GLsizei Height(void) const
+    {
+        if (this->tex == 0)
+            return 0;
+        return this->tex->Height();
+    }
 
-	GLenum Format(void) const
-	{
-		if (this->tex == 0) return GL_NONE;
-		return this->tex->Format();
-	}
+    GLenum Format(void) const
+    {
+        if (this->tex == 0)
+            return GL_NONE;
+        return this->tex->Format();
+    }
 
-	RTStorageType StorageType(void) const
-	{
-		return RenderTarget::TEXTURE;
-	}
+    RTStorageType StorageType(void) const
+    {
+        return RenderTarget::TEXTURE;
+    }
 
-	void SetLevel(GLint level)
-	{
-		if (level < 0) level = 0;
-		this->level = level;
-	}
+    void SetLevel(GLint level)
+    {
+        if (level < 0)
+            level = 0;
+        this->level = level;
+    }
 
-	bool Set(Texture2D * tex)
-	{
-		this->Unset();
+    bool Set(Texture2D *tex)
+    {
+        this->Unset();
 
-		if (tex == 0) return true;
-		if (this->Semantic() != tex->Semantic()) return false;
+        if (tex == 0)
+            return true;
+        if (this->Semantic() != tex->Semantic())
+            return false;
 
-		this->tex = tex;
+        this->tex = tex;
 
-		return true;
-	}
+        return true;
+    }
 
-	bool Unset(void)
-	{
-		this->tex = 0;
+    bool Unset(void)
+    {
+        this->tex = 0;
 
-		return true;
-	}
+        return true;
+    }
 
-	Texture2D * GetTexture(void)
-	{
-		return (this->tex);
-	}
+    Texture2D *GetTexture(void)
+    {
+        return (this->tex);
+    }
 
-	bool BindToFB(void)
-	{
-		if (this->frameBuffer == 0) return false;
-		if (this->tex == 0) return false;
+    bool BindToFB(void)
+    {
+        if (this->frameBuffer == 0)
+            return false;
+        if (this->tex == 0)
+            return false;
 
-		glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, this->Attachment(), GL_TEXTURE_2D, this->tex->ObjectID(), this->level);
+        glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, this->Attachment(), GL_TEXTURE_2D, this->tex->ObjectID(),
+                                  this->level);
 
-		return true;
-	}
+        return true;
+    }
 
-protected:
+  protected:
+    Texture2D *tex;
+    GLint level;
 
-	Texture2D * tex;
-	GLint level;
+    void DoBind(void)
+    {
+    }
 
-	void DoBind(void)
-	{
-	}
-
-	void DoUnbind(void)
-	{
-	}
+    void DoUnbind(void)
+    {
+    }
 };
 
 class ColorRenderTarget : public virtual RenderTarget
 {
-public:
-	ColorRenderTarget(void) : RenderTarget()
-	{
-		this->attachment = GL_COLOR_ATTACHMENT0_EXT;
-	}
+  public:
+    ColorRenderTarget(void) : RenderTarget()
+    {
+        this->attachment = GL_COLOR_ATTACHMENT0_EXT;
+    }
 
-	FrameBufferSemantic::FBSType Semantic(void) const
-	{
-		return FrameBufferSemantic::COLOR;
-	}
+    FrameBufferSemantic::FBSType Semantic(void) const
+    {
+        return FrameBufferSemantic::COLOR;
+    }
 
-	bool ValidateFormat(GLenum format) const
-	{
-		return FrameBufferSemantic::ValidateColor(format);
-	}
+    bool ValidateFormat(GLenum format) const
+    {
+        return FrameBufferSemantic::ValidateColor(format);
+    }
 
-	bool ValidateAttachment(GLenum attachment) const
-	{
-		return (((GL_COLOR_ATTACHMENT0_EXT) <= attachment) && (attachment <= (GL_COLOR_ATTACHMENT0_EXT + 3)));
-	}
+    bool ValidateAttachment(GLenum attachment) const
+    {
+        return (((GL_COLOR_ATTACHMENT0_EXT) <= attachment) && (attachment <= (GL_COLOR_ATTACHMENT0_EXT + 3)));
+    }
 
-	void SetAttachment(GLenum attachment)
-	{
-		if (!this->ValidateAttachment(attachment)) return;
-		this->attachment = attachment;
-	}
+    void SetAttachment(GLenum attachment)
+    {
+        if (!this->ValidateAttachment(attachment))
+            return;
+        this->attachment = attachment;
+    }
 
-	GLenum Attachment(void) const
-	{
-		return this->attachment;
-	}
+    GLenum Attachment(void) const
+    {
+        return this->attachment;
+    }
 
-protected:
-	GLenum attachment;
+  protected:
+    GLenum attachment;
 };
 
 class DepthRenderTarget : public virtual RenderTarget
 {
-public:
-	DepthRenderTarget(void) : RenderTarget()
-	{
-	}
+  public:
+    DepthRenderTarget(void) : RenderTarget()
+    {
+    }
 
-	FrameBufferSemantic::FBSType Semantic(void) const
-	{
-		return FrameBufferSemantic::DEPTH;
-	}
+    FrameBufferSemantic::FBSType Semantic(void) const
+    {
+        return FrameBufferSemantic::DEPTH;
+    }
 
-	bool ValidateFormat(GLenum format) const
-	{
-		return FrameBufferSemantic::ValidateDepth(format);
-	}
+    bool ValidateFormat(GLenum format) const
+    {
+        return FrameBufferSemantic::ValidateDepth(format);
+    }
 
-	bool ValidateAttachment(GLenum attachment) const
-	{
-		return (attachment == GL_DEPTH_ATTACHMENT_EXT);
-	}
+    bool ValidateAttachment(GLenum attachment) const
+    {
+        return (attachment == GL_DEPTH_ATTACHMENT_EXT);
+    }
 
-	GLenum Attachment(void) const
-	{
-		return GL_DEPTH_ATTACHMENT_EXT;
-	}
+    GLenum Attachment(void) const
+    {
+        return GL_DEPTH_ATTACHMENT_EXT;
+    }
 };
 
 class StencilRenderTarget : public virtual RenderTarget
 {
-public:
-	StencilRenderTarget(void) : RenderTarget()
-	{
-	}
+  public:
+    StencilRenderTarget(void) : RenderTarget()
+    {
+    }
 
-	FrameBufferSemantic::FBSType Semantic(void) const
-	{
-		return FrameBufferSemantic::STENCIL;
-	}
+    FrameBufferSemantic::FBSType Semantic(void) const
+    {
+        return FrameBufferSemantic::STENCIL;
+    }
 
-	bool ValidateFormat(GLenum format) const
-	{
-		return FrameBufferSemantic::ValidateStencil(format);
-	}
+    bool ValidateFormat(GLenum format) const
+    {
+        return FrameBufferSemantic::ValidateStencil(format);
+    }
 
-	bool ValidateAttachment(GLenum attachment) const
-	{
-		return (attachment == GL_STENCIL_ATTACHMENT_EXT);
-	}
+    bool ValidateAttachment(GLenum attachment) const
+    {
+        return (attachment == GL_STENCIL_ATTACHMENT_EXT);
+    }
 
-	GLenum Attachment(void) const
-	{
-		return GL_STENCIL_ATTACHMENT_EXT;
-	}
+    GLenum Attachment(void) const
+    {
+        return GL_STENCIL_ATTACHMENT_EXT;
+    }
 };
 
 class ColorRenderBuffer : public virtual ColorRenderTarget, public virtual BufferRenderTarget
 {
-public:
-	ColorRenderBuffer(void) : ColorRenderTarget(), BufferRenderTarget()
-	{
-	}
+  public:
+    ColorRenderBuffer(void) : ColorRenderTarget(), BufferRenderTarget()
+    {
+    }
 };
 
 class ColorRenderTexture : public virtual ColorRenderTarget, public virtual TextureRenderTarget
 {
-public:
-	ColorRenderTexture(void) : ColorRenderTarget(), TextureRenderTarget()
-	{
-	}
+  public:
+    ColorRenderTexture(void) : ColorRenderTarget(), TextureRenderTarget()
+    {
+    }
 
-	ColorRenderTexture(Texture2D * tex) : ColorRenderTarget(), TextureRenderTarget()
-	{
-		this->Set(tex);
-	}
+    ColorRenderTexture(Texture2D *tex) : ColorRenderTarget(), TextureRenderTarget()
+    {
+        this->Set(tex);
+    }
 };
 
 class DepthRenderBuffer : public virtual DepthRenderTarget, public virtual BufferRenderTarget
 {
-public:
-	DepthRenderBuffer(void) : DepthRenderTarget(), BufferRenderTarget()
-	{
-	}
+  public:
+    DepthRenderBuffer(void) : DepthRenderTarget(), BufferRenderTarget()
+    {
+    }
 };
 
 class DepthRenderTexture : public virtual DepthRenderTarget, public virtual TextureRenderTarget
 {
-public:
-	DepthRenderTexture(void) : DepthRenderTarget(), TextureRenderTarget()
-	{
-	}
+  public:
+    DepthRenderTexture(void) : DepthRenderTarget(), TextureRenderTarget()
+    {
+    }
 
-	DepthRenderTexture(Texture2D * tex) : DepthRenderTarget(), TextureRenderTarget()
-	{
-		this->Set(tex);
-	}
+    DepthRenderTexture(Texture2D *tex) : DepthRenderTarget(), TextureRenderTarget()
+    {
+        this->Set(tex);
+    }
 };
 
 class StencilRenderBuffer : public virtual StencilRenderTarget, public virtual BufferRenderTarget
 {
-public:
-	StencilRenderBuffer(void) : StencilRenderTarget(), BufferRenderTarget()
-	{
-	}
+  public:
+    StencilRenderBuffer(void) : StencilRenderTarget(), BufferRenderTarget()
+    {
+    }
 };
 
 class StencilRenderTexture : public virtual StencilRenderTarget, public virtual TextureRenderTarget
 {
-public:
-	StencilRenderTexture(void) : StencilRenderTarget(), TextureRenderTarget()
-	{
-	}
+  public:
+    StencilRenderTexture(void) : StencilRenderTarget(), TextureRenderTarget()
+    {
+    }
 
-	StencilRenderTexture(Texture2D * tex) : StencilRenderTarget(), TextureRenderTarget()
-	{
-		this->Set(tex);
-	}
+    StencilRenderTexture(Texture2D *tex) : StencilRenderTarget(), TextureRenderTarget()
+    {
+        this->Set(tex);
+    }
 };
 
 class FrameBuffer : public GLObject, public Bindable
 {
-friend class RenderTarget;
+    friend class RenderTarget;
 
-public:
-	FrameBuffer(void) : GLObject(), Bindable()
-	{
-	}
+  public:
+    FrameBuffer(void) : GLObject(), Bindable()
+    {
+    }
 
-	void Gen(void)
-	{
-		this->Del();
-		glGenFramebuffersEXT(1, &(this->objectID));
-	}
+    void Gen(void)
+    {
+        this->Del();
+        glGenFramebuffersEXT(1, &(this->objectID));
+    }
 
-	void Del(void)
-	{
-		if (this->objectID == 0) return;
-		glDeleteFramebuffersEXT(1, &(this->objectID));
-		this->objectID = 0;
-	}
+    void Del(void)
+    {
+        if (this->objectID == 0)
+            return;
+        glDeleteFramebuffersEXT(1, &(this->objectID));
+        this->objectID = 0;
+    }
 
-	bool DetachAll(void)
-	{
-		return false;
-	}
+    bool DetachAll(void)
+    {
+        return false;
+    }
 
-	bool IsValid(void) const
-	{
-		const GLenum s = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-		//return (s == GL_FRAMEBUFFER_COMPLETE_EXT);
+    bool IsValid(void) const
+    {
+        const GLenum s = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+        // return (s == GL_FRAMEBUFFER_COMPLETE_EXT);
 
-		switch (s)
-		{
-			case GL_FRAMEBUFFER_COMPLETE_EXT:
-				printf("ok\n");
-				break;
-			case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
-				printf("i a\n");
-				break;
-			case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
-				printf("i m a\n");
-				break;
-			case GL_FRAMEBUFFER_INCOMPLETE_DUPLICATE_ATTACHMENT_EXT:
-				printf("i d a\n");
-				break;
-			case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
-				printf("i d\n");
-				break;
-			case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
-				printf("i f\n");
-				break;
-			case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
-				printf("i d b\n");
-				break;
-			case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
-				printf("i r b\n");
-				break;
-			case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
-				printf("u\n");
-				break;
-			default:
-				printf("def\n");
-				break;
-		}
+        switch (s)
+        {
+            case GL_FRAMEBUFFER_COMPLETE_EXT:
+                printf("ok\n");
+                break;
+            case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
+                printf("i a\n");
+                break;
+            case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
+                printf("i m a\n");
+                break;
+            case GL_FRAMEBUFFER_INCOMPLETE_DUPLICATE_ATTACHMENT_EXT:
+                printf("i d a\n");
+                break;
+            case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
+                printf("i d\n");
+                break;
+            case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
+                printf("i f\n");
+                break;
+            case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
+                printf("i d b\n");
+                break;
+            case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
+                printf("i r b\n");
+                break;
+            case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
+                printf("u\n");
+                break;
+            default:
+                printf("def\n");
+                break;
+        }
 
-		return (s == GL_FRAMEBUFFER_COMPLETE_EXT);
-	}
+        return (s == GL_FRAMEBUFFER_COMPLETE_EXT);
+    }
 
-protected:
-	typedef std::map<GLenum, RenderTarget *> RTMap;
-	typedef RTMap::iterator RTMap_i;
-	typedef RTMap::const_iterator RTMap_ci;
+  protected:
+    typedef std::map<GLenum, RenderTarget *> RTMap;
+    typedef RTMap::iterator RTMap_i;
+    typedef RTMap::const_iterator RTMap_ci;
 
-	RTMap renderTargets;
+    RTMap renderTargets;
 
-	void DoBind(void)
-	{
-		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, this->objectID);
+    void DoBind(void)
+    {
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, this->objectID);
 
-		std::vector<GLenum> colorDrawBuffers;
-		colorDrawBuffers.reserve(this->renderTargets.size());
+        std::vector<GLenum> colorDrawBuffers;
+        colorDrawBuffers.reserve(this->renderTargets.size());
 
-		for (RTMap_i rt=this->renderTargets.begin(); rt!=this->renderTargets.end(); ++rt)
-		{
-			RenderTarget * prt = (*rt).second;
-			if (prt->Semantic() == FrameBufferSemantic::COLOR)
-			{
-				colorDrawBuffers.push_back(prt->Attachment());
-			}
-			prt->BindToFB();
-		}
+        for (RTMap_i rt = this->renderTargets.begin(); rt != this->renderTargets.end(); ++rt)
+        {
+            RenderTarget *prt = (*rt).second;
+            if (prt->Semantic() == FrameBufferSemantic::COLOR)
+            {
+                colorDrawBuffers.push_back(prt->Attachment());
+            }
+            prt->BindToFB();
+        }
 
-		const GLsizei sz = (GLsizei)(colorDrawBuffers.size());
-		if (sz > 0)
-		{
-			glDrawBuffers(sz, &(colorDrawBuffers[0]));
-		}
-	}
+        const GLsizei sz = (GLsizei)(colorDrawBuffers.size());
+        if (sz > 0)
+        {
+            glDrawBuffers(sz, &(colorDrawBuffers[0]));
+        }
+    }
 
-	void DoUnbind(void)
-	{
-		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-	}
+    void DoUnbind(void)
+    {
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+    }
 
-	bool AddRT(RenderTarget * rt)
-	{
-		if (rt == 0) return false;
-		RTMap_i it = this->renderTargets.find(rt->Attachment());
-		if (it == this->renderTargets.end())
-		{
-			this->renderTargets.insert(std::make_pair(rt->Attachment(), rt));
-			return true;
-		}
-		return false;
-	}
+    bool AddRT(RenderTarget *rt)
+    {
+        if (rt == 0)
+            return false;
+        RTMap_i it = this->renderTargets.find(rt->Attachment());
+        if (it == this->renderTargets.end())
+        {
+            this->renderTargets.insert(std::make_pair(rt->Attachment(), rt));
+            return true;
+        }
+        return false;
+    }
 
-	bool RemoveRT(RenderTarget * rt)
-	{
-		if (rt == 0) return false;
-		RTMap_i it = this->renderTargets.find(rt->Attachment());
-		if ((*it).second == rt)
-		{
-			this->renderTargets.erase(it);
-			return true;
-		}
-		return false;
-	}
+    bool RemoveRT(RenderTarget *rt)
+    {
+        if (rt == 0)
+            return false;
+        RTMap_i it = this->renderTargets.find(rt->Attachment());
+        if ((*it).second == rt)
+        {
+            this->renderTargets.erase(it);
+            return true;
+        }
+        return false;
+    }
 };
 
-
-
-bool RenderTarget::Attach(FrameBuffer * fb)
+bool RenderTarget::Attach(FrameBuffer *fb)
 {
-	this->Detach();
-	if (fb == 0) return true;
+    this->Detach();
+    if (fb == 0)
+        return true;
 
-	if (fb->AddRT(this))
-	{
-		this->frameBuffer = fb;
-		return true;
-	}
+    if (fb->AddRT(this))
+    {
+        this->frameBuffer = fb;
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
 bool RenderTarget::Detach(void)
 {
-	if (this->frameBuffer == 0) return false;
-	this->frameBuffer->RemoveRT(this);
-	this->frameBuffer = 0;
+    if (this->frameBuffer == 0)
+        return false;
+    this->frameBuffer->RemoveRT(this);
+    this->frameBuffer = 0;
 
-	return true;
+    return true;
 }
 
 #endif  // __FBO_H__

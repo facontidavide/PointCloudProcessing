@@ -8,7 +8,7 @@
 *                                                                    \      *
 * All rights reserved.                                                      *
 *                                                                           *
-* This program is free software; you can redistribute it and/or modify      *   
+* This program is free software; you can redistribute it and/or modify      *
 * it under the terms of the GNU General Public License as published by      *
 * the Free Software Foundation; either version 2 of the License, or         *
 * (at your option) any later version.                                       *
@@ -52,171 +52,183 @@ name of adhacency function updated
 #ifndef __VCGLIB_EDGEALLOCATOR
 #define __VCGLIB_EDGEALLOCATOR
 
-namespace vcg {
-	namespace edg {
-		/** \addtogroup edgemesh */
-		/*@{*/
-		/// Class to safely add vertexes and faces to a mesh updating all the involved pointers.
-		/// It provides static memeber to add either vertex or faces to a edgemesh.
-		template <class AllocateMeshType>
-		class Allocator
-		{
+namespace vcg
+{
+namespace edg
+{
+/** \addtogroup edgemesh */
+/*@{*/
+/// Class to safely add vertexes and faces to a mesh updating all the involved pointers.
+/// It provides static memeber to add either vertex or faces to a edgemesh.
+template <class AllocateMeshType>
+class Allocator
+{
+  public:
+    typedef AllocateMeshType MeshType;
+    typedef typename MeshType::VertexType VertexType;
+    typedef typename MeshType::VertexPointer VertexPointer;
+    typedef typename MeshType::VertexIterator VertexIterator;
+    typedef typename MeshType::EdgeType EdgeType;
+    typedef typename MeshType::EdgePointer EdgePointer;
+    typedef typename MeshType::EdgeIterator EdgeIterator;
 
-		public:
-			typedef AllocateMeshType MeshType; 
-			typedef typename MeshType::VertexType     VertexType;
-			typedef typename MeshType::VertexPointer  VertexPointer;
-			typedef typename MeshType::VertexIterator VertexIterator;
-			typedef typename MeshType::EdgeType       EdgeType;
-			typedef typename MeshType::EdgePointer    EdgePointer;
-			typedef typename MeshType::EdgeIterator   EdgeIterator;
+    /** This class is used when allocating new vertexes and faces to update
+    the pointers that can be changed when resizing the involved vectors of vertex or faces.
+    It can also be used to prevent any update of the various mesh fields
+    (e.g. in case you are building all the connections by hand as in a importer);
+    */
+    template <class SimplexPointerType>
+    class PointerUpdater
+    {
+      public:
+        void Clear()
+        {
+            newBase = oldBase = newEnd = oldEnd = 0;
+            preventUpdateFlag = false;
+        };
+        void Update(SimplexPointerType &vp)
+        {
+            vp = newBase + (vp - oldBase);
+        }
+        bool NeedUpdate()
+        {
+            if (newBase != oldBase && !preventUpdateFlag)
+                return true;
+            else
+                return false;
+        }
 
-			/** This class is used when allocating new vertexes and faces to update 
-			the pointers that can be changed when resizing the involved vectors of vertex or faces.
-			It can also be used to prevent any update of the various mesh fields
-			(e.g. in case you are building all the connections by hand as in a importer);
-			*/ 
-			template<class SimplexPointerType>
-			class PointerUpdater
-			{
-			public:
-				void Clear(){newBase=oldBase=newEnd=oldEnd=0;preventUpdateFlag=false;};
-				void Update(SimplexPointerType &vp)
-				{
-					vp=newBase+(vp-oldBase);
-				}
-				bool NeedUpdate() {if(newBase!=oldBase && !preventUpdateFlag) return true; else return false;}
+        SimplexPointerType oldBase;
+        SimplexPointerType newBase;
+        SimplexPointerType newEnd;
+        SimplexPointerType oldEnd;
+        bool preventUpdateFlag;  /// when true no update is considered necessary.
+    };
 
-				SimplexPointerType oldBase;
-				SimplexPointerType newBase;
-				SimplexPointerType newEnd;
-				SimplexPointerType oldEnd;
-				bool preventUpdateFlag; /// when true no update is considered necessary.
-			};
+    /** Function to safely add n vertices to a mesh.
 
+    @param m The mesh to be expanded
+    @param n the number of vertexes to be added
+    @param pu A PointerUpdater that stores the relocation that can be happened.
+    */
+    static VertexIterator AddVertices(MeshType &m, int n, PointerUpdater<VertexPointer> &pu)
+    {
+        VertexIterator last = m.vert.end();
+        pu.Clear();
+        if (m.vert.empty())
+            pu.oldBase = 0;  // if the vector is empty we cannot find the last valid element
+        else
+            pu.oldBase = &*m.vert.begin();
 
-			/** Function to safely add n vertices to a mesh. 
+        for (int i = 0; i < n; ++i)
+        {
+            m.vert.push_back(VertexType());
+            m.vert.back().ClearFlags();
+        }
 
-			@param m The mesh to be expanded
-			@param n the number of vertexes to be added
-			@param pu A PointerUpdater that stores the relocation that can be happened.
-			*/
-			static VertexIterator AddVertices(MeshType &m,int n, PointerUpdater<VertexPointer> &pu)
-			{
-				VertexIterator last=m.vert.end();
-				pu.Clear();
-				if(m.vert.empty()) pu.oldBase=0;  // if the vector is empty we cannot find the last valid element
-				else               pu.oldBase=&*m.vert.begin(); 
+        m.vn += n;
 
+        pu.newBase = &*m.vert.begin();
+        if (pu.NeedUpdate())
+        {
+            EdgeIterator ei;
+            for (ei = m.edges.begin(); ei != m.edges.end(); ++ei)
+                if (!(*ei).IsD())
+                {
+                    pu.Update((*ei).V(0));
+                    pu.Update((*ei).V(1));
+                }
+        }
+        // e poiche' lo spazio e' cambiato si ricalcola anche last da zero
+        unsigned int siz = (unsigned int)m.vert.size() - n;
+        // if(last!=(VertexIterator)0)
+        //{
+        last = m.vert.begin();
+        advance(last, siz);
+        //}
+        // else last=m.vert.begin();
 
-				for(int i=0; i<n; ++i)
-				{
-					m.vert.push_back(VertexType());
-					m.vert.back().ClearFlags();
-				}
+        return last;  // deve restituire l'iteratore alla prima faccia aggiunta;
+    }
 
-				m.vn+=n;
+    static VertexIterator AddVertices(MeshType &m, int n)
+    {
+        PointerUpdater<VertexPointer> pu;
+        return AddVertices(m, n, pu);
+    }
 
-				pu.newBase = &*m.vert.begin();
-				if(pu.NeedUpdate())
-				{
-					EdgeIterator ei;
-					for (ei=m.edges.begin(); ei!=m.edges.end(); ++ei)
-						if(!(*ei).IsD())
-						{
-							pu.Update((*ei).V(0));
-							pu.Update((*ei).V(1));
-						}
-				}
-				// e poiche' lo spazio e' cambiato si ricalcola anche last da zero  
-				unsigned int siz=(unsigned int)m.vert.size()-n;	
-				//if(last!=(VertexIterator)0)  
-				//{ 
-				last = m.vert.begin(); 
-				advance(last,siz);
-				//}
-				//else last=m.vert.begin(); 
+    /** Function to add n faces to the mesh.
+    @param n Il numero di facce che si vuole aggiungere alla mesh
+    */
+    static EdgeIterator AddEdges(MeshType &m, int n)
+    {
+        PointerUpdater<EdgePointer> pu;
+        return AddEdges(m, n, pu);
+    }
+    /** Function to add n faces to the mesh.
+    NOTA: Aggiorna fn;
+    */
+    static EdgeIterator AddEdges(MeshType &m, int n, PointerUpdater<EdgePointer> &pu)
+    {
+        EdgeIterator last = m.edges.end();
+        pu.Clear();
+        if (m.edges.empty())
+        {
+            pu.oldBase = 0;  // if the vector is empty we cannot find the last valid element
+                             // last=0;
+        }
+        else
+        {
+            pu.oldBase = &*m.edges.begin();
+            last = m.edges.end();
+        }
 
+        m.edges.resize(m.edges.size() + n);
+        /*for(int i=0; i<n; ++i)
+        {
+        m.edges.push_back(MeshType::EdgeType());
+        m.edges.back().ClearFlags();
+        }*/
 
-				return last;// deve restituire l'iteratore alla prima faccia aggiunta;
-			}
+        m.en += n;
 
-			static VertexIterator AddVertices(MeshType &m, int n)
-			{
-				PointerUpdater<VertexPointer> pu;
-				return AddVertices(m, n,pu);
-			}
+        pu.newBase = &*m.edges.begin();
 
-			/** Function to add n faces to the mesh.
-			@param n Il numero di facce che si vuole aggiungere alla mesh
-			*/
-			static EdgeIterator AddEdges(MeshType &m, int n)
-			{
-				PointerUpdater<EdgePointer> pu;
-				return AddEdges(m,n,pu);
-			}
-			/** Function to add n faces to the mesh. 
-			NOTA: Aggiorna fn;
-			*/
-			static EdgeIterator AddEdges(MeshType &m, int n, PointerUpdater<EdgePointer> &pu)
-			{
-				EdgeIterator last=m.edges.end();
-				pu.Clear();
-				if(m.edges.empty()) {
-					pu.oldBase=0;  // if the vector is empty we cannot find the last valid element
-					//last=0;
-				}	else  {
-					pu.oldBase=&*m.edges.begin(); 
-					last=m.edges.end();
-				} 
+        if (pu.NeedUpdate())
+        {
+            EdgeIterator ei;
+            for (ei = m.edges.begin(); ei != m.edges.end(); ++ei)
+                if (!(*ei).IsD())
+                {
+                    if (EdgeType::HasEEAdjacency())
+                    {
+                        pu.Update((*ei).EEp(0));
+                        pu.Update((*ei).EEp(1));
+                    }
+                }
+            VertexIterator vi;
+            for (vi = m.vert.begin(); vi != m.vert.end(); ++vi)
+                if (!(*vi).IsD())
+                {
+                    if (VertexType::HasVEAdjacency())
+                        pu.Update((*vi).VEp());
+                }
+        }
+        // e poiche' lo spazio e' cambiato si ricalcola anche last da zero
+        unsigned int siz = (unsigned int)m.edges.size() - (unsigned int)n;
+        // if(last!=(EdgeIterator)0)
+        //	{
+        last = m.edges.begin();
+        advance(last, siz);
+        //	}
+        // else last=m.edges.begin();
 
-				m.edges.resize(m.edges.size()+n);
-				/*for(int i=0; i<n; ++i)
-				{
-				m.edges.push_back(MeshType::EdgeType());
-				m.edges.back().ClearFlags();
-				}*/
+        return last;
+    }
 
-				m.en+=n;
-
-				pu.newBase = &*m.edges.begin();
-
-				if(pu.NeedUpdate())
-				{
-					EdgeIterator ei;
-					for (ei=m.edges.begin(); ei!=m.edges.end(); ++ei)
-						if(!(*ei).IsD())
-						{
-							if(EdgeType::HasEEAdjacency())
-							{
-								pu.Update((*ei).EEp(0));
-								pu.Update((*ei).EEp(1));
-							}
-						}
-						VertexIterator vi;
-						for (vi=m.vert.begin(); vi!=m.vert.end(); ++vi)
-							if(!(*vi).IsD())
-							{
-								if(VertexType::HasVEAdjacency())
-									pu.Update((*vi).VEp());
-							}
-				}						
-				// e poiche' lo spazio e' cambiato si ricalcola anche last da zero  
-				unsigned int siz=(unsigned int)m.edges.size()-(unsigned int)n;	
-				//if(last!=(EdgeIterator)0)  
-				//	{ 
-				last = m.edges.begin(); 
-				advance(last,siz);
-				//	}
-				//else last=m.edges.begin(); 
-
-
-				return last;
-			}
-
-		}; // end class
-		/*@}*/
-	} // End Namespace TriMesh
-} // End Namespace vcg
+};  // end class
+    /*@}*/
+}  // End Namespace TriMesh
+}  // End Namespace vcg
 
 #endif

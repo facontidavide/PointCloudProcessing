@@ -28,7 +28,8 @@
 /** \geometry_module \ingroup Geometry_Module
   * \nonstableyet
   *
-  * \returns the Euler-angles of the rotation matrix \c *this using the convention defined by the triplet (\a a0,\a a1,\a a2)
+  * \returns the Euler-angles of the rotation matrix \c *this using the convention defined by the triplet (\a a0,\a
+ * a1,\a a2)
   *
   * Each of the three parameters \a a0,\a a1,\a a2 represents the respective rotation axis as an integer in {0,1,2}.
   * For instance, in:
@@ -41,56 +42,54 @@
   *      * AngleAxisf(ea[2], Vector3f::UnitZ()); \endcode
   * This corresponds to the right-multiply conventions (with right hand side frames).
   */
-template<typename Derived>
-inline Matrix<typename MatrixBase<Derived>::Scalar,3,1>
-MatrixBase<Derived>::eulerAngles(int a0, int a1, int a2) const
+template <typename Derived>
+inline Matrix<typename MatrixBase<Derived>::Scalar, 3, 1> MatrixBase<Derived>::eulerAngles(int a0, int a1, int a2) const
 {
-  /* Implemented from Graphics Gems IV */
-  EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE(Derived,3,3)
+    /* Implemented from Graphics Gems IV */
+    EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE(Derived, 3, 3)
 
-  Matrix<Scalar,3,1> res;
-  typedef Matrix<typename Derived::Scalar,2,1> Vector2;
-  const Scalar epsilon = precision<Scalar>();
+    Matrix<Scalar, 3, 1> res;
+    typedef Matrix<typename Derived::Scalar, 2, 1> Vector2;
+    const Scalar epsilon = precision<Scalar>();
 
-  const int odd = ((a0+1)%3 == a1) ? 0 : 1;
-  const int i = a0;
-  const int j = (a0 + 1 + odd)%3;
-  const int k = (a0 + 2 - odd)%3;
+    const int odd = ((a0 + 1) % 3 == a1) ? 0 : 1;
+    const int i = a0;
+    const int j = (a0 + 1 + odd) % 3;
+    const int k = (a0 + 2 - odd) % 3;
 
-  if (a0==a2)
-  {
-    Scalar s = Vector2(coeff(j,i) , coeff(k,i)).norm();
-    res[1] = std::atan2(s, coeff(i,i));
-    if (s > epsilon)
+    if (a0 == a2)
     {
-      res[0] = std::atan2(coeff(j,i), coeff(k,i));
-      res[2] = std::atan2(coeff(i,j),-coeff(i,k));
+        Scalar s = Vector2(coeff(j, i), coeff(k, i)).norm();
+        res[1] = std::atan2(s, coeff(i, i));
+        if (s > epsilon)
+        {
+            res[0] = std::atan2(coeff(j, i), coeff(k, i));
+            res[2] = std::atan2(coeff(i, j), -coeff(i, k));
+        }
+        else
+        {
+            res[0] = Scalar(0);
+            res[2] = (coeff(i, i) > 0 ? 1 : -1) * std::atan2(-coeff(k, j), coeff(j, j));
+        }
     }
     else
     {
-      res[0] = Scalar(0);
-      res[2] = (coeff(i,i)>0?1:-1)*std::atan2(-coeff(k,j), coeff(j,j));
+        Scalar c = Vector2(coeff(i, i), coeff(i, j)).norm();
+        res[1] = std::atan2(-coeff(i, k), c);
+        if (c > epsilon)
+        {
+            res[0] = std::atan2(coeff(j, k), coeff(k, k));
+            res[2] = std::atan2(coeff(i, j), coeff(i, i));
+        }
+        else
+        {
+            res[0] = Scalar(0);
+            res[2] = (coeff(i, k) > 0 ? 1 : -1) * std::atan2(-coeff(k, j), coeff(j, j));
+        }
     }
-  }
-  else
-  {
-    Scalar c = Vector2(coeff(i,i) , coeff(i,j)).norm();
-    res[1] = std::atan2(-coeff(i,k), c);
-    if (c > epsilon)
-    {
-      res[0] = std::atan2(coeff(j,k), coeff(k,k));
-      res[2] = std::atan2(coeff(i,j), coeff(i,i));
-    }
-    else
-    {
-      res[0] = Scalar(0);
-      res[2] = (coeff(i,k)>0?1:-1)*std::atan2(-coeff(k,j), coeff(j,j));
-    }
-  }
-  if (!odd)
-    res = -res;
-  return res;
+    if (!odd)
+        res = -res;
+    return res;
 }
 
-
-#endif // EIGEN_EULERANGLES_H
+#endif  // EIGEN_EULERANGLES_H

@@ -36,37 +36,39 @@ first version
 #ifndef __VCGLIB_LINEAR
 #define __VCGLIB_LINEAR
 
-namespace vcg {
+namespace vcg
+{
 /*@{*/
-    /**
-        This class represents the common interface for any linear objects.
-				It consists (the declaration of) a set of functions and types that
-				each such object mush have.
-				Linear have the Zero element (neutral element for sums)
-				moltiplication (for a scalar), and two linear elements of
-				a given type can be summed.
-				In this way it is possible to interpolate between two different linear entities.
-				For example:
-				LinearType a,b,c,d,e,f;
-				...
-				d = a * 0.1 + b * 0.9;
-				e = a + (b - a) * 0.9;
-     */
-	template <class T>
-	class Linear{
-	public:
-		typedef T ScalarType;
-		inline void SetZero();
-		T operator + ( T const & p) const;
-		T operator - ( T const & p) const;
-		T operator * ( const ScalarType );
-		T operator / ( const ScalarType ) const;
-		T & operator += ( T const & );
-		T & operator -= ( T const & );
-		T & operator *= ( const ScalarType );
-		T & operator /= ( const ScalarType );
-		T operator - () const;
-	};
+/**
+    This class represents the common interface for any linear objects.
+            It consists (the declaration of) a set of functions and types that
+            each such object mush have.
+            Linear have the Zero element (neutral element for sums)
+            moltiplication (for a scalar), and two linear elements of
+            a given type can be summed.
+            In this way it is possible to interpolate between two different linear entities.
+            For example:
+            LinearType a,b,c,d,e,f;
+            ...
+            d = a * 0.1 + b * 0.9;
+            e = a + (b - a) * 0.9;
+ */
+template <class T>
+class Linear
+{
+  public:
+    typedef T ScalarType;
+    inline void SetZero();
+    T operator+(T const& p) const;
+    T operator-(T const& p) const;
+    T operator*(const ScalarType);
+    T operator/(const ScalarType) const;
+    T& operator+=(T const&);
+    T& operator-=(T const&);
+    T& operator*=(const ScalarType);
+    T& operator/=(const ScalarType);
+    T operator-() const;
+};
 };
 
 #endif

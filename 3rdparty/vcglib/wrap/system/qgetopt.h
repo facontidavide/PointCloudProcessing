@@ -24,12 +24,12 @@
 #ifndef GETOPT_H
 #define GETOPT_H
 
+#include <QMap>
 #include <QString>
 #include <QStringList>
-#include <QMap>
 #include <QVariant>
 
-/* Example usage: 
+/* Example usage:
 
   QString file1, file2;
   QString o_gamma = "10";
@@ -43,66 +43,82 @@
 
   opt.parse();          */
 
-class GetOpt {
- protected:
-  struct Option {
-    enum Type { SWITCH, OPTION, ARGUMENT, OPTIONAL };
-    Type type;
-    char o;
-    QString name;
-    QString description;
-    QVariant *value;
-    bool *b;
-  };
-  bool unlimitedArgs;
-  QList<Option> options;
+class GetOpt
+{
+  protected:
+    struct Option
+    {
+        enum Type
+        {
+            SWITCH,
+            OPTION,
+            ARGUMENT,
+            OPTIONAL
+        };
+        Type type;
+        char o;
+        QString name;
+        QString description;
+        QVariant *value;
+        bool *b;
+    };
+    bool unlimitedArgs;
+    QList<Option> options;
 
- public:
-  QString appname;          //application name
-  QString help;             //help text
-  QStringList args;         //original argument vector
-  QStringList arguments;    //arbitrary long list of arguments if unlimitedArgs is true
+  public:
+    QString appname;        // application name
+    QString help;           // help text
+    QStringList args;       // original argument vector
+    QStringList arguments;  // arbitrary long list of arguments if unlimitedArgs is true
 
-  GetOpt(): unlimitedArgs(false) {}
-  GetOpt(int argc, char *argv[] );
-  GetOpt(const QStringList &a);
+    GetOpt() : unlimitedArgs(false)
+    {
+    }
+    GetOpt(int argc, char *argv[]);
+    GetOpt(const QStringList &a);
 
-  //add an option without a value
-  void addSwitch(char s, const QString &longname, const QString &description, bool *b );
+    // add an option without a value
+    void addSwitch(char s, const QString &longname, const QString &description, bool *b);
 
-  //add a valued option (v will be left untouched if the option is not given)
-  void addOption(char s, const QString &longname, const QString &description, QVariant *v);
+    // add a valued option (v will be left untouched if the option is not given)
+    void addOption(char s, const QString &longname, const QString &description, QVariant *v);
 
-  //add an argument
-  void addArgument(const QString &name, const QString &description, QVariant *v);
+    // add an argument
+    void addArgument(const QString &name, const QString &description, QVariant *v);
 
-  //add an optional agrument
-  void addOptionalArgument(const QString &name, const QString &description, QVariant *v);
- 
-  //allow an unlimited number of optional arguments
-  void allowUnlimitedArguments(bool allow) { unlimitedArgs = allow; }
+    // add an optional agrument
+    void addOptionalArgument(const QString &name, const QString &description, QVariant *v);
 
-  //set help if someone uses -h or --help option
-  void setHelp(QString &_help) { help = _help; }
+    // allow an unlimited number of optional arguments
+    void allowUnlimitedArguments(bool allow)
+    {
+        unlimitedArgs = allow;
+    }
 
-  //parses the command line and fill variables or print an error message and exits
-  void parse();
+    // set help if someone uses -h or --help option
+    void setHelp(QString &_help)
+    {
+        help = _help;
+    }
 
-  //return usage string
-  QString usage();
+    // parses the command line and fill variables or print an error message and exits
+    void parse();
 
-  //return argv[0]
-  QString &applicationName();
+    // return usage string
+    QString usage();
 
- protected:
-  //parses and return true on success
-  bool parse(QString &error);
-  //return options or switch
-  bool findOption(char c, Option &option);
-  //return any named argument
-  bool findArg(const QString &name, Option &option);
-  //split desc into n pieces of the right length TODO: check for newlines also
-  QString formatDesc(QString desc, int len);
+    // return argv[0]
+    QString &applicationName();
+
+  protected:
+    // parses and return true on success
+    bool parse(QString &error);
+    // return options or switch
+    bool findOption(char c, Option &option);
+    // return any named argument
+    bool findArg(const QString &name, Option &option);
+    // split desc into n pieces of the right length TODO: check for newlines also
+    QString formatDesc(QString desc, int len);
 };
 
 #endif

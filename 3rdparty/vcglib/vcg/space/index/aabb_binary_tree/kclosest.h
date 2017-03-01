@@ -8,7 +8,7 @@
 *                                                                    \      *
 * All rights reserved.                                                      *
 *                                                                           *
-* This program is free software; you can redistribute it and/or modify      *   
+* This program is free software; you can redistribute it and/or modify      *
 * it under the terms of the GNU General Public License as published by      *
 * the Free Software Foundation; either version 2 of the License, or         *
 * (at your option) any later version.                                       *
@@ -35,8 +35,8 @@ First Commit.
 #define __VCGLIB_AABBBINARYTREE_KCLOSEST_H
 
 // stl headers
-#include <queue>
 #include <deque>
+#include <queue>
 
 // vcg headers
 #include <vcg/space/index/aabb_binary_tree/base.h>
@@ -44,118 +44,141 @@ First Commit.
 
 /***************************************************************************/
 
-namespace vcg {
-
+namespace vcg
+{
 template <class TREETYPE>
-class AABBBinaryTreeKClosest {
-public:
-	typedef AABBBinaryTreeKClosest<TREETYPE> ClassType;
-	typedef TREETYPE TreeType;
-	typedef typename TreeType::ScalarType ScalarType;
-	typedef typename TreeType::CoordType CoordType;
-	typedef typename TreeType::NodeType NodeType;
-	typedef typename TreeType::ObjPtr ObjPtr;
+class AABBBinaryTreeKClosest
+{
+  public:
+    typedef AABBBinaryTreeKClosest<TREETYPE> ClassType;
+    typedef TREETYPE TreeType;
+    typedef typename TreeType::ScalarType ScalarType;
+    typedef typename TreeType::CoordType CoordType;
+    typedef typename TreeType::NodeType NodeType;
+    typedef typename TreeType::ObjPtr ObjPtr;
 
-protected:
-		class ClosestObjType {
-		public:
-			ObjPtr pObj;
-			ScalarType minDist;
-			CoordType closestPt;
-		};
+  protected:
+    class ClosestObjType
+    {
+      public:
+        ObjPtr pObj;
+        ScalarType minDist;
+        CoordType closestPt;
+    };
 
-		class CompareClosest {
-		public:
-			bool operator () (const ClosestObjType & a, const ClosestObjType & b) {
-				return (a.minDist < b.minDist);
-			}
-		};
+    class CompareClosest
+    {
+      public:
+        bool operator()(const ClosestObjType &a, const ClosestObjType &b)
+        {
+            return (a.minDist < b.minDist);
+        }
+    };
 
-		typedef std::priority_queue<ClosestObjType, std::deque<ClosestObjType>, CompareClosest> PQueueType;
+    typedef std::priority_queue<ClosestObjType, std::deque<ClosestObjType>, CompareClosest> PQueueType;
 
-public:
-	template <class OBJPOINTDISTANCEFUNCT, class OBJPTRCONTAINERTYPE, class DISTCONTAINERTYPE, class POINTCONTAINERTYPE>
-	static inline unsigned int KClosest(TreeType & tree, OBJPOINTDISTANCEFUNCT & getPointDistance, const unsigned int k, const CoordType & p, const ScalarType & maxDist, OBJPTRCONTAINERTYPE & objects, DISTCONTAINERTYPE & distances, POINTCONTAINERTYPE & points) {
-		typedef std::vector<NodeType *> NodePtrVector;
-		typedef typename NodePtrVector::const_iterator NodePtrVector_ci;
+  public:
+    template <class OBJPOINTDISTANCEFUNCT, class OBJPTRCONTAINERTYPE, class DISTCONTAINERTYPE, class POINTCONTAINERTYPE>
+    static inline unsigned int KClosest(TreeType &tree, OBJPOINTDISTANCEFUNCT &getPointDistance, const unsigned int k,
+                                        const CoordType &p, const ScalarType &maxDist, OBJPTRCONTAINERTYPE &objects,
+                                        DISTCONTAINERTYPE &distances, POINTCONTAINERTYPE &points)
+    {
+        typedef std::vector<NodeType *> NodePtrVector;
+        typedef typename NodePtrVector::const_iterator NodePtrVector_ci;
 
-		if (k == 0) {
-			return (0);
-		}
+        if (k == 0)
+        {
+            return (0);
+        }
 
-		NodeType * pRoot = tree.pRoot;
+        NodeType *pRoot = tree.pRoot;
 
-		if (pRoot == 0) {
-			return (0);
-		}
+        if (pRoot == 0)
+        {
+            return (0);
+        }
 
-		PQueueType pq;
-		ScalarType mindmax = maxDist;
+        PQueueType pq;
+        ScalarType mindmax = maxDist;
 
-		ClassType::DepthFirstCollect(pRoot, getPointDistance, k, p, mindmax, pq);
+        ClassType::DepthFirstCollect(pRoot, getPointDistance, k, p, mindmax, pq);
 
-		const unsigned int sz = (unsigned int)(pq.size());
+        const unsigned int sz = (unsigned int)(pq.size());
 
-		while (!pq.empty()) {
-			ClosestObjType cobj = pq.top();
-			pq.pop();
-			objects.push_back(cobj.pObj);
-			distances.push_back(cobj.minDist);
-			points.push_back(cobj.closestPt);
-		}
+        while (!pq.empty())
+        {
+            ClosestObjType cobj = pq.top();
+            pq.pop();
+            objects.push_back(cobj.pObj);
+            distances.push_back(cobj.minDist);
+            points.push_back(cobj.closestPt);
+        }
 
-		return (sz);
-	}
+        return (sz);
+    }
 
-protected:
-	template <class OBJPOINTDISTANCEFUNCT>
-	static void DepthFirstCollect(NodeType * node, OBJPOINTDISTANCEFUNCT & getPointDistance, const unsigned int k, const CoordType & p, ScalarType & mindmax, PQueueType & pq) {
-		const CoordType dc = Abs(p - node->boxCenter);
+  protected:
+    template <class OBJPOINTDISTANCEFUNCT>
+    static void DepthFirstCollect(NodeType *node, OBJPOINTDISTANCEFUNCT &getPointDistance, const unsigned int k,
+                                  const CoordType &p, ScalarType &mindmax, PQueueType &pq)
+    {
+        const CoordType dc = Abs(p - node->boxCenter);
 
-		if (pq.size() >= k) {
-			const ScalarType dmin = LowClampToZero(dc - node->boxHalfDims).SquaredNorm();
-			if (dmin >= mindmax) {
-				return;
-			}
-		}
+        if (pq.size() >= k)
+        {
+            const ScalarType dmin = LowClampToZero(dc - node->boxHalfDims).SquaredNorm();
+            if (dmin >= mindmax)
+            {
+                return;
+            }
+        }
 
-		if (node->IsLeaf()) {
-			bool someInserted = true;
-			for (typename TreeType::ObjPtrVectorConstIterator si=node->oBegin; si!=node->oEnd; ++si) {
-				ScalarType minDst = (pq.size() >= k) ? (pq.top().minDist) : (mindmax);
-				ClosestObjType cobj;
-				if (getPointDistance(*(*si), p, minDst, cobj.closestPt)) {
-					someInserted = true;
-					cobj.pObj = (*si);
-					cobj.minDist = minDst;
-					if (pq.size() >= k) {
-						pq.pop();
-					}
-					pq.push(cobj);
-				}
-			}
-			if (someInserted) {
-				if (pq.size() >= k) {
-					const ScalarType dmax = pq.top().minDist;
-					const ScalarType sqdmax = dmax * dmax;
-					if (sqdmax < mindmax) {
-						mindmax = sqdmax;
-					}
-				}
-			}
-		}
-		else {
-			if (node->children[0] != 0) {
-				ClassType::DepthFirstCollect(node->children[0], getPointDistance, k, p, mindmax, pq);
-			}
-			if (node->children[1] != 0) {
-				ClassType::DepthFirstCollect(node->children[1], getPointDistance, k, p, mindmax, pq);
-			}
-		}
-	}
-
+        if (node->IsLeaf())
+        {
+            bool someInserted = true;
+            for (typename TreeType::ObjPtrVectorConstIterator si = node->oBegin; si != node->oEnd; ++si)
+            {
+                ScalarType minDst = (pq.size() >= k) ? (pq.top().minDist) : (mindmax);
+                ClosestObjType cobj;
+                if (getPointDistance(*(*si), p, minDst, cobj.closestPt))
+                {
+                    someInserted = true;
+                    cobj.pObj = (*si);
+                    cobj.minDist = minDst;
+                    if (pq.size() >= k)
+                    {
+                        pq.pop();
+                    }
+                    pq.push(cobj);
+                }
+            }
+            if (someInserted)
+            {
+                if (pq.size() >= k)
+                {
+                    const ScalarType dmax = pq.top().minDist;
+                    const ScalarType sqdmax = dmax * dmax;
+                    if (sqdmax < mindmax)
+                    {
+                        mindmax = sqdmax;
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (node->children[0] != 0)
+            {
+                ClassType::DepthFirstCollect(node->children[0], getPointDistance, k, p, mindmax, pq);
+            }
+            if (node->children[1] != 0)
+            {
+                ClassType::DepthFirstCollect(node->children[1], getPointDistance, k, p, mindmax, pq);
+            }
+        }
+    }
 };
 
-} // end namespace vcg
+}  // end namespace vcg
 
-#endif // #ifndef __VCGLIB_AABBBINARYTREE_KCLOSEST_H
+#endif  // #ifndef __VCGLIB_AABBBINARYTREE_KCLOSEST_H

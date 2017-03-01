@@ -8,7 +8,7 @@
 *                                                                    \      *
 * All rights reserved.                                                      *
 *                                                                           *
-* This program is free software; you can redistribute it and/or modify      *   
+* This program is free software; you can redistribute it and/or modify      *
 * it under the terms of the GNU General Public License as published by      *
 * the Free Software Foundation; either version 2 of the License, or         *
 * (at your option) any later version.                                       *
@@ -29,9 +29,10 @@ $Log: not supported by cvs2svn $
 #ifndef __VCG_EDGE_UPDATE_BOUNDING
 #define __VCG_EDGE_UPDATE_BOUNDING
 
-namespace vcg {
-namespace edg {
-
+namespace vcg
+{
+namespace edg
+{
 /** \addtogroup edgemesh */
 /*@{*/
 
@@ -40,31 +41,28 @@ namespace edg {
 template <class ComputeMeshType>
 class UpdateBounding
 {
+  public:
+    typedef ComputeMeshType MeshType;
+    typedef typename MeshType::VertexType VertexType;
+    typedef typename MeshType::VertexPointer VertexPointer;
+    typedef typename MeshType::VertexIterator VertexIterator;
+    typedef typename MeshType::EdgeType EdgeType;
+    typedef typename MeshType::EdgePointer EdgePointer;
+    typedef typename MeshType::EdgeIterator EdgeIterator;
 
-public:
-typedef ComputeMeshType MeshType; 
-typedef typename MeshType::VertexType     VertexType;
-typedef typename MeshType::VertexPointer  VertexPointer;
-typedef typename MeshType::VertexIterator VertexIterator;
-typedef typename MeshType::EdgeType       EdgeType;
-typedef typename MeshType::EdgePointer    EdgePointer;
-typedef typename MeshType::EdgeIterator   EdgeIterator;
+    /// Calculates the vertex normal (if stored in the current face type)
+    static void Box(ComputeMeshType &m)
+    {
+        m.bbox.SetNull();
+        VertexIterator vi;
+        for (vi = m.vert.begin(); vi != m.vert.end(); ++vi)
+            if (!(*vi).IsD())
+                m.bbox.Add((*vi).P());
+    }
 
-/// Calculates the vertex normal (if stored in the current face type)
-static void Box(ComputeMeshType &m)
-{
-  m.bbox.SetNull();
-	VertexIterator vi;
-	for(vi=m.vert.begin();vi!=m.vert.end();++vi)
-			if( !(*vi).IsD() )	m.bbox.Add((*vi).P());
+};  // end class
 
-}
-
-
-}; // end class
-
-}	// End namespace
-}	// End namespace
-
+}  // End namespace
+}  // End namespace
 
 #endif

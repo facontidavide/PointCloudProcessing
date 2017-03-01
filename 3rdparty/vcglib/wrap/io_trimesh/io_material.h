@@ -8,7 +8,7 @@
 *                                                                    \      *
 * All rights reserved.                                                      *
 *                                                                           *
-* This program is free software; you can redistribute it and/or modify      *   
+* This program is free software; you can redistribute it and/or modify      *
 * it under the terms of the GNU General Public License as published by      *
 * the Free Software Foundation; either version 2 of the License, or         *
 * (at your option) any later version.                                       *
@@ -52,100 +52,111 @@
 #ifndef __VCGLIB_MATERIAL
 #define __VCGLIB_MATERIAL
 
-namespace vcg {
-namespace tri {
-namespace io {
-	
-	/*
-		structures material
-	*/
-	struct Material
-	{
-		unsigned int index;//index of material
-		std::string materialName;
+namespace vcg
+{
+namespace tri
+{
+namespace io
+{
+/*
+    structures material
+*/
+struct Material
+{
+    unsigned int index;  // index of material
+    std::string materialName;
 
-		Point3f Ka;//ambient
-		Point3f Kd;//diffuse
-		Point3f Ks;//specular
-		
-		float d;//alpha
-		float Tr;//alpha
-		
-		int illum;//specular illumination
-		float Ns;
+    Point3f Ka;  // ambient
+    Point3f Kd;  // diffuse
+    Point3f Ks;  // specular
 
-		std::string map_Kd; //filename texture
-	};
+    float d;   // alpha
+    float Tr;  // alpha
 
-	
-	template <class SaveMeshType>
-	class Materials
-	{
-	public:	
-		typedef typename SaveMeshType::FaceIterator FaceIterator;
-		typedef typename SaveMeshType::VertexIterator VertexIterator;
-		typedef typename SaveMeshType::VertexType VertexType;
-	
-		/*
-			creates a new meterial
-		*/
-		inline static int CreateNewMaterial(SaveMeshType &m, std::vector<Material> &materials, unsigned int index, FaceIterator &fi)
-		{			
-			Point3f diffuse(1,1,1);
-      float Transp = 1;
-      if(HasPerFaceColor(m)){
-        diffuse = Point3f((float)((*fi).C()[0])/255.0f,(float)((*fi).C()[1])/255.0f,(float)((*fi).C()[2])/255.0f);//diffuse
-			  Transp = (float)((*fi).C()[3])/255.0f;//alpha
-      }
-			
-			int illum = 2; //default not use Ks!
-			float ns = 0.0; //default
+    int illum;  // specular illumination
+    float Ns;
 
-			Material mtl;
+    std::string map_Kd;  // filename texture
+};
 
-			mtl.index = index;//index of materials
-			mtl.Ka = Point3f(0.2f,0.2f,0.2f);//ambient
-			mtl.Kd = diffuse;//diffuse
-			mtl.Ks = Point3f(1.0f,1.0f,1.0f);//specular
-			mtl.Tr = Transp;//alpha
-			mtl.Ns = ns;
-			mtl.illum = illum;//illumination
-			
-			if(m.textures.size() && (*fi).WT(0).n() >=0 ) 
-				mtl.map_Kd = m.textures[(*fi).WT(0).n()];
-			else
-				mtl.map_Kd = "";
-			
-			int i = -1;
-			if((i = MaterialsCompare(materials,mtl)) == -1)
-			{
-				materials.push_back(mtl);
-				return materials.size();
-			}
-			return i;
-		}
+template <class SaveMeshType>
+class Materials
+{
+  public:
+    typedef typename SaveMeshType::FaceIterator FaceIterator;
+    typedef typename SaveMeshType::VertexIterator VertexIterator;
+    typedef typename SaveMeshType::VertexType VertexType;
 
-		/*
-			returns the index of the material if it exists inside the list of the materials, 
-			otherwise it returns -1.
-		*/
-		inline static int MaterialsCompare(std::vector<Material> &materials, Material mtl)
-		{
-			for(unsigned int i=0;i<materials.size();i++)
-			{
-				if(materials[i].Kd     != mtl.Kd    ) continue;
-				if(materials[i].Ka     != mtl.Ka    ) continue;
-				if(materials[i].Ks     != mtl.Ks    ) continue;
-				if(materials[i].Tr     != mtl.Tr    ) continue;
-				if(materials[i].illum  != mtl.illum ) continue;
-				if(materials[i].Ns     != mtl.Ns    ) continue;
-				if(materials[i].map_Kd != mtl.map_Kd) continue;
-				return i;
-			}
-			return -1;
-		}
-	};
+    /*
+        creates a new meterial
+    */
+    inline static int CreateNewMaterial(SaveMeshType &m, std::vector<Material> &materials, unsigned int index,
+                                        FaceIterator &fi)
+    {
+        Point3f diffuse(1, 1, 1);
+        float Transp = 1;
+        if (HasPerFaceColor(m))
+        {
+            diffuse = Point3f((float)((*fi).C()[0]) / 255.0f, (float)((*fi).C()[1]) / 255.0f,
+                              (float)((*fi).C()[2]) / 255.0f);  // diffuse
+            Transp = (float)((*fi).C()[3]) / 255.0f;            // alpha
+        }
+
+        int illum = 2;   // default not use Ks!
+        float ns = 0.0;  // default
+
+        Material mtl;
+
+        mtl.index = index;                   // index of materials
+        mtl.Ka = Point3f(0.2f, 0.2f, 0.2f);  // ambient
+        mtl.Kd = diffuse;                    // diffuse
+        mtl.Ks = Point3f(1.0f, 1.0f, 1.0f);  // specular
+        mtl.Tr = Transp;                     // alpha
+        mtl.Ns = ns;
+        mtl.illum = illum;  // illumination
+
+        if (m.textures.size() && (*fi).WT(0).n() >= 0)
+            mtl.map_Kd = m.textures[(*fi).WT(0).n()];
+        else
+            mtl.map_Kd = "";
+
+        int i = -1;
+        if ((i = MaterialsCompare(materials, mtl)) == -1)
+        {
+            materials.push_back(mtl);
+            return materials.size();
+        }
+        return i;
+    }
+
+    /*
+        returns the index of the material if it exists inside the list of the materials,
+        otherwise it returns -1.
+    */
+    inline static int MaterialsCompare(std::vector<Material> &materials, Material mtl)
+    {
+        for (unsigned int i = 0; i < materials.size(); i++)
+        {
+            if (materials[i].Kd != mtl.Kd)
+                continue;
+            if (materials[i].Ka != mtl.Ka)
+                continue;
+            if (materials[i].Ks != mtl.Ks)
+                continue;
+            if (materials[i].Tr != mtl.Tr)
+                continue;
+            if (materials[i].illum != mtl.illum)
+                continue;
+            if (materials[i].Ns != mtl.Ns)
+                continue;
+            if (materials[i].map_Kd != mtl.map_Kd)
+                continue;
+            return i;
+        }
+        return -1;
+    }
+};
 }
 }
 }
-#endif //__VCGLIB_MATERIAL
+#endif  //__VCGLIB_MATERIAL

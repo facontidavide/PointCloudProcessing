@@ -3,8 +3,8 @@
 
 #define EDGE_TYPE Edge
 
-#include <vcg/simplex/edge/base.h> 
+#include <vcg/simplex/edge/base.h>
 
-#undef EDGE_TYPE 
+#undef EDGE_TYPE
 
 #endif

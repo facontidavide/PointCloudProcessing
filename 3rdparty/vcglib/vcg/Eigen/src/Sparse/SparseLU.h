@@ -35,34 +35,33 @@
   *
   * \sa class LU, class SparseLLT
   */
-template<typename MatrixType, int Backend = DefaultBackend>
+template <typename MatrixType, int Backend = DefaultBackend>
 class SparseLU
 {
   protected:
     typedef typename MatrixType::Scalar Scalar;
     typedef typename NumTraits<typename MatrixType::Scalar>::Real RealScalar;
-    typedef SparseMatrix<Scalar,LowerTriangular> LUMatrixType;
+    typedef SparseMatrix<Scalar, LowerTriangular> LUMatrixType;
 
-    enum {
-      MatrixLUIsDirty             = 0x10000
+    enum
+    {
+        MatrixLUIsDirty = 0x10000
     };
 
   public:
-
     /** Creates a dummy LU factorization object with flags \a flags. */
-    SparseLU(int flags = 0)
-      : m_flags(flags), m_status(0)
+    SparseLU(int flags = 0) : m_flags(flags), m_status(0)
     {
-      m_precision = RealScalar(0.1) * Eigen::precision<RealScalar>();
+        m_precision = RealScalar(0.1) * Eigen::precision<RealScalar>();
     }
 
     /** Creates a LU object and compute the respective factorization of \a matrix using
       * flags \a flags. */
     SparseLU(const MatrixType& matrix, int flags = 0)
-      : /*m_matrix(matrix.rows(), matrix.cols()),*/ m_flags(flags), m_status(0)
+        : /*m_matrix(matrix.rows(), matrix.cols()),*/ m_flags(flags), m_status(0)
     {
-      m_precision = RealScalar(0.1) * Eigen::precision<RealScalar>();
-      compute(matrix);
+        m_precision = RealScalar(0.1) * Eigen::precision<RealScalar>();
+        compute(matrix);
     }
 
     /** Sets the relative threshold value used to prune zero coefficients during the decomposition.
@@ -75,12 +74,18 @@ class SparseLU
       * backend. Moreover, not all backends support this feature.
       *
       * \sa precision() */
-    void setPrecision(RealScalar v) { m_precision = v; }
+    void setPrecision(RealScalar v)
+    {
+        m_precision = v;
+    }
 
     /** \returns the current precision.
       *
       * \sa setPrecision() */
-    RealScalar precision() const { return m_precision; }
+    RealScalar precision() const
+    {
+        return m_precision;
+    }
 
     /** Sets the flags. Possible values are:
       *  - CompleteFactorization
@@ -90,35 +95,44 @@ class SparseLU
       *  - etc...
       *
       * \sa flags() */
-    void setFlags(int f) { m_flags = f; }
+    void setFlags(int f)
+    {
+        m_flags = f;
+    }
     /** \returns the current flags */
-    int flags() const { return m_flags; }
+    int flags() const
+    {
+        return m_flags;
+    }
 
     void setOrderingMethod(int m)
     {
-      ei_assert(m&~OrderingMask == 0 && m!=0 && "invalid ordering method");
-      m_flags = m_flags&~OrderingMask | m&OrderingMask;
+        ei_assert(m & ~OrderingMask == 0 && m != 0 && "invalid ordering method");
+        m_flags = m_flags & ~OrderingMask | m & OrderingMask;
     }
 
     int orderingMethod() const
     {
-      return m_flags&OrderingMask;
+        return m_flags & OrderingMask;
     }
 
     /** Computes/re-computes the LU factorization */
     void compute(const MatrixType& matrix);
 
     /** \returns the lower triangular matrix L */
-    //inline const MatrixType& matrixL() const { return m_matrixL; }
+    // inline const MatrixType& matrixL() const { return m_matrixL; }
 
     /** \returns the upper triangular matrix U */
-    //inline const MatrixType& matrixU() const { return m_matrixU; }
+    // inline const MatrixType& matrixU() const { return m_matrixU; }
 
-    template<typename BDerived, typename XDerived>
-    bool solve(const MatrixBase<BDerived> &b, MatrixBase<XDerived>* x) const;
+    template <typename BDerived, typename XDerived>
+    bool solve(const MatrixBase<BDerived>& b, MatrixBase<XDerived>* x) const;
 
     /** \returns true if the factorization succeeded */
-    inline bool succeeded(void) const { return m_succeeded; }
+    inline bool succeeded(void) const
+    {
+        return m_succeeded;
+    }
 
   protected:
     RealScalar m_precision;
@@ -130,19 +144,19 @@ class SparseLU
 /** Computes / recomputes the LU decomposition of matrix \a a
   * using the default algorithm.
   */
-template<typename MatrixType, int Backend>
-void SparseLU<MatrixType,Backend>::compute(const MatrixType& a)
+template <typename MatrixType, int Backend>
+void SparseLU<MatrixType, Backend>::compute(const MatrixType& a)
 {
-  ei_assert(false && "not implemented yet");
+    ei_assert(false && "not implemented yet");
 }
 
 /** Computes *x = U^-1 L^-1 b */
-template<typename MatrixType, int Backend>
-template<typename BDerived, typename XDerived>
-bool SparseLU<MatrixType,Backend>::solve(const MatrixBase<BDerived> &b, MatrixBase<XDerived>* x) const
+template <typename MatrixType, int Backend>
+template <typename BDerived, typename XDerived>
+bool SparseLU<MatrixType, Backend>::solve(const MatrixBase<BDerived>& b, MatrixBase<XDerived>* x) const
 {
-  ei_assert(false && "not implemented yet");
-  return false;
+    ei_assert(false && "not implemented yet");
+    return false;
 }
 
-#endif // EIGEN_SPARSELU_H
+#endif  // EIGEN_SPARSELU_H

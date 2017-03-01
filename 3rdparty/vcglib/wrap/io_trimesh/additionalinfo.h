@@ -26,18 +26,19 @@
 
 class AdditionalInfo
 {
-protected:
-	AdditionalInfo()
-	{
-	}
-public:
-	unsigned int numvert;
-	unsigned int numface;
-	int mask;
+  protected:
+    AdditionalInfo()
+    {
+    }
 
-	virtual ~AdditionalInfo()
-	{
-	}
+  public:
+    unsigned int numvert;
+    unsigned int numface;
+    int mask;
+
+    virtual ~AdditionalInfo()
+    {
+    }
 };
 
 #endif

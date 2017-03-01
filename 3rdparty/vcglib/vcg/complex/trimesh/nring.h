@@ -24,34 +24,31 @@
  *                                                                           *
  ****************************************************************************/
 
-#include <vcg/simplex/face/jumping_pos.h>
 #include <vcg/complex/trimesh/allocate.h>
 #include <vcg/complex/trimesh/update/flag.h>
+#include <vcg/simplex/face/jumping_pos.h>
 #include <vector>
 
 namespace vcg
 {
-namespace tri 
+namespace tri
 {
-		
-	/** \addtogroup trimesh */
-	/*@{*/
-	/*@{*/
-	/** Class Mesh.
-	 This is class for extracting n-ring of vertexes or faces, starting from a vertex of a mesh.
-	 */
+/** \addtogroup trimesh */
+/*@{*/
+/*@{*/
+/** Class Mesh.
+ This is class for extracting n-ring of vertexes or faces, starting from a vertex of a mesh.
+ */
 template <class MeshType>
 class Nring
 {
-public:
-
-    typedef typename MeshType::FaceType   FaceType;
+  public:
+    typedef typename MeshType::FaceType FaceType;
     typedef typename MeshType::VertexType VertexType;
     typedef typename MeshType::ScalarType ScalarType;
     typedef typename MeshType::FaceIterator FaceIterator;
     typedef typename MeshType::VertexIterator VertexIterator;
     typedef typename MeshType::CoordType CoordType;
-
 
     std::vector<VertexType*> allV;
     std::vector<FaceType*> allF;
@@ -65,19 +62,18 @@ public:
     {
         assert((unsigned)(v - &*m->vert.begin()) < m->vert.size());
         insertAndFlag(v);
-
     }
-	
+
     ~Nring()
     {
-		clear();
+        clear();
     }
 
     void insertAndFlag1Ring(VertexType* v)
     {
         insertAndFlag(v);
 
-        typename face::Pos<FaceType> p(v->VFp(),v);
+        typename face::Pos<FaceType> p(v->VFp(), v);
         assert(p.V() == v);
 
         int count = 0;
@@ -89,7 +85,6 @@ public:
             p.FlipE();
             assert(count++ < 100);
         } while (ori != p);
-
     }
 
     void insertAndFlag(FaceType* f)
@@ -115,7 +110,6 @@ public:
         }
     }
 
-
     static void clearFlags(MeshType* m)
     {
         tri::UpdateFlags<MeshType>::VertexClearV(*m);
@@ -124,9 +118,9 @@ public:
 
     void clear()
     {
-        for(unsigned i=0; i< allV.size(); ++i)
+        for (unsigned i = 0; i < allV.size(); ++i)
             allV[i]->ClearV();
-        for(unsigned i=0; i< allF.size(); ++i)
+        for (unsigned i = 0; i < allF.size(); ++i)
             allF[i]->ClearV();
 
         allV.clear();
@@ -135,12 +129,12 @@ public:
 
     void expand()
     {
-      std::vector<VertexType*> lastVtemp = lastV;
+        std::vector<VertexType*> lastVtemp = lastV;
 
         lastV.clear();
         lastF.clear();
 
-        for(typename std::vector<VertexType*>::iterator it = lastVtemp.begin(); it != lastVtemp.end(); ++it)
+        for (typename std::vector<VertexType*>::iterator it = lastVtemp.begin(); it != lastVtemp.end(); ++it)
         {
             insertAndFlag1Ring(*it);
         }
@@ -148,10 +142,10 @@ public:
 
     void expand(int k)
     {
-        for(int i=0;i<k;++i)
+        for (int i = 0; i < k; ++i)
             expand();
     }
 };
-
-}} // end namespace NAMESPACE
-#endif // RINGWALKER_H
+}
+}  // end namespace NAMESPACE
+#endif  // RINGWALKER_H

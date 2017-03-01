@@ -26,7 +26,11 @@
 #ifndef EIGEN_IO_H
 #define EIGEN_IO_H
 
-enum { Raw, AlignCols };
+enum
+{
+    Raw,
+    AlignCols
+};
 
 /** \class IOFormat
   *
@@ -49,27 +53,32 @@ enum { Raw, AlignCols };
   */
 struct IOFormat
 {
-  /** Default contructor, see class IOFormat for the meaning of the parameters */
-  IOFormat(int _precision=4, int _flags=Raw,
-    const std::string& _coeffSeparator = " ",
-    const std::string& _rowSeparator = "\n", const std::string& _rowPrefix="", const std::string& _rowSuffix="",
-    const std::string& _matPrefix="", const std::string& _matSuffix="")
-  : matPrefix(_matPrefix), matSuffix(_matSuffix), rowPrefix(_rowPrefix), rowSuffix(_rowSuffix), rowSeparator(_rowSeparator),
-    coeffSeparator(_coeffSeparator), precision(_precision), flags(_flags)
-  {
-    rowSpacer = "";
-    int i = int(matSuffix.length())-1;
-    while (i>=0 && matSuffix[i]!='\n')
+    /** Default contructor, see class IOFormat for the meaning of the parameters */
+    IOFormat(int _precision = 4, int _flags = Raw, const std::string& _coeffSeparator = " ",
+             const std::string& _rowSeparator = "\n", const std::string& _rowPrefix = "",
+             const std::string& _rowSuffix = "", const std::string& _matPrefix = "", const std::string& _matSuffix = "")
+        : matPrefix(_matPrefix)
+        , matSuffix(_matSuffix)
+        , rowPrefix(_rowPrefix)
+        , rowSuffix(_rowSuffix)
+        , rowSeparator(_rowSeparator)
+        , coeffSeparator(_coeffSeparator)
+        , precision(_precision)
+        , flags(_flags)
     {
-      rowSpacer += ' ';
-      i--;
+        rowSpacer = "";
+        int i = int(matSuffix.length()) - 1;
+        while (i >= 0 && matSuffix[i] != '\n')
+        {
+            rowSpacer += ' ';
+            i--;
+        }
     }
-  }
-  std::string matPrefix, matSuffix;
-  std::string rowPrefix, rowSuffix, rowSeparator, rowSpacer;
-  std::string coeffSeparator;
-  int precision;
-  int flags;
+    std::string matPrefix, matSuffix;
+    std::string rowPrefix, rowSuffix, rowSeparator, rowSpacer;
+    std::string coeffSeparator;
+    int precision;
+    int flags;
 };
 
 /** \class WithFormat
@@ -86,18 +95,17 @@ struct IOFormat
   *
   * \sa MatrixBase::format(), class IOFormat
   */
-template<typename ExpressionType>
+template <typename ExpressionType>
 class WithFormat
 {
   public:
-
-    WithFormat(const ExpressionType& matrix, const IOFormat& format)
-      : m_matrix(matrix), m_format(format)
-    {}
-
-    friend std::ostream & operator << (std::ostream & s, const WithFormat& wf)
+    WithFormat(const ExpressionType& matrix, const IOFormat& format) : m_matrix(matrix), m_format(format)
     {
-      return ei_print_matrix(s, wf.m_matrix.eval(), wf.m_format);
+    }
+
+    friend std::ostream& operator<<(std::ostream& s, const WithFormat& wf)
+    {
+        return ei_print_matrix(s, wf.m_matrix.eval(), wf.m_format);
     }
 
   protected:
@@ -112,54 +120,55 @@ class WithFormat
   *
   * \sa class IOFormat, class WithFormat
   */
-template<typename Derived>
-inline const WithFormat<Derived>
-MatrixBase<Derived>::format(const IOFormat& fmt) const
+template <typename Derived>
+inline const WithFormat<Derived> MatrixBase<Derived>::format(const IOFormat& fmt) const
 {
-  return WithFormat<Derived>(derived(), fmt);
+    return WithFormat<Derived>(derived(), fmt);
 }
 
 /** \internal
   * print the matrix \a _m to the output stream \a s using the output format \a fmt */
-template<typename Derived>
-std::ostream & ei_print_matrix(std::ostream & s, const Derived& _m, const IOFormat& fmt)
+template <typename Derived>
+std::ostream& ei_print_matrix(std::ostream& s, const Derived& _m, const IOFormat& fmt)
 {
-  const typename Derived::Nested m = _m;
+    const typename Derived::Nested m = _m;
 
-  int width = 0;
-  if (fmt.flags & AlignCols)
-  {
-    // compute the largest width
-    for(int j = 1; j < m.cols(); ++j)
-      for(int i = 0; i < m.rows(); ++i)
-      {
-        std::stringstream sstr;
-        sstr.precision(fmt.precision);
-        sstr << m.coeff(i,j);
-        width = std::max<int>(width, int(sstr.str().length()));
-      }
-  }
-  s.precision(fmt.precision);
-  s << fmt.matPrefix;
-  for(int i = 0; i < m.rows(); ++i)
-  {
-    if (i)
-      s << fmt.rowSpacer;
-    s << fmt.rowPrefix;
-    if(width) s.width(width);
-    s << m.coeff(i, 0);
-    for(int j = 1; j < m.cols(); ++j)
+    int width = 0;
+    if (fmt.flags & AlignCols)
     {
-      s << fmt.coeffSeparator;
-      if (width) s.width(width);
-      s << m.coeff(i, j);
+        // compute the largest width
+        for (int j = 1; j < m.cols(); ++j)
+            for (int i = 0; i < m.rows(); ++i)
+            {
+                std::stringstream sstr;
+                sstr.precision(fmt.precision);
+                sstr << m.coeff(i, j);
+                width = std::max<int>(width, int(sstr.str().length()));
+            }
     }
-    s << fmt.rowSuffix;
-    if( i < m.rows() - 1)
-      s << fmt.rowSeparator;
-  }
-  s << fmt.matSuffix;
-  return s;
+    s.precision(fmt.precision);
+    s << fmt.matPrefix;
+    for (int i = 0; i < m.rows(); ++i)
+    {
+        if (i)
+            s << fmt.rowSpacer;
+        s << fmt.rowPrefix;
+        if (width)
+            s.width(width);
+        s << m.coeff(i, 0);
+        for (int j = 1; j < m.cols(); ++j)
+        {
+            s << fmt.coeffSeparator;
+            if (width)
+                s.width(width);
+            s << m.coeff(i, j);
+        }
+        s << fmt.rowSuffix;
+        if (i < m.rows() - 1)
+            s << fmt.rowSeparator;
+    }
+    s << fmt.matSuffix;
+    return s;
 }
 
 /** \relates MatrixBase
@@ -169,16 +178,15 @@ std::ostream & ei_print_matrix(std::ostream & s, const Derived& _m, const IOForm
   * If you wish to print the matrix with a format different than the default, use MatrixBase::format().
   *
   * It is also possible to change the default format by defining EIGEN_DEFAULT_IO_FORMAT before including Eigen headers.
-  * If not defined, this will automatically be defined to Eigen::IOFormat(), that is the Eigen::IOFormat with default parameters.
+  * If not defined, this will automatically be defined to Eigen::IOFormat(), that is the Eigen::IOFormat with default
+ * parameters.
   *
   * \sa MatrixBase::format()
   */
-template<typename Derived>
-std::ostream & operator <<
-(std::ostream & s,
- const MatrixBase<Derived> & m)
+template <typename Derived>
+std::ostream& operator<<(std::ostream& s, const MatrixBase<Derived>& m)
 {
-  return ei_print_matrix(s, m.eval(), EIGEN_DEFAULT_IO_FORMAT);
+    return ei_print_matrix(s, m.eval(), EIGEN_DEFAULT_IO_FORMAT);
 }
 
-#endif // EIGEN_IO_H
+#endif  // EIGEN_IO_H

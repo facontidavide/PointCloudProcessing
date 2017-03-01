@@ -8,7 +8,7 @@
 *                                                                    \      *
 * All rights reserved.                                                      *
 *                                                                           *
-* This program is free software; you can redistribute it and/or modify      *   
+* This program is free software; you can redistribute it and/or modify      *
 * it under the terms of the GNU General Public License as published by      *
 * the Free Software Foundation; either version 2 of the License, or         *
 * (at your option) any later version.                                       *
@@ -30,7 +30,8 @@ Revision 1.13  2006/12/18 14:28:07  matteodelle
 *** empty log message ***
 
 Revision 1.12  2006/12/18 09:46:39  callieri
-camera+shot revamp: changed field names to something with more sense, cleaning of various functions, correction of minor bugs/incongruences, removal of the infamous reference in shot.
+camera+shot revamp: changed field names to something with more sense, cleaning of various functions, correction of minor
+bugs/incongruences, removal of the infamous reference in shot.
 
 Revision 1.11  2006/01/10 12:22:34  spinelli
 add namespace vcg::
@@ -73,7 +74,6 @@ creation
 
 ****************************************************************************/
 
-
 #ifndef __GL_CAMERA
 #define __GL_CAMERA
 // VCG
@@ -83,137 +83,160 @@ creation
 #include <GL/glew.h>
 
 template <class CameraType>
-struct GlCamera{
-
-	typedef typename CameraType::ScalarType ScalarType;
-	typedef typename CameraType::ScalarType S;
-
-
-/// returns the OpenGL 4x4 PROJECTION matrix that describes the camera (intrinsics)
-static vcg::Matrix44<ScalarType>
-MatrixGL(vcg::Camera<S> & cam, vcg::Matrix44<S> &m)
+struct GlCamera
 {
-	glPushAttrib(GL_TRANSFORM_BIT);
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	TransformGL(cam);
-	glGetv(GL_PROJECTION_MATRIX,&m[0][0]);
-	glPopMatrix();
-	glPopAttrib();
-	return m;
-}
+    typedef typename CameraType::ScalarType ScalarType;
+    typedef typename CameraType::ScalarType S;
 
-/// set the OpenGL PROJECTION matrix for the Cavalieri projection
-static void SetGLCavalieriProj(float x1, float x2, float y1, float y2, float z1, float z2)
-{
-	GLfloat cavalieri[16];
+    /// returns the OpenGL 4x4 PROJECTION matrix that describes the camera (intrinsics)
+    static vcg::Matrix44<ScalarType> MatrixGL(vcg::Camera<S> &cam, vcg::Matrix44<S> &m)
+    {
+        glPushAttrib(GL_TRANSFORM_BIT);
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        glLoadIdentity();
+        TransformGL(cam);
+        glGetv(GL_PROJECTION_MATRIX, &m[0][0]);
+        glPopMatrix();
+        glPopAttrib();
+        return m;
+    }
 
-	cavalieri[0]  = 2.0f/(x2-x1);                   cavalieri[4] = 0;            
-	cavalieri[8]  = (0.707106f * -2.0f)/(x2-x1);    cavalieri[12] = (x2+x1)/(x2-x1);
-	cavalieri[1]  = 0;                              cavalieri[5] = 2.0/(y2-y1);    
-	cavalieri[9]  = (0.707106f * -2.0f)/(y2-y1);    cavalieri[13] = (y2+y1)/(y2-y1);
-	cavalieri[2]  = 0;                              cavalieri[6] = 0;            
-	cavalieri[10] = -2.0f/(z2-z1);                  cavalieri[14] = (z2+z1)/(z2-z1);
-	cavalieri[3]  = 0;                              cavalieri[7] = 0;            
-	cavalieri[11] = 0;                              cavalieri[15] = 1.0f;
+    /// set the OpenGL PROJECTION matrix for the Cavalieri projection
+    static void SetGLCavalieriProj(float x1, float x2, float y1, float y2, float z1, float z2)
+    {
+        GLfloat cavalieri[16];
 
-	glLoadMatrixf(cavalieri);
-}
+        cavalieri[0] = 2.0f / (x2 - x1);
+        cavalieri[4] = 0;
+        cavalieri[8] = (0.707106f * -2.0f) / (x2 - x1);
+        cavalieri[12] = (x2 + x1) / (x2 - x1);
+        cavalieri[1] = 0;
+        cavalieri[5] = 2.0 / (y2 - y1);
+        cavalieri[9] = (0.707106f * -2.0f) / (y2 - y1);
+        cavalieri[13] = (y2 + y1) / (y2 - y1);
+        cavalieri[2] = 0;
+        cavalieri[6] = 0;
+        cavalieri[10] = -2.0f / (z2 - z1);
+        cavalieri[14] = (z2 + z1) / (z2 - z1);
+        cavalieri[3] = 0;
+        cavalieri[7] = 0;
+        cavalieri[11] = 0;
+        cavalieri[15] = 1.0f;
 
-/// set the OpenGL PROJECTION matrix for the Isometric projection
-static void SetGLIsometricProj(float x1, float x2, float y1, float y2, float z1, float z2)
-{
-	GLfloat isometric[16];
+        glLoadMatrixf(cavalieri);
+    }
 
-	isometric[0]  = 1.6f/(x2-x1);     isometric[4]  = 0;            
-	isometric[8]  = -1.6f/(x2-x1);    isometric[12] = (x2+x1)/(x2-x1);
-	isometric[1]  = -1.0f/(y2-y1);    isometric[5]  = 2.0f/(y2-y1);    
-	isometric[9]  = -1.0f/(y2-y1);    isometric[13] = (y2+y1)/(y2-y1);
-	isometric[2]  = 0;                isometric[6]  = 0;            
-	isometric[10] = -2.0f/(z2-z1);    isometric[14] = (z2+z1)/(z2-z1);
-	isometric[3]  = 0;                isometric[7]  = 0;            
-	isometric[11] = 0;                isometric[15] = 1.0f;
+    /// set the OpenGL PROJECTION matrix for the Isometric projection
+    static void SetGLIsometricProj(float x1, float x2, float y1, float y2, float z1, float z2)
+    {
+        GLfloat isometric[16];
 
-	glLoadMatrixf(isometric);
-}
+        isometric[0] = 1.6f / (x2 - x1);
+        isometric[4] = 0;
+        isometric[8] = -1.6f / (x2 - x1);
+        isometric[12] = (x2 + x1) / (x2 - x1);
+        isometric[1] = -1.0f / (y2 - y1);
+        isometric[5] = 2.0f / (y2 - y1);
+        isometric[9] = -1.0f / (y2 - y1);
+        isometric[13] = (y2 + y1) / (y2 - y1);
+        isometric[2] = 0;
+        isometric[6] = 0;
+        isometric[10] = -2.0f / (z2 - z1);
+        isometric[14] = (z2 + z1) / (z2 - z1);
+        isometric[3] = 0;
+        isometric[7] = 0;
+        isometric[11] = 0;
+        isometric[15] = 1.0f;
 
-/// get OpenGL-like frustum from a vcg camera (intrinsics)
-static void GetFrustum(vcg::Camera<S> & intrinsics, S & sx,S & dx,S & bt,S & tp,S & f)
-{
-	intrinsics.GetFrustum(sx,dx,bt,tp,f);
-}
+        glLoadMatrixf(isometric);
+    }
 
-/// set the OpenGL PROJECTION matrix to match the camera (intrinsics). requires near and far plane
-static void TransformGL(vcg::Camera<S> & camera, S nearDist, S farDist ) 
-{
-	S sx,dx,bt,tp,nr;
-	camera.GetFrustum(sx,dx,bt,tp,nr);
+    /// get OpenGL-like frustum from a vcg camera (intrinsics)
+    static void GetFrustum(vcg::Camera<S> &intrinsics, S &sx, S &dx, S &bt, S &tp, S &f)
+    {
+        intrinsics.GetFrustum(sx, dx, bt, tp, f);
+    }
 
-  if(camera.cameraType == CameraType::PERSPECTIVE) {
-    S ratio = nearDist/nr;
-    sx *= ratio;
-    dx *= ratio;
-    bt *= ratio;
-    tp *= ratio;
-  }
+    /// set the OpenGL PROJECTION matrix to match the camera (intrinsics). requires near and far plane
+    static void TransformGL(vcg::Camera<S> &camera, S nearDist, S farDist)
+    {
+        S sx, dx, bt, tp, nr;
+        camera.GetFrustum(sx, dx, bt, tp, nr);
 
-	assert(glGetError()==0);
-	
-	switch(camera.cameraType) 
-	{
-   case CameraType::PERSPECTIVE: glFrustum(sx,dx,bt,tp,nearDist,farDist);	break;
-   case CameraType::ORTHO:       glOrtho(sx,dx,bt,tp,nearDist,farDist); break;
-   case CameraType::ISOMETRIC:   SetGLIsometricProj(sx,dx,bt,tp,nearDist,farDist); 	break;
-   case CameraType::CAVALIERI:   SetGLCavalieriProj(sx,dx,bt,tp,nearDist,farDist); 	break;
-	}
-       
-	assert(glGetError()==0);
-};
+        if (camera.cameraType == CameraType::PERSPECTIVE)
+        {
+            S ratio = nearDist / nr;
+            sx *= ratio;
+            dx *= ratio;
+            bt *= ratio;
+            tp *= ratio;
+        }
 
+        assert(glGetError() == 0);
 
-static void GetViewSize(vcg::Camera<S> & camera, S &width, S &height) {
-	S sx,dx,bt,tp,nr,fr;
-	GetFrustum(camera,sx,dx,bt,tp,nr,fr);	
-	width = dx-sx;	//right - left = width
-	height = tp-bt;  //top - bottom = height
-};
+        switch (camera.cameraType)
+        {
+            case CameraType::PERSPECTIVE:
+                glFrustum(sx, dx, bt, tp, nearDist, farDist);
+                break;
+            case CameraType::ORTHO:
+                glOrtho(sx, dx, bt, tp, nearDist, farDist);
+                break;
+            case CameraType::ISOMETRIC:
+                SetGLIsometricProj(sx, dx, bt, tp, nearDist, farDist);
+                break;
+            case CameraType::CAVALIERI:
+                SetGLCavalieriProj(sx, dx, bt, tp, nearDist, farDist);
+                break;
+        }
 
+        assert(glGetError() == 0);
+    };
 
-static void SetSubView(vcg::Camera<S> & camera,vcg::Point2<S> p0,S nearDist, S farDist,vcg::Point2<S> p1){
-	//typedef typename CameraType::ScalarType S;
-	S sx,dx,bt,tp,f;
-	GetFrustum(camera,sx,dx,bt,tp,f);	
-	S width = dx-sx;	//right - left = width
-	S height = tp-bt;  //top - bottom = height
-	/*glFrustum(
-				width* p0[0]+ sx, width* p1[0]+ sx,	
-				height* p0[1]+ bt, height* p1[1]+ bt,
-				nr,fr);*/
+    static void GetViewSize(vcg::Camera<S> &camera, S &width, S &height)
+    {
+        S sx, dx, bt, tp, nr, fr;
+        GetFrustum(camera, sx, dx, bt, tp, nr, fr);
+        width = dx - sx;   // right - left = width
+        height = tp - bt;  // top - bottom = height
+    };
 
-	
+    static void SetSubView(vcg::Camera<S> &camera, vcg::Point2<S> p0, S nearDist, S farDist, vcg::Point2<S> p1)
+    {
+        // typedef typename CameraType::ScalarType S;
+        S sx, dx, bt, tp, f;
+        GetFrustum(camera, sx, dx, bt, tp, f);
+        S width = dx - sx;   // right - left = width
+        S height = tp - bt;  // top - bottom = height
+        /*glFrustum(
+                    width* p0[0]+ sx, width* p1[0]+ sx,
+                    height* p0[1]+ bt, height* p1[1]+ bt,
+                    nr,fr);*/
 
-	switch(camera.cameraType) 
-	{
-   case CameraType::PERSPECTIVE: glFrustum(	width* p0[0]+ sx, width* p1[0]+ sx,		height* p0[1]+ bt, height* p1[1]+bt,nearDist,farDist);	break;
-   case CameraType::ORTHO:       glOrtho(width* p0[0]+sx, width* p1[0]+sx,			height* p0[1]+ bt, height* p1[1]+bt,nearDist,farDist); break;
-	 //case vcg::ISOMETRIC:   IsometricProj(dx-width* p1[0], dx-width* p0[0],		tp-height* p1[1], tp-height* p0[1],nearDist,farDist);	break;
-	 //case vcg::CAVALIERI:   CavalieriProj(dx-width* p1[0], dx-width* p0[0],		tp-height* p1[1], tp-height* p0[1],nearDist,farDist);	break;
-	}
+        switch (camera.cameraType)
+        {
+            case CameraType::PERSPECTIVE:
+                glFrustum(width * p0[0] + sx, width * p1[0] + sx, height * p0[1] + bt, height * p1[1] + bt, nearDist,
+                          farDist);
+                break;
+            case CameraType::ORTHO:
+                glOrtho(width * p0[0] + sx, width * p1[0] + sx, height * p0[1] + bt, height * p1[1] + bt, nearDist,
+                        farDist);
+                break;
+                // case vcg::ISOMETRIC:   IsometricProj(dx-width* p1[0], dx-width* p0[0],		tp-height* p1[1], tp-height*
+                // p0[1],nearDist,farDist);	break;
+                // case vcg::CAVALIERI:   CavalieriProj(dx-width* p1[0], dx-width* p0[0],		tp-height* p1[1], tp-height*
+                // p0[1],nearDist,farDist);	break;
+        }
 
-
-	assert(glGetError()==0);
-};
+        assert(glGetError() == 0);
+    };
 };
 #endif
 
-
-
-
-
-
-//private:
-//	
+// private:
+//
 //	static inline S SQRT( S x) { return sqrt(fabs(x)); }
 //	static inline S CBRT ( S x )
 //	{
@@ -234,7 +257,7 @@ static void SetSubView(vcg::Camera<S> & camera,vcg::Point2<S> p0,S nearDist, S f
 //	static inline S CUB( S x ) { return x*x*x; }
 //	static inline S SQR( S x ) { return x*x; }
 //
-//public:
+// public:
 //	void undistorted_to_distorted_sensor_coord (S Xu, S Yu, S & Xd, S & Yd) const
 //	{
 //		const S SQRT3 = S(1.732050807568877293527446341505872366943);
@@ -263,7 +286,7 @@ static void SetSubView(vcg::Camera<S> & camera,vcg::Point2<S> p0,S nearDist, S f
 //			Rd = S + T;
 //
 //			if (Rd < 0)
-//				Rd = SQRT (-1 / (3 * k[0]));	
+//				Rd = SQRT (-1 / (3 * k[0]));
 //		}
 //		else			/* three real roots */
 //		{
@@ -285,7 +308,7 @@ static void SetSubView(vcg::Camera<S> & camera,vcg::Point2<S> p0,S nearDist, S f
 //	}
 //
 //
-//void correction(double k, float i, float j, float &disi, float &disj)
+// void correction(double k, float i, float j, float &disi, float &disj)
 //{
 //	// (i,j)		punto nell'immagine distorta
 //	// (disi,disj)	punto nell'immagine corretta (undistorted)
@@ -306,7 +329,7 @@ static void SetSubView(vcg::Camera<S> & camera,vcg::Point2<S> p0,S nearDist, S f
 //
 //
 //
-//void distorsion( float k ,float i, float j,double & disi, double &disj)
+// void distorsion( float k ,float i, float j,double & disi, double &disj)
 //{
 //		// (i,j)		punto nell'immagine corretta (undistorted)
 //	// (disi,disj)	punto nell'immagine distorta
@@ -336,19 +359,22 @@ static void SetSubView(vcg::Camera<S> & camera,vcg::Point2<S> p0,S nearDist, S f
 //
 //
 //
-//	//----------- Maple 
+//	//----------- Maple
 //	//  float t0,t1,t2,sol;
 //
-//	//t0 = 1/k*pow((108.0*hyp+12.0*sqrt(3.0)*sqrt((4.0+27.0*hyp*hyp*k)/k))*k*k,0.3333333333333333)/6.0-2.0/pow((108.0*hyp+12.0*sqrt(3.0)*sqrt((4.0+27.0*hyp*hyp*k)/k))*k*k,0.3333333333333333);
+//	//t0 =
+//1/k*pow((108.0*hyp+12.0*sqrt(3.0)*sqrt((4.0+27.0*hyp*hyp*k)/k))*k*k,0.3333333333333333)/6.0-2.0/pow((108.0*hyp+12.0*sqrt(3.0)*sqrt((4.0+27.0*hyp*hyp*k)/k))*k*k,0.3333333333333333);
 //
 //
-//	//t1 = -1/k*pow((108.0*hyp+12.0*sqrt(3.0)*sqrt((4.0+27.0*hyp*hyp*k)/k))*k*k,0.3333333333333333)/12.0+1/pow((108.0*hyp+12.0*sqrt(3.0)*sqrt((4.0+27.0*hyp*
+//	//t1 =
+//-1/k*pow((108.0*hyp+12.0*sqrt(3.0)*sqrt((4.0+27.0*hyp*hyp*k)/k))*k*k,0.3333333333333333)/12.0+1/pow((108.0*hyp+12.0*sqrt(3.0)*sqrt((4.0+27.0*hyp*
 //	//hyp*k)/k))*k*k,0.3333333333333333)+sqrt(-1.0)*sqrt(3.0)*(1/k*pow((108.0*hyp+
 //	//12.0*sqrt(3.0)*sqrt((4.0+27.0*hyp*hyp*k)/k))*k*k,0.3333333333333333)/6.0+2.0/
 //	//pow((108.0*hyp+12.0*sqrt(3.0)*sqrt((4.0+27.0*hyp*hyp*k)/k))*k*k,
 //	//0.3333333333333333))/2.0;
 //
-//	//t2 = -1/k*pow((108.0*hyp+12.0*sqrt(3.0)*sqrt((4.0+27.0*hyp*hyp*k)/k))*k*k,0.3333333333333333)/12.0+1/pow((108.0*hyp+12.0*sqrt(3.0)*sqrt((4.0+27.0*hyp*
+//	//t2 =
+//-1/k*pow((108.0*hyp+12.0*sqrt(3.0)*sqrt((4.0+27.0*hyp*hyp*k)/k))*k*k,0.3333333333333333)/12.0+1/pow((108.0*hyp+12.0*sqrt(3.0)*sqrt((4.0+27.0*hyp*
 //	//hyp*k)/k))*k*k,0.3333333333333333)-sqrt(-1.0)*sqrt(3.0)*(1/k*pow((108.0*hyp+
 //	//12.0*sqrt(3.0)*sqrt((4.0+27.0*hyp*hyp*k)/k))*k*k,0.3333333333333333)/6.0+2.0/
 //	//pow((108.0*hyp+12.0*sqrt(3.0)*sqrt((4.0+27.0*hyp*hyp*k)/k))*k*k,
@@ -359,7 +385,7 @@ static void SetSubView(vcg::Camera<S> & camera,vcg::Point2<S> p0,S nearDist, S f
 //	//sol = t0;
 //	//ni = sol*I/hyp;
 //	//nj = sol*J/hyp;
-//	////----------- 
+//	////-----------
 //
 //	//disi = (ni*ratio+viewport[0]/2);
 //	//disj = (nj*ratio+viewport[1]/2);
@@ -408,7 +434,7 @@ static void SetSubView(vcg::Camera<S> & camera,vcg::Point2<S> p0,S nearDist, S f
 //		valid = false;
 //	}
 //
-//	inline void SetOrtho(bool isOrtho=true) 
+//	inline void SetOrtho(bool isOrtho=true)
 //	{
 //		ortho = isOrtho;
 //	}
@@ -442,7 +468,7 @@ static void SetSubView(vcg::Camera<S> & camera,vcg::Point2<S> p0,S nearDist, S f
 //		// Trasla la camera (camera coordinate)
 //	inline void Move( const vectorial & t )
 //	{
-//		view_p+= x_axis * t[0]+y_axis * t[1] + z_axis * t[2];		
+//		view_p+= x_axis * t[0]+y_axis * t[1] + z_axis * t[2];
 //	}
 //
 //	// scala la camera
@@ -454,7 +480,7 @@ static void SetSubView(vcg::Camera<S> & camera,vcg::Point2<S> p0,S nearDist, S f
 //		//printf("sc\n");
 //	}
 //
-//	
+//
 //
 //		// NOTA funziona solo se l'ultima colonna di m e' 0,0,0,1
 //	void Apply( const Matrix44<S> & m )
@@ -563,7 +589,7 @@ static void SetSubView(vcg::Camera<S> & camera,vcg::Point2<S> p0,S nearDist, S f
 //		Point3<S> tz = view_p+z_axis;
 //
 //		view_p = m.Apply(view_p);
-//		
+//
 //		x_axis = m.Apply(tx) - view_p;
 //		y_axis = m.Apply(ty) - view_p;
 //		z_axis = m.Apply(tz) - view_p;
@@ -577,7 +603,7 @@ static void SetSubView(vcg::Camera<S> & camera,vcg::Point2<S> p0,S nearDist, S f
 //		Point3<S> tz = view_p+z_axis;
 //
 //		view_p = m.Stable_Apply(view_p);
-//		
+//
 //		x_axis = m.Stable_Apply(tx) - view_p;
 //		y_axis = m.Stable_Apply(ty) - view_p;
 //		z_axis = m.Stable_Apply(tz) - view_p;
@@ -591,7 +617,7 @@ static void SetSubView(vcg::Camera<S> & camera,vcg::Point2<S> p0,S nearDist, S f
 //		S  dx = dp*x_axis;
 //		S  dy = dp*y_axis;
 //		S  dz = dp*z_axis;
-//		
+//
 //		S  tx = dx;
 //		S  ty = -dy;
 //		S  qx,qy;
@@ -611,7 +637,7 @@ static void SetSubView(vcg::Camera<S> & camera,vcg::Point2<S> p0,S nearDist, S f
 //		{
 //			q[0] = tx/(s[0]*viewportM)+c[0];
 //			q[1] = ty/(s[1]*viewportM)+c[1];
-//		}	
+//		}
 //	}
 //
 //#if 1
@@ -665,7 +691,7 @@ static void SetSubView(vcg::Camera<S> & camera,vcg::Point2<S> p0,S nearDist, S f
 //		fread(&(cc->Rx),sizeof(double),1,fp);
 //		fread(&(cc->Ry),sizeof(double),1,fp);
 //		fread(&(cc->Rz),sizeof(double),1,fp);
-//    
+//
 //
 //		SINCOSd (cc->Rx, sa, ca);
 //		SINCOSd (cc->Ry, sb, cb);
@@ -730,7 +756,7 @@ static void SetSubView(vcg::Camera<S> & camera,vcg::Point2<S> p0,S nearDist, S f
 //		fscanf (fp, "%lf", &(cc->p1));
 //		fscanf (fp, "%lf", &(cc->p2));
 //	}
-//	
+//
 //		// Importa una camera dal formato tsai
 //	void import( const tsai_camera_parameters & cp,
 //		         const tsai_calibration_constants & cc,
@@ -782,7 +808,7 @@ static void SetSubView(vcg::Camera<S> & camera,vcg::Point2<S> p0,S nearDist, S f
 //
 //		cp.Cx=  c[0] ;
 //		cp.Cy=  c[1] ;
-//		cp.sx= 1; 
+//		cp.sx= 1;
 //
 //		cc.f= f ;
 //
@@ -859,14 +885,14 @@ static void SetSubView(vcg::Camera<S> & camera,vcg::Point2<S> p0,S nearDist, S f
 //// Prende in ingresso il bounding box dell'oggetto da inquadrare e setta projection e modelmatrix
 //// in modo da matchare il piu' possibile quelle della camera. Ovviamente (?) si ignora le distorsioni radiali.
 //// Nota che bb viene utilizzato solo per settare i near e far plane in maniera sensata.
-//void SetGL(const Box3<scalar> &bb,scalar subx0=0, scalar subx1=1,scalar suby0=0,scalar suby1=1)
+// void SetGL(const Box3<scalar> &bb,scalar subx0=0, scalar subx1=1,scalar suby0=0,scalar suby1=1)
 //{
 //	scalar _,__;
 //	SetGL(_,__,bb,subx0, subx1, suby0, suby1);
 //
 //}
 //
-//void SetGL(scalar &znear, scalar &zfar,const Box3<scalar> &bb,scalar subx0=0, 
+// void SetGL(scalar &znear, scalar &zfar,const Box3<scalar> &bb,scalar subx0=0,
 //		   scalar subx1=1,scalar suby0=0,scalar suby1=1)
 //{
 //	glMatrixMode(GL_PROJECTION);
@@ -875,8 +901,8 @@ static void SetSubView(vcg::Camera<S> & camera,vcg::Point2<S> p0,S nearDist, S f
 //	scalar bottom, top;
 //	scalar w,h;
 //
-//	// La lunghezza focale <f> e' la distanza del piano immagine dal centro di proiezione. 
-//	// il che mappa direttamente nella chiamata glFrustum che prende in ingresso 
+//	// La lunghezza focale <f> e' la distanza del piano immagine dal centro di proiezione.
+//	// il che mappa direttamente nella chiamata glFrustum che prende in ingresso
 //	// le coordinate del piano immagine posto a znear.
 //
 //	float imleft   =-c[0]*s[0];
@@ -885,28 +911,28 @@ static void SetSubView(vcg::Camera<S> & camera,vcg::Point2<S> p0,S nearDist, S f
 //	float imtop    =(viewport[1]-c[1])*s[1];
 //	znear = Distance(view_p, bb.Center())-bb.Diag();
 //	zfar  = Distance(view_p, bb.Center())+bb.Diag();
-//	
+//
 //	w=imright-imleft;
 //	h=imtop-imbottom;
-//	
-//	// Quindi il frustum giusto sarebbe questo, 
+//
+//	// Quindi il frustum giusto sarebbe questo,
 //	//            glFrustum(imleft, imright, imbottom, imtop, f, zfar);
 //  // ma per amor di opengl conviene spostare il near plane fino ad essere vicino all'oggetto da inquadrare.
 //	// Cambiare f significa amplificare in maniera proporzionale anche i left right ecc.
-//	
-//	// 8/5/02 Nota che il near plane va spostato verso l'oggetto solo se quello calcolato sopra e' maggiore di 'f' 
+//
+//	// 8/5/02 Nota che il near plane va spostato verso l'oggetto solo se quello calcolato sopra e' maggiore di 'f'
 //	// nota che potrebbe anche succedere che znear <0 (viewpoint vicino ad un oggetto con il bb allungato);
 //	if(znear<f) znear=f;
 //
-//	float nof = znear/f; 
-//	if(subx0==0 && subx1 == 1 && suby0==0 && suby1 == 1) 
+//	float nof = znear/f;
+//	if(subx0==0 && subx1 == 1 && suby0==0 && suby1 == 1)
 //	{
 //		if(!IsOrtho())
 //			glFrustum(imleft*nof, imright*nof, imbottom*nof, imtop*nof, znear, zfar);
 //		else
 //			glOrtho(imleft*viewportM, imright*viewportM, imbottom*viewportM, imtop*viewportM, znear, zfar);
 //	}
-//	else {// nel caso si voglia fare subboxing 
+//	else {// nel caso si voglia fare subboxing
 //		left   = imleft+w*subx0;
 //		right  = imleft+w*subx1;
 //		bottom = imbottom +h*suby0;
@@ -923,17 +949,18 @@ static void SetSubView(vcg::Camera<S> & camera,vcg::Point2<S> p0,S nearDist, S f
 //	glLoadIdentity();
 //	scalar l=max(scalar(1.0),view_p.Norm());
 //	gluLookAt(view_p[0], view_p[1], view_p[2],
-//						view_p[0] + (z_axis[0]*l), 
-//						view_p[1] + (z_axis[1]*l), 
+//						view_p[0] + (z_axis[0]*l),
+//						view_p[1] + (z_axis[1]*l),
 //						view_p[2] + (z_axis[2]*l),
 //						y_axis[0],y_axis[1],y_axis[2]);
 //}
-//// Sposta la camera a caso di in maniera che l'angolo di variazione rispetto al punt c passato sia inferiore a RadAngle
+//// Sposta la camera a caso di in maniera che l'angolo di variazione rispetto al punt c passato sia inferiore a
+///RadAngle
 ////
-//void Jitter(Point3<scalar> c, scalar RadAngle)
+// void Jitter(Point3<scalar> c, scalar RadAngle)
 //{
-//	Point3<scalar> rnd(1.0 - 2.0*scalar(rand())/RAND_MAX, 
-//		                 1.0 - 2.0*scalar(rand())/RAND_MAX, 
+//	Point3<scalar> rnd(1.0 - 2.0*scalar(rand())/RAND_MAX,
+//		                 1.0 - 2.0*scalar(rand())/RAND_MAX,
 //										 1.0 - 2.0*scalar(rand())/RAND_MAX);
 //	rnd.Normalize();
 //	Matrix44<scalar> m,t0,t1,tr;
@@ -949,11 +976,11 @@ static void SetSubView(vcg::Camera<S> & camera,vcg::Point2<S> p0,S nearDist, S f
 //
 //
 //
-//void glTexGen(int offx =0, // angolo basso sinistra della
-//			  int offy=0,  // subtexture per la quale si vogliono settare le coordinate	
+// void glTexGen(int offx =0, // angolo basso sinistra della
+//			  int offy=0,  // subtexture per la quale si vogliono settare le coordinate
 //			  int sx=1,    // Dimensioni in Texel
-//			  int sy=1, 
-//			  int Tx=1,	   // Dimensioni della texture	
+//			  int sy=1,
+//			  int Tx=1,	   // Dimensioni della texture
 //			  int Ty=1)
 //{
 //	// prendi la rototraslazione che
@@ -986,12 +1013,12 @@ static void SetSubView(vcg::Camera<S> & camera,vcg::Point2<S> p0,S nearDist, S f
 //
 //	if(!IsOrtho())//  prospettica
 //	{
-//		
+//
 //		P[0][0] = sx/(s[0]*viewport[0]*Tx);
-//		P[0][2] = (1/f)*(offx+0.5*sx)/Tx; 
+//		P[0][2] = (1/f)*(offx+0.5*sx)/Tx;
 //
 //		P[1][1] = sy/(s[1]* viewport[1]*Ty);
-//		P[1][2] = (1/f)*(offy+0.5*sy)/Ty; 
+//		P[1][2] = (1/f)*(offy+0.5*sy)/Ty;
 //
 //		P[2][2] = 1;
 //		P[3][2] = 1/f;
@@ -1026,7 +1053,7 @@ static void SetSubView(vcg::Camera<S> & camera,vcg::Point2<S> p0,S nearDist, S f
 //
 //// versione per le texture rettangolare NV_TEXTURE_RECTANGLE
 //// la differenza da glTexGen e' che il mapping e' in [0..sx]X[0..sy]
-//void glTexGen_NV(int sx,    // Texture Size
+// void glTexGen_NV(int sx,    // Texture Size
 //				 int sy)
 //{
 //	// prendi la rototraslazione che
@@ -1059,12 +1086,12 @@ static void SetSubView(vcg::Camera<S> & camera,vcg::Point2<S> p0,S nearDist, S f
 //
 //	if(!IsOrtho())//  prospettica
 //	{
-//		
+//
 //		P[0][0] = sx/(s[0]*viewport[0]);
-//		P[0][2] = sx*(1/f)*( 0.5); 
+//		P[0][2] = sx*(1/f)*( 0.5);
 //
 //		P[1][1] = sy/(s[1]* viewport[1] );
-//		P[1][2] = sy*(1/f)*( 0.5); 
+//		P[1][2] = sy*(1/f)*( 0.5);
 //
 //		P[2][2] = 1;
 //		P[3][2] = 1/f;

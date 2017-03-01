@@ -25,44 +25,44 @@
 #ifndef EIGEN_VISITOR_H
 #define EIGEN_VISITOR_H
 
-template<typename Visitor, typename Derived, int UnrollCount>
+template <typename Visitor, typename Derived, int UnrollCount>
 struct ei_visitor_impl
 {
-  enum {
-    col = (UnrollCount-1) / Derived::RowsAtCompileTime,
-    row = (UnrollCount-1) % Derived::RowsAtCompileTime
-  };
+    enum
+    {
+        col = (UnrollCount - 1) / Derived::RowsAtCompileTime,
+        row = (UnrollCount - 1) % Derived::RowsAtCompileTime
+    };
 
-  inline static void run(const Derived &mat, Visitor& visitor)
-  {
-    ei_visitor_impl<Visitor, Derived, UnrollCount-1>::run(mat, visitor);
-    visitor(mat.coeff(row, col), row, col);
-  }
+    inline static void run(const Derived& mat, Visitor& visitor)
+    {
+        ei_visitor_impl<Visitor, Derived, UnrollCount - 1>::run(mat, visitor);
+        visitor(mat.coeff(row, col), row, col);
+    }
 };
 
-template<typename Visitor, typename Derived>
+template <typename Visitor, typename Derived>
 struct ei_visitor_impl<Visitor, Derived, 1>
 {
-  inline static void run(const Derived &mat, Visitor& visitor)
-  {
-    return visitor.init(mat.coeff(0, 0), 0, 0);
-  }
+    inline static void run(const Derived& mat, Visitor& visitor)
+    {
+        return visitor.init(mat.coeff(0, 0), 0, 0);
+    }
 };
 
-template<typename Visitor, typename Derived>
+template <typename Visitor, typename Derived>
 struct ei_visitor_impl<Visitor, Derived, Dynamic>
 {
-  inline static void run(const Derived& mat, Visitor& visitor)
-  {
-    visitor.init(mat.coeff(0,0), 0, 0);
-    for(int i = 1; i < mat.rows(); ++i)
-      visitor(mat.coeff(i, 0), i, 0);
-    for(int j = 1; j < mat.cols(); ++j)
-      for(int i = 0; i < mat.rows(); ++i)
-        visitor(mat.coeff(i, j), i, j);
-  }
+    inline static void run(const Derived& mat, Visitor& visitor)
+    {
+        visitor.init(mat.coeff(0, 0), 0, 0);
+        for (int i = 1; i < mat.rows(); ++i)
+            visitor(mat.coeff(i, 0), i, 0);
+        for (int j = 1; j < mat.cols(); ++j)
+            for (int i = 0; i < mat.rows(); ++i)
+                visitor(mat.coeff(i, j), i, j);
+    }
 };
-
 
 /** Applies the visitor \a visitor to the whole coefficients of the matrix or vector.
   *
@@ -81,16 +81,14 @@ struct ei_visitor_impl<Visitor, Derived, Dynamic>
   *
   * \sa minCoeff(int*,int*), maxCoeff(int*,int*), MatrixBase::redux()
   */
-template<typename Derived>
-template<typename Visitor>
+template <typename Derived>
+template <typename Visitor>
 void MatrixBase<Derived>::visit(Visitor& visitor) const
 {
-  const bool unroll = SizeAtCompileTime * CoeffReadCost
-                    + (SizeAtCompileTime-1) * ei_functor_traits<Visitor>::Cost
-                    <= EIGEN_UNROLLING_LIMIT;
-  return ei_visitor_impl<Visitor, Derived,
-      unroll ? int(SizeAtCompileTime) : Dynamic
-    >::run(derived(), visitor);
+    const bool unroll =
+      SizeAtCompileTime * CoeffReadCost + (SizeAtCompileTime - 1) * ei_functor_traits<Visitor>::Cost <=
+      EIGEN_UNROLLING_LIMIT;
+    return ei_visitor_impl < Visitor, Derived, unroll ? int(SizeAtCompileTime) : Dynamic > ::run(derived(), visitor);
 }
 
 /** \internal
@@ -99,14 +97,14 @@ void MatrixBase<Derived>::visit(Visitor& visitor) const
 template <typename Scalar>
 struct ei_coeff_visitor
 {
-  int row, col;
-  Scalar res;
-  inline void init(const Scalar& value, int i, int j)
-  {
-    res = value;
-    row = i;
-    col = j;
-  }
+    int row, col;
+    Scalar res;
+    inline void init(const Scalar& value, int i, int j)
+    {
+        res = value;
+        row = i;
+        col = j;
+    }
 };
 
 /** \internal
@@ -117,22 +115,24 @@ struct ei_coeff_visitor
 template <typename Scalar>
 struct ei_min_coeff_visitor : ei_coeff_visitor<Scalar>
 {
-  void operator() (const Scalar& value, int i, int j)
-  {
-    if(value < this->res)
+    void operator()(const Scalar& value, int i, int j)
     {
-      this->res = value;
-      this->row = i;
-      this->col = j;
+        if (value < this->res)
+        {
+            this->res = value;
+            this->row = i;
+            this->col = j;
+        }
     }
-  }
 };
 
-template<typename Scalar>
-struct ei_functor_traits<ei_min_coeff_visitor<Scalar> > {
-  enum {
-    Cost = NumTraits<Scalar>::AddCost
-  };
+template <typename Scalar>
+struct ei_functor_traits<ei_min_coeff_visitor<Scalar> >
+{
+    enum
+    {
+        Cost = NumTraits<Scalar>::AddCost
+    };
 };
 
 /** \internal
@@ -143,22 +143,24 @@ struct ei_functor_traits<ei_min_coeff_visitor<Scalar> > {
 template <typename Scalar>
 struct ei_max_coeff_visitor : ei_coeff_visitor<Scalar>
 {
-  void operator() (const Scalar& value, int i, int j)
-  {
-    if(value > this->res)
+    void operator()(const Scalar& value, int i, int j)
     {
-      this->res = value;
-      this->row = i;
-      this->col = j;
+        if (value > this->res)
+        {
+            this->res = value;
+            this->row = i;
+            this->col = j;
+        }
     }
-  }
 };
 
-template<typename Scalar>
-struct ei_functor_traits<ei_max_coeff_visitor<Scalar> > {
-  enum {
-    Cost = NumTraits<Scalar>::AddCost
-  };
+template <typename Scalar>
+struct ei_functor_traits<ei_max_coeff_visitor<Scalar> >
+{
+    enum
+    {
+        Cost = NumTraits<Scalar>::AddCost
+    };
 };
 
 /** \returns the minimum of all coefficients of *this
@@ -166,15 +168,15 @@ struct ei_functor_traits<ei_max_coeff_visitor<Scalar> > {
   *
   * \sa MatrixBase::maxCoeff(int*,int*), MatrixBase::visitor(), MatrixBase::minCoeff()
   */
-template<typename Derived>
-typename ei_traits<Derived>::Scalar
-MatrixBase<Derived>::minCoeff(int* row, int* col) const
+template <typename Derived>
+typename ei_traits<Derived>::Scalar MatrixBase<Derived>::minCoeff(int* row, int* col) const
 {
-  ei_min_coeff_visitor<Scalar> minVisitor;
-  this->visit(minVisitor);
-  *row = minVisitor.row;
-  if (col) *col = minVisitor.col;
-  return minVisitor.res;
+    ei_min_coeff_visitor<Scalar> minVisitor;
+    this->visit(minVisitor);
+    *row = minVisitor.row;
+    if (col)
+        *col = minVisitor.col;
+    return minVisitor.res;
 }
 
 /** \returns the maximum of all coefficients of *this
@@ -182,16 +184,15 @@ MatrixBase<Derived>::minCoeff(int* row, int* col) const
   *
   * \sa MatrixBase::minCoeff(int*,int*), MatrixBase::visitor(), MatrixBase::maxCoeff()
   */
-template<typename Derived>
-typename ei_traits<Derived>::Scalar
-MatrixBase<Derived>::maxCoeff(int* row, int* col) const
+template <typename Derived>
+typename ei_traits<Derived>::Scalar MatrixBase<Derived>::maxCoeff(int* row, int* col) const
 {
-  ei_max_coeff_visitor<Scalar> maxVisitor;
-  this->visit(maxVisitor);
-  *row = maxVisitor.row;
-  if (col) *col = maxVisitor.col;
-  return maxVisitor.res;
+    ei_max_coeff_visitor<Scalar> maxVisitor;
+    this->visit(maxVisitor);
+    *row = maxVisitor.row;
+    if (col)
+        *col = maxVisitor.col;
+    return maxVisitor.res;
 }
 
-
-#endif // EIGEN_VISITOR_H
+#endif  // EIGEN_VISITOR_H

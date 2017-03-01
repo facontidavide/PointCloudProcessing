@@ -8,7 +8,7 @@
 *                                                                    \      *
 * All rights reserved.                                                      *
 *                                                                           *
-* This program is free software; you can redistribute it and/or modify      *   
+* This program is free software; you can redistribute it and/or modify      *
 * it under the terms of the GNU General Public License as published by      *
 * the Free Software Foundation; either version 2 of the License, or         *
 * (at your option) any later version.                                       *
@@ -32,39 +32,45 @@ $Log: not supported by cvs2svn $
 
 #include <vector>
 
-namespace vcg {
+namespace vcg
+{
+class StripMesh
+{
+  public:
+    enum Signature
+    {
+        NORMAL = 1,
+        COLOR = 2,
+        STRIP = 4
+    };
 
+    StripMesh(char *s);
 
-class StripMesh {
-public:
-  enum Signature { NORMAL = 1, COLOR = 2, STRIP = 4 };
+  private:
+    unsigned short _vert_size;
+    unsigned short _norm_size;
+    unsigned short _color_size;
+    unsigned short _strip_size;
 
-  StripMesh(char *s);
-
-private:
-  unsigned short _vert_size;
-  unsigned short _norm_size;
-  unsigned short _color_size;
-  unsigned short _strip_size;
-
-  Point3f        *_vert_start;  
-  short          *_norm_start;  
-  unsigned char  *_color_start;  
-  unsigned short *_strip_start;  
-};  
-
-class StripMeshBuilder {
-public:
-  std::vector<Point3f> vert;
-  std::vector<short> norm;
-  std::vector<unsigned char> color;
-  std::vector<unsigned short> strip;
-
-  unsigned int Signature();
-  ///required size;
-  unsigned int Size(); 
-  void Write(char *buffer, unsigned int size);
+    Point3f *_vert_start;
+    short *_norm_start;
+    unsigned char *_color_start;
+    unsigned short *_strip_start;
 };
 
-}//namespace
+class StripMeshBuilder
+{
+  public:
+    std::vector<Point3f> vert;
+    std::vector<short> norm;
+    std::vector<unsigned char> color;
+    std::vector<unsigned short> strip;
+
+    unsigned int Signature();
+    /// required size;
+    unsigned int Size();
+    void Write(char *buffer, unsigned int size);
+};
+
+}  // namespace
 #endif

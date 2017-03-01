@@ -8,7 +8,7 @@
 *                                                                    \      *
 * All rights reserved.                                                      *
 *                                                                           *
-* This program is free software; you can redistribute it and/or modify      *   
+* This program is free software; you can redistribute it and/or modify      *
 * it under the terms of the GNU General Public License as published by      *
 * the Free Software Foundation; either version 2 of the License, or         *
 * (at your option) any later version.                                       *
@@ -37,22 +37,31 @@ just color and quality on the vertex
 #ifndef _CMESH_H
 #define _CMESH_H
 
-
 #include <math.h>
-#include <vcg/space/index/grid_static_ptr.h>
 #include <vcg/complex/trimesh/base.h>
+#include <vcg/space/index/grid_static_ptr.h>
 
 // Vertex, Face, Mesh and Grid definitions.
-#include <vcg/simplex/vertex/base.h>
-#include <vcg/simplex/vertex/component.h>
 #include <vcg/simplex/face/base.h>
 #include <vcg/simplex/face/component.h>
 #include <vcg/simplex/face/component_rt.h>
+#include <vcg/simplex/vertex/base.h>
+#include <vcg/simplex/vertex/component.h>
 class CFace;
 class CVertex;
-struct UsedTypes:public vcg::UsedTypes< vcg::Use<CFace>::AsFaceType, vcg::Use<CVertex>::AsVertexType>{};
-class CVertex   : public vcg::Vertex<UsedTypes,vcg::vertex::Coord3d,vcg::vertex::Qualityf,vcg::vertex::Normal3d,vcg::vertex::Color4b,vcg::vertex::BitFlags> {};
-class CFace     : public vcg::Face< UsedTypes,vcg::face::VertexRef, vcg::face::Normal3d, vcg::face::EdgePlane,vcg::face::Color4b,vcg::face::Mark,vcg::face::BitFlags> {};
-class CMesh     : public vcg::tri::TriMesh< std::vector<CVertex>, std::vector<CFace> > {};
+struct UsedTypes : public vcg::UsedTypes<vcg::Use<CFace>::AsFaceType, vcg::Use<CVertex>::AsVertexType>
+{
+};
+class CVertex : public vcg::Vertex<UsedTypes, vcg::vertex::Coord3d, vcg::vertex::Qualityf, vcg::vertex::Normal3d,
+                                   vcg::vertex::Color4b, vcg::vertex::BitFlags>
+{
+};
+class CFace : public vcg::Face<UsedTypes, vcg::face::VertexRef, vcg::face::Normal3d, vcg::face::EdgePlane,
+                               vcg::face::Color4b, vcg::face::Mark, vcg::face::BitFlags>
+{
+};
+class CMesh : public vcg::tri::TriMesh<std::vector<CVertex>, std::vector<CFace> >
+{
+};
 
 #endif

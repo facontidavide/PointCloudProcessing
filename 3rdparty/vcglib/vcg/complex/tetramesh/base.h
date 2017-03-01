@@ -8,7 +8,7 @@
 *                                                                    \      *
 * All rights reserved.                                                      *
 *                                                                           *
-* This program is free software; you can redistribute it and/or modify      *   
+* This program is free software; you can redistribute it and/or modify      *
 * it under the terms of the GNU General Public License as published by      *
 * the Free Software Foundation; either version 2 of the License, or         *
 * (at your option) any later version.                                       *
@@ -71,203 +71,240 @@ Revision 1.1  2004/04/15 08:54:20  pietroni
 
 ***************************************************************************/
 
-
 #ifndef __VCG_TETRAMESH
 #define __VCG_TETRAMESH
 #include <vcg/space/box3.h>
 #include <vcg/space/color4.h>
 
-
-namespace vcg {
-namespace tetra {
- /** \addtogroup tetramesh */
+namespace vcg
+{
+namespace tetra
+{
+/** \addtogroup tetramesh */
 /*@{*/
 
-  /**  Class TetraMesh.
- This is class for definition of a mesh.
-		@param STL_VERT_CONT (Template Parameter) Specifies the type of the vertices container any the vertex type.
-		@param STL_FACE_CONT (Template Parameter) Specifies the type of the faces container any the face type.
- */
+/**  Class TetraMesh.
+This is class for definition of a mesh.
+      @param STL_VERT_CONT (Template Parameter) Specifies the type of the vertices container any the vertex type.
+      @param STL_FACE_CONT (Template Parameter) Specifies the type of the faces container any the face type.
+*/
 
+template <class STL_VERT_CONT, class STL_TETRA_CONT>
+class Tetramesh
+{
+  public:
+    /***********************************************/
+    /** @name Tetramesh Type Definitions **/
+    //@{
 
-template < class STL_VERT_CONT ,class STL_TETRA_CONT >
-class Tetramesh{
-	public:
+    /// The mesh type
+    typedef Tetramesh<STL_VERT_CONT, STL_TETRA_CONT> TetraMeshType;
 
-/***********************************************/
-/** @name Tetramesh Type Definitions **/
-//@{
-  
-  /// The mesh type
-	typedef Tetramesh<STL_VERT_CONT,STL_TETRA_CONT> TetraMeshType;
+    /// The vertex container
+    typedef STL_VERT_CONT VertexContainer;
 
-	/// The vertex container
-	typedef STL_VERT_CONT VertexContainer;
+    /// The tethaedhron container
+    typedef STL_TETRA_CONT TetraContainer;
 
-	/// The tethaedhron container
-	typedef STL_TETRA_CONT TetraContainer;
+    /// The vertex type
+    typedef typename STL_VERT_CONT::value_type VertexType;
 
-	/// The vertex type 
-	typedef typename STL_VERT_CONT::value_type VertexType;
-	
-	/// The tetrahedron type 
-	typedef typename STL_TETRA_CONT::value_type TetraType;
+    /// The tetrahedron type
+    typedef typename STL_TETRA_CONT::value_type TetraType;
 
-	/// The type of vertex iterator
-	typedef typename STL_VERT_CONT::iterator VertexIterator;
+    /// The type of vertex iterator
+    typedef typename STL_VERT_CONT::iterator VertexIterator;
 
-	/// The type of tetra iterator
-	typedef typename STL_TETRA_CONT::iterator TetraIterator;
+    /// The type of tetra iterator
+    typedef typename STL_TETRA_CONT::iterator TetraIterator;
 
-	/// The type of constant vertex iterator
-	typedef typename STL_VERT_CONT::const_iterator const_VertexIterator;
+    /// The type of constant vertex iterator
+    typedef typename STL_VERT_CONT::const_iterator const_VertexIterator;
 
-	/// The type of constant face iterator
-	typedef typename STL_TETRA_CONT::const_iterator const_TetraIterator;
+    /// The type of constant face iterator
+    typedef typename STL_TETRA_CONT::const_iterator const_TetraIterator;
 
-	/// The vertex pointer type
-	typedef VertexType * VertexPointer;
+    /// The vertex pointer type
+    typedef VertexType *VertexPointer;
 
-	/// The tetra pointer type
-	typedef TetraType * TetraPointer;
+    /// The tetra pointer type
+    typedef TetraType *TetraPointer;
 
-	/// The type of the constant vertex pointer
-	typedef const VertexType * const_VertexPointer;
+    /// The type of the constant vertex pointer
+    typedef const VertexType *const_VertexPointer;
 
-	/// The type of the constant tetrahedron pointer
-	typedef const VertexType * const_TetraPointer;
+    /// The type of the constant tetrahedron pointer
+    typedef const VertexType *const_TetraPointer;
 
-	typedef typename VertexType::ScalarType ScalarType;
-//@}
+    typedef typename VertexType::ScalarType ScalarType;
+    //@}
 
-/***********************************************/
-/** @Common Attributes of a tetrahedral mesh **/
-//@{
+    /***********************************************/
+    /** @Common Attributes of a tetrahedral mesh **/
+    //@{
 
-	///temporary mark for decimation
-	int IMark;
+    /// temporary mark for decimation
+    int IMark;
 
-	/// Set of vertices 
-	STL_VERT_CONT vert;
+    /// Set of vertices
+    STL_VERT_CONT vert;
 
-	/// Real number of vertices
-	int vn;
+    /// Real number of vertices
+    int vn;
 
-	/// Set of tetrahedron
-	STL_TETRA_CONT tetra;
+    /// Set of tetrahedron
+    STL_TETRA_CONT tetra;
 
-	/// Real number of tetrahedron
-	int tn;
-  
-  /// Real number of edges
-	int en;
+    /// Real number of tetrahedron
+    int tn;
 
-  ///Boundingbox della mesh
-  Box3<ScalarType> bbox;
-//@}
- 
-/***********************************************/
-/** @Default Functions **/
-//@{
+    /// Real number of edges
+    int en;
 
-	/// Default constructor
-	Tetramesh()
-	{   
-		tn = vn = en = 0;
-	}
-	
-	Tetramesh(VertexContainer v,TetraContainer t)
-	{
-		this->vert=v;
-		this->tetra=t;
-		vn=v.size();
-		tn=t.size();
-	}
+    /// Boundingbox della mesh
+    Box3<ScalarType> bbox;
+    //@}
 
-	inline int MemUsed() const
-	{
-		return sizeof(Tetramesh)+sizeof(VertexType)*vert.size()+sizeof(TetraType)*tetra.size();
-	}
+    /***********************************************/
+    /** @Default Functions **/
+    //@{
 
-	void Clear(){
-		vert.clear();
-		tetra.clear();
-		tn = 0;
-		vn = 0;
-		}
+    /// Default constructor
+    Tetramesh()
+    {
+        tn = vn = en = 0;
+    }
 
-	/// Initialize the imark-system of the vertices
-	void InitVertexIMark()	
-	{
-		VertexIterator vi;
+    Tetramesh(VertexContainer v, TetraContainer t)
+    {
+        this->vert = v;
+        this->tetra = t;
+        vn = v.size();
+        tn = t.size();
+    }
 
-		for(vi=vert.begin();vi!=vert.end();++vi)
-			if( !(*vi).IsD() && (*vi).IsRW() )
-				(*vi).InitIMark();
-}
-//@}
+    inline int MemUsed() const
+    {
+        return sizeof(Tetramesh) + sizeof(VertexType) * vert.size() + sizeof(TetraType) * tetra.size();
+    }
 
-/***********************************************/
-/** @Functions used to retrieve informations**/
-//@{
- /// Reflection functions that speak about vertex and face properties.
-static bool HasPerVertexNormal()  { return VertexType::HasNormal() ; }
-static bool HasPerVertexColor()   { return VertexType::HasColor()  ; }
-static bool HasPerVertexMark()    { return VertexType::HasMark()   ; }
-static bool HasPerVertexQuality() { return VertexType::HasQuality(); }
-static bool HasPerVertexTexCoord(){ return VertexType::HasTexCoord(); }
+    void Clear()
+    {
+        vert.clear();
+        tetra.clear();
+        tn = 0;
+        vn = 0;
+    }
 
-static bool HasPerTetraNormal()    { return TetraType::HasTetraNormal()  ; }
-static bool HasPerTetraMark()      { return TetraType::HasTetraMark()   ; }
-static bool HasPerTetraQuality()   { return TetraType::HasTetraQuality(); }
+    /// Initialize the imark-system of the vertices
+    void InitVertexIMark()
+    {
+        VertexIterator vi;
 
-static bool HasTTTopology()       { return TetraType::HasTTAdjacency();  }
-static bool HasVTTopology()       { return TetraType::HasVTAdjacency(); }
-static bool HasTopology()         { return HasTTTopology() || HasVTTopology(); }
+        for (vi = vert.begin(); vi != vert.end(); ++vi)
+            if (!(*vi).IsD() && (*vi).IsRW())
+                (*vi).InitIMark();
+    }
+    //@}
 
-int & SimplexNumber(){ return tn;}
-int & VertexNumber(){ return vn;}
-/***********************************************/
+    /***********************************************/
+    /** @Functions used to retrieve informations**/
+    //@{
+    /// Reflection functions that speak about vertex and face properties.
+    static bool HasPerVertexNormal()
+    {
+        return VertexType::HasNormal();
+    }
+    static bool HasPerVertexColor()
+    {
+        return VertexType::HasColor();
+    }
+    static bool HasPerVertexMark()
+    {
+        return VertexType::HasMark();
+    }
+    static bool HasPerVertexQuality()
+    {
+        return VertexType::HasQuality();
+    }
+    static bool HasPerVertexTexCoord()
+    {
+        return VertexType::HasTexCoord();
+    }
 
-/** @Functions used for handle the temporany mark of a tetrahedron used in decimation**/
-//@{
+    static bool HasPerTetraNormal()
+    {
+        return TetraType::HasTetraNormal();
+    }
+    static bool HasPerTetraMark()
+    {
+        return TetraType::HasTetraMark();
+    }
+    static bool HasPerTetraQuality()
+    {
+        return TetraType::HasTetraQuality();
+    }
 
-///Increase the current mark.
-	void UnMarkAll()
-	{	
-		++IMark;
-	}
+    static bool HasTTTopology()
+    {
+        return TetraType::HasTTAdjacency();
+    }
+    static bool HasVTTopology()
+    {
+        return TetraType::HasVTAdjacency();
+    }
+    static bool HasTopology()
+    {
+        return HasTTTopology() || HasVTTopology();
+    }
 
-///Mark the vertex with current value
-	void Mark(VertexType *v)
-	{
-		 v->IMark()=IMark;
-	}
+    int &SimplexNumber()
+    {
+        return tn;
+    }
+    int &VertexNumber()
+    {
+        return vn;
+    }
+    /***********************************************/
 
-  ///return the current mark
-	int GetMark()
-	{
-		return (IMark);
-	}
+    /** @Functions used for handle the temporany mark of a tetrahedron used in decimation**/
+    //@{
 
-///Initialize the mark of all vertices
-	void InitIMark()
-	{
-	VertexIterator vi;
-	IMark=0;
-	for(vi=vert.begin();vi!=vert.end();vi++)
-	{
-		(*vi).InitIMark();
-	}
-	}
+    /// Increase the current mark.
+    void UnMarkAll()
+    {
+        ++IMark;
+    }
 
-//@}
-};//End class
+    /// Mark the vertex with current value
+    void Mark(VertexType *v)
+    {
+        v->IMark() = IMark;
+    }
+
+    /// return the current mark
+    int GetMark()
+    {
+        return (IMark);
+    }
+
+    /// Initialize the mark of all vertices
+    void InitIMark()
+    {
+        VertexIterator vi;
+        IMark = 0;
+        for (vi = vert.begin(); vi != vert.end(); vi++)
+        {
+            (*vi).InitIMark();
+        }
+    }
+
+    //@}
+};  // End class
 
 /*@}*/
 
-
-};//end namespace
-};//end namespace
+};  // end namespace
+};  // end namespace
 #endif
-

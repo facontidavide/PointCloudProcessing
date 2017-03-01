@@ -8,7 +8,7 @@
 *                                                                    \      *
 * All rights reserved.                                                      *
 *                                                                           *
-* This program is free software; you can redistribute it and/or modify      *   
+* This program is free software; you can redistribute it and/or modify      *
 * it under the terms of the GNU General Public License as published by      *
 * the Free Software Foundation; either version 2 of the License, or         *
 * (at your option) any later version.                                       *
@@ -24,9 +24,9 @@
 #ifndef EXPORTER_DAE_H
 #define EXPORTER_DAE_H
 
-#include <wrap/dae/xmldocumentmanaging.h>
 #include <wrap/dae/colladaformat.h>
 #include <wrap/dae/util_dae.h>
+#include <wrap/dae/xmldocumentmanaging.h>
 
 namespace vcg
 {
@@ -34,44 +34,44 @@ namespace tri
 {
 namespace io
 {
-	template<typename MESHMODEL>
-	class ExporterDAE
-	{
-	public:
-		static int Save(const MESHMODEL& model,const char* filename,const int mask,const QDomDocument* doc = NULL)
-		{
-			XMLDocumentWriter stream(filename);
-			if (stream.isReliable())
-			{
-				XMLDocument* document = Collada::DocumentManager::createColladaDocument(model,mask);
-				stream.write(*document);
-				Collada::DocumentManager::destroyColladaDocument(document);
-				return UtilDAE::E_NOERROR;
-			}
-			else 
-				return UtilDAE::E_CANTSAVE;
-		}
+template <typename MESHMODEL>
+class ExporterDAE
+{
+  public:
+    static int Save(const MESHMODEL& model, const char* filename, const int mask, const QDomDocument* doc = NULL)
+    {
+        XMLDocumentWriter stream(filename);
+        if (stream.isReliable())
+        {
+            XMLDocument* document = Collada::DocumentManager::createColladaDocument(model, mask);
+            stream.write(*document);
+            Collada::DocumentManager::destroyColladaDocument(document);
+            return UtilDAE::E_NOERROR;
+        }
+        else
+            return UtilDAE::E_CANTSAVE;
+    }
 
-		static int GetExportMaskCapability()
-		{
-			int capability = 0;
+    static int GetExportMaskCapability()
+    {
+        int capability = 0;
 
-			//camera
-			//capability |= MeshModel::IOM_CAMERA;
+        // camera
+        // capability |= MeshModel::IOM_CAMERA;
 
-			//vert
-			capability |= Mask::IOM_VERTNORMAL;
-			capability |= Mask::IOM_VERTTEXCOORD;
-			capability |= Mask::IOM_VERTCOLOR;
-			//face
+        // vert
+        capability |= Mask::IOM_VERTNORMAL;
+        capability |= Mask::IOM_VERTTEXCOORD;
+        capability |= Mask::IOM_VERTCOLOR;
+        // face
 
-			////wedg
-			capability |= Mask::IOM_WEDGTEXCOORD;
-			capability |= Mask::IOM_WEDGNORMAL;
+        ////wedg
+        capability |= Mask::IOM_WEDGTEXCOORD;
+        capability |= Mask::IOM_WEDGNORMAL;
 
-			return capability;
-		}
-	};
+        return capability;
+    }
+};
 }
 }
 }

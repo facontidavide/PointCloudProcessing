@@ -10,9 +10,9 @@
 #ifndef MAINFRAME_H
 #define MAINFRAME_H
 
-#include <qvariant.h>
-#include <qpixmap.h>
 #include <qmainwindow.h>
+#include <qpixmap.h>
+#include <qvariant.h>
 
 class QVBoxLayout;
 class QHBoxLayout;
@@ -31,8 +31,8 @@ class MainFrame : public QMainWindow
 {
     Q_OBJECT
 
-public:
-    MainFrame( QWidget* parent = 0, const char* name = 0, WFlags fl = WType_TopLevel );
+  public:
+    MainFrame(QWidget* parent = 0, const char* name = 0, WFlags fl = WType_TopLevel);
     ~MainFrame();
 
     QGroupBox* file;
@@ -49,10 +49,10 @@ public:
     QButtonGroup* buttonGroup2;
     QPushButton* TrackButton;
     QPushButton* SectionButton;
-    QMenuBar *MenuBar;
-    QPopupMenu *File;
-    QPopupMenu *Help;
-    QPopupMenu *Info_2;
+    QMenuBar* MenuBar;
+    QPopupMenu* File;
+    QPopupMenu* Help;
+    QPopupMenu* Info_2;
     QAction* fileNewAction;
     QAction* fileOpenAction;
     QAction* fileSaveAction;
@@ -68,7 +68,7 @@ public:
     QAction* infoQualityAction;
     QAction* infoPhysicsAction;
 
-public slots:
+  public slots:
     virtual void fileNew();
     virtual void fileOpen();
     virtual void fileSave();
@@ -79,14 +79,12 @@ public slots:
     virtual void helpAbout();
     void setWire();
 
-protected:
-
-protected slots:
+  protected:
+  protected slots:
     virtual void languageChange();
 
-private:
+  private:
     QPixmap image0;
-
 };
 
-#endif // MAINFRAME_H
+#endif  // MAINFRAME_H

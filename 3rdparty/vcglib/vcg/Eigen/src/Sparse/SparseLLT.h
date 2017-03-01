@@ -35,35 +35,34 @@
   *
   * \sa class LLT, class LDLT
   */
-template<typename MatrixType, int Backend = DefaultBackend>
+template <typename MatrixType, int Backend = DefaultBackend>
 class SparseLLT
 {
   protected:
     typedef typename MatrixType::Scalar Scalar;
     typedef typename NumTraits<typename MatrixType::Scalar>::Real RealScalar;
-    typedef SparseMatrix<Scalar,LowerTriangular> CholMatrixType;
+    typedef SparseMatrix<Scalar, LowerTriangular> CholMatrixType;
 
-    enum {
-      SupernodalFactorIsDirty      = 0x10000,
-      MatrixLIsDirty               = 0x20000
+    enum
+    {
+        SupernodalFactorIsDirty = 0x10000,
+        MatrixLIsDirty = 0x20000
     };
 
   public:
-
     /** Creates a dummy LLT factorization object with flags \a flags. */
-    SparseLLT(int flags = 0)
-      : m_flags(flags), m_status(0)
+    SparseLLT(int flags = 0) : m_flags(flags), m_status(0)
     {
-      m_precision = RealScalar(0.1) * Eigen::precision<RealScalar>();
+        m_precision = RealScalar(0.1) * Eigen::precision<RealScalar>();
     }
 
     /** Creates a LLT object and compute the respective factorization of \a matrix using
       * flags \a flags. */
     SparseLLT(const MatrixType& matrix, int flags = 0)
-      : m_matrix(matrix.rows(), matrix.cols()), m_flags(flags), m_status(0)
+        : m_matrix(matrix.rows(), matrix.cols()), m_flags(flags), m_status(0)
     {
-      m_precision = RealScalar(0.1) * Eigen::precision<RealScalar>();
-      compute(matrix);
+        m_precision = RealScalar(0.1) * Eigen::precision<RealScalar>();
+        compute(matrix);
     }
 
     /** Sets the relative threshold value used to prune zero coefficients during the decomposition.
@@ -79,12 +78,18 @@ class SparseLLT
       * backend. Moreover, not all backends support this feature.
       *
       * \sa precision() */
-    void setPrecision(RealScalar v) { m_precision = v; }
+    void setPrecision(RealScalar v)
+    {
+        m_precision = v;
+    }
 
     /** \returns the current precision.
       *
       * \sa setPrecision() */
-    RealScalar precision() const { return m_precision; }
+    RealScalar precision() const
+    {
+        return m_precision;
+    }
 
     /** Sets the flags. Possible values are:
       *  - CompleteFactorization
@@ -96,21 +101,33 @@ class SparseLLT
       *                              overloads the MemoryEfficient flags)
       *
       * \sa flags() */
-    void setFlags(int f) { m_flags = f; }
+    void setFlags(int f)
+    {
+        m_flags = f;
+    }
     /** \returns the current flags */
-    int flags() const { return m_flags; }
+    int flags() const
+    {
+        return m_flags;
+    }
 
     /** Computes/re-computes the LLT factorization */
     void compute(const MatrixType& matrix);
 
     /** \returns the lower triangular matrix L */
-    inline const CholMatrixType& matrixL(void) const { return m_matrix; }
+    inline const CholMatrixType& matrixL(void) const
+    {
+        return m_matrix;
+    }
 
-    template<typename Derived>
-    bool solveInPlace(MatrixBase<Derived> &b) const;
+    template <typename Derived>
+    bool solveInPlace(MatrixBase<Derived>& b) const;
 
     /** \returns true if the factorization succeeded */
-    inline bool succeeded(void) const { return m_succeeded; }
+    inline bool succeeded(void) const
+    {
+        return m_succeeded;
+    }
 
   protected:
     CholMatrixType m_matrix;
@@ -123,83 +140,83 @@ class SparseLLT
 /** Computes / recomputes the LLT decomposition of matrix \a a
   * using the default algorithm.
   */
-template<typename MatrixType, int Backend>
-void SparseLLT<MatrixType,Backend>::compute(const MatrixType& a)
+template <typename MatrixType, int Backend>
+void SparseLLT<MatrixType, Backend>::compute(const MatrixType& a)
 {
-  assert(a.rows()==a.cols());
-  const int size = a.rows();
-  m_matrix.resize(size, size);
+    assert(a.rows() == a.cols());
+    const int size = a.rows();
+    m_matrix.resize(size, size);
 
-  // allocate a temporary vector for accumulations
-  AmbiVector<Scalar> tempVector(size);
-  RealScalar density = a.nonZeros()/RealScalar(size*size);
+    // allocate a temporary vector for accumulations
+    AmbiVector<Scalar> tempVector(size);
+    RealScalar density = a.nonZeros() / RealScalar(size * size);
 
-  // TODO estimate the number of non zeros
-  m_matrix.startFill(a.nonZeros()*2);
-  for (int j = 0; j < size; ++j)
-  {
-    Scalar x = ei_real(a.coeff(j,j));
-
-    // TODO better estimate of the density !
-    tempVector.init(density>0.001? IsDense : IsSparse);
-    tempVector.setBounds(j+1,size);
-    tempVector.setZero();
-    // init with current matrix a
+    // TODO estimate the number of non zeros
+    m_matrix.startFill(a.nonZeros() * 2);
+    for (int j = 0; j < size; ++j)
     {
-      typename MatrixType::InnerIterator it(a,j);
-      ++it; // skip diagonal element
-      for (; it; ++it)
-        tempVector.coeffRef(it.index()) = it.value();
-    }
-    for (int k=0; k<j+1; ++k)
-    {
-      typename CholMatrixType::InnerIterator it(m_matrix, k);
-      while (it && it.index()<j)
-        ++it;
-      if (it && it.index()==j)
-      {
-        Scalar y = it.value();
-        x -= ei_abs2(y);
-        ++it; // skip j-th element, and process remaining column coefficients
-        tempVector.restart();
-        for (; it; ++it)
+        Scalar x = ei_real(a.coeff(j, j));
+
+        // TODO better estimate of the density !
+        tempVector.init(density > 0.001 ? IsDense : IsSparse);
+        tempVector.setBounds(j + 1, size);
+        tempVector.setZero();
+        // init with current matrix a
         {
-          tempVector.coeffRef(it.index()) -= it.value() * y;
+            typename MatrixType::InnerIterator it(a, j);
+            ++it;  // skip diagonal element
+            for (; it; ++it)
+                tempVector.coeffRef(it.index()) = it.value();
         }
-      }
+        for (int k = 0; k < j + 1; ++k)
+        {
+            typename CholMatrixType::InnerIterator it(m_matrix, k);
+            while (it && it.index() < j)
+                ++it;
+            if (it && it.index() == j)
+            {
+                Scalar y = it.value();
+                x -= ei_abs2(y);
+                ++it;  // skip j-th element, and process remaining column coefficients
+                tempVector.restart();
+                for (; it; ++it)
+                {
+                    tempVector.coeffRef(it.index()) -= it.value() * y;
+                }
+            }
+        }
+        // copy the temporary vector to the respective m_matrix.col()
+        // while scaling the result by 1/real(x)
+        RealScalar rx = ei_sqrt(ei_real(x));
+        m_matrix.fill(j, j) = rx;
+        Scalar y = Scalar(1) / rx;
+        for (typename AmbiVector<Scalar>::Iterator it(tempVector, m_precision * rx); it; ++it)
+        {
+            m_matrix.fill(it.index(), j) = it.value() * y;
+        }
     }
-    // copy the temporary vector to the respective m_matrix.col()
-    // while scaling the result by 1/real(x)
-    RealScalar rx = ei_sqrt(ei_real(x));
-    m_matrix.fill(j,j) = rx;
-    Scalar y = Scalar(1)/rx;
-    for (typename AmbiVector<Scalar>::Iterator it(tempVector, m_precision*rx); it; ++it)
-    {
-      m_matrix.fill(it.index(), j) = it.value() * y;
-    }
-  }
-  m_matrix.endFill();
+    m_matrix.endFill();
 }
 
 /** Computes b = L^-T L^-1 b */
-template<typename MatrixType, int Backend>
-template<typename Derived>
-bool SparseLLT<MatrixType, Backend>::solveInPlace(MatrixBase<Derived> &b) const
+template <typename MatrixType, int Backend>
+template <typename Derived>
+bool SparseLLT<MatrixType, Backend>::solveInPlace(MatrixBase<Derived>& b) const
 {
-  const int size = m_matrix.rows();
-  ei_assert(size==b.rows());
+    const int size = m_matrix.rows();
+    ei_assert(size == b.rows());
 
-  m_matrix.solveTriangularInPlace(b);
-  // FIXME should be simply .adjoint() but it fails to compile...
-  if (NumTraits<Scalar>::IsComplex)
-  {
-    CholMatrixType aux = m_matrix.conjugate();
-    aux.transpose().solveTriangularInPlace(b);
-  }
-  else
-    m_matrix.transpose().solveTriangularInPlace(b);
+    m_matrix.solveTriangularInPlace(b);
+    // FIXME should be simply .adjoint() but it fails to compile...
+    if (NumTraits<Scalar>::IsComplex)
+    {
+        CholMatrixType aux = m_matrix.conjugate();
+        aux.transpose().solveTriangularInPlace(b);
+    }
+    else
+        m_matrix.transpose().solveTriangularInPlace(b);
 
-  return true;
+    return true;
 }
 
-#endif // EIGEN_SPARSELLT_H
+#endif  // EIGEN_SPARSELLT_H

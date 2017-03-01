@@ -6,146 +6,151 @@
 #include "myclasses.h"
 #include "tetrastats.h"
 
+class MyGLWidget : public QGLWidget
+{
+    Q_OBJECT
 
+  private:
+    int _H;
+    int _W;
+    vcg::Trackball Track;
+    vcg::GLWrapTetra<MyTetraMesh::TetraContainer> *WT;
 
-class MyGLWidget: public QGLWidget{
+    GLdouble projection[16];
+    GLdouble modelMatrix[16];
+    GLint viewport[4];
 
-Q_OBJECT
+    int modality;  // rendering modality
+    enum mousemod
+    {
+        MMTrackball,
+        MMSection,
+        MMNavigateSection
+    };  // modality of using mouse
+    mousemod mouse_modality;
 
-private :
-	int _H;
-	int _W;
-	vcg::Trackball Track;
-	vcg::GLWrapTetra<MyTetraMesh::TetraContainer > *WT;
+    vcg::Trackball TrackClip;
 
-	GLdouble projection[16];
-	GLdouble modelMatrix[16];
-	GLint viewport[4];
+    /// This are the flags pf info of the mesh that we want to show
+    int _ShowBar;
 
-	
-	int modality;//rendering modality
-	enum mousemod {MMTrackball, MMSection,MMNavigateSection};//modality of using mouse
-	mousemod mouse_modality;
-	
+    enum
+    {
+        SIMPLEX = 0x00000001,  // show vertex number and tetrahedrons number
+        PHYSICS = 0x00000002,  // show also physical information about the mesh
+        QUALITY = 0x00000004,  // show informations about aspect ratio
+    };
 
-	vcg::Trackball TrackClip;
-	
-/// This are the flags pf info of the mesh that we want to show
-	int  _ShowBar;
+  public:
+    MyGLWidget(QWidget *parent = 0, const char *name = 0, const QGLWidget *shareWidget = 0, WFlags f = 0);
 
-  enum {
-	SIMPLEX        = 0x00000001,	 // show vertex number and tetrahedrons number
-	PHYSICS		   = 0x00000002,	 // show also physical information about the mesh
-	QUALITY        = 0x00000004,	 // show informations about aspect ratio
-	};
+    virtual void glDraw();
+    void resizeGL(int w, int h);
+    virtual void mousePressEvent(QMouseEvent *e);
+    virtual void mouseReleaseEvent(QMouseEvent *e);
+    virtual void mouseMoveEvent(QMouseEvent *e);
+    virtual void wheelEvent(QWheelEvent *e);
+    virtual void keyPressEvent(QKeyEvent *k);
+    virtual void initializeGL();
+    virtual void SaveMatrix();
+    void DrawTetraMesh();
+    void DrawBox();
+    bool ShowTextSimplex();
+    bool ShowTextPhysics();
+    bool ShowTextQuality();
+    void DrawTextInfo();
+    void LoadMatrix();
 
-	
-public:
-	
-	MyGLWidget( QWidget * parent = 0, const char * name = 0, const QGLWidget * shareWidget = 0, WFlags f = 0 );
+  public slots:
 
-	virtual void glDraw();
-    void resizeGL( int w, int h );
-    virtual void mousePressEvent ( QMouseEvent * e );
-	virtual void mouseReleaseEvent(QMouseEvent * e );
-	virtual void mouseMoveEvent ( QMouseEvent * e );
-	virtual void wheelEvent ( QWheelEvent * e );
-	virtual void keyPressEvent(QKeyEvent *k);
-	virtual void initializeGL();
-	virtual void SaveMatrix();
-	void DrawTetraMesh();
-	void DrawBox();
-	bool ShowTextSimplex();
-	bool ShowTextPhysics();
-	bool ShowTextQuality();
-	void DrawTextInfo();
-	void LoadMatrix();
+    /// bounding box visualization modality
+    void setBox()
+    {
+        modality = 0;
+        repaint();
+    };
 
-public slots:
+    /// wireframe modality
+    void setWire()
+    {
+        modality = 1;
+        repaint();
+    };
 
-	///bounding box visualization modality
-	void setBox(){
-		modality=0;
-		repaint();
-	};
+    /// hiddenlines modality
+    void setHidden()
+    {
+        modality = 2;
+        repaint();
+    };
 
-	///wireframe modality
-	void setWire(){
-		modality=1;
-		repaint();
-	};
+    /// alternate wire visualization
+    void setFlat()
+    {
+        modality = 3;
+        repaint();
+    };
 
-	///hiddenlines modality
-	void setHidden(){
-		modality=2;
-		repaint();
-	};
+    /// alternate wire visualization
+    void setFlatWire()
+    {
+        modality = 4;
+        repaint();
+    };
 
-	///alternate wire visualization
-	void setFlat(){
-		modality=3;
-		repaint();
-	};
+    /// alternate wire visualization
+    void setSmooth()
+    {
+        modality = 5;
+        repaint();
+    };
 
-	///alternate wire visualization
-	void setFlatWire(){
-		modality=4;
-		repaint();
-	};
+    /// alternate wire visualization
+    void setSmallTetra()
+    {
+        modality = 6;
+        repaint();
+    };
 
-	///alternate wire visualization
-	void setSmooth(){
-		modality=5;
-		repaint();
-	};
+    // set trackball modality
+    void TrackMouseModality()
+    {
+        mouse_modality = MMTrackball;
+    };
 
-	///alternate wire visualization
-	void setSmallTetra()
-	{
-		modality=6;
-		repaint();
-	};
+    // set trackball modality
+    void SectionMouseModality()
+    {
+        mouse_modality = MMSection;
+    };
 
-	//set trackball modality
-	void TrackMouseModality()
-	{
-		mouse_modality=MMTrackball;
-	};
+    /// switching to modality of viewing txt info on simplex
+    void SwitchTextSimplex()
+    {
+        if (ShowTextSimplex())
+            _ShowBar &= ~SIMPLEX;
+        else
+            _ShowBar |= SIMPLEX;
+        repaint();
+    };
 
-	//set trackball modality
-	void SectionMouseModality()
-	{
-		mouse_modality=MMSection;
-	};
+    /// switching to modality of viewing txt info on physics
+    void SwitchTextPhysics()
+    {
+        if (ShowTextPhysics())
+            _ShowBar &= ~PHYSICS;
+        else
+            _ShowBar |= PHYSICS;
+        repaint();
+    };
 
-	///switching to modality of viewing txt info on simplex
-	void SwitchTextSimplex()
-	{
-		if (ShowTextSimplex())
-			_ShowBar&=~SIMPLEX;
-		else
-			_ShowBar|=SIMPLEX;
-		repaint();
-	};
-
-	///switching to modality of viewing txt info on physics
-	void SwitchTextPhysics()
-	{
-		if (ShowTextPhysics())
-			_ShowBar&=~PHYSICS;
-		else
-		_ShowBar|=PHYSICS;
-		repaint();
-	};
-
-	///switching to modality of viewing txt info on quality
-	void SwitchTextQuality()
-	{
-		if (ShowTextQuality())
-			_ShowBar&=~QUALITY;
-		else
-		_ShowBar|=QUALITY;
-		repaint();
-	};
-
+    /// switching to modality of viewing txt info on quality
+    void SwitchTextQuality()
+    {
+        if (ShowTextQuality())
+            _ShowBar &= ~QUALITY;
+        else
+            _ShowBar |= QUALITY;
+        repaint();
+    };
 };

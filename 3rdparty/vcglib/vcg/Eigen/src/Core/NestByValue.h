@@ -37,65 +37,76 @@
   *
   * \sa MatrixBase::nestByValue()
   */
-template<typename ExpressionType>
+template <typename ExpressionType>
 struct ei_traits<NestByValue<ExpressionType> > : public ei_traits<ExpressionType>
-{};
+{
+};
 
-template<typename ExpressionType> class NestByValue
-  : public MatrixBase<NestByValue<ExpressionType> >
+template <typename ExpressionType>
+class NestByValue : public MatrixBase<NestByValue<ExpressionType> >
 {
   public:
-
     EIGEN_GENERIC_PUBLIC_INTERFACE(NestByValue)
 
-    inline NestByValue(const ExpressionType& matrix) : m_expression(matrix) {}
+    inline NestByValue(const ExpressionType& matrix) : m_expression(matrix)
+    {
+    }
 
-    inline int rows() const { return m_expression.rows(); }
-    inline int cols() const { return m_expression.cols(); }
-    inline int stride() const { return m_expression.stride(); }
+    inline int rows() const
+    {
+        return m_expression.rows();
+    }
+    inline int cols() const
+    {
+        return m_expression.cols();
+    }
+    inline int stride() const
+    {
+        return m_expression.stride();
+    }
 
     inline const Scalar coeff(int row, int col) const
     {
-      return m_expression.coeff(row, col);
+        return m_expression.coeff(row, col);
     }
 
     inline Scalar& coeffRef(int row, int col)
     {
-      return m_expression.const_cast_derived().coeffRef(row, col);
+        return m_expression.const_cast_derived().coeffRef(row, col);
     }
 
     inline const Scalar coeff(int index) const
     {
-      return m_expression.coeff(index);
+        return m_expression.coeff(index);
     }
 
     inline Scalar& coeffRef(int index)
     {
-      return m_expression.const_cast_derived().coeffRef(index);
+        return m_expression.const_cast_derived().coeffRef(index);
     }
 
-    template<int LoadMode>
+    template <int LoadMode>
     inline const PacketScalar packet(int row, int col) const
     {
-      return m_expression.template packet<LoadMode>(row, col);
+        return m_expression.template packet<LoadMode>(row, col);
     }
 
-    template<int LoadMode>
+    template <int LoadMode>
     inline void writePacket(int row, int col, const PacketScalar& x)
     {
-      m_expression.const_cast_derived().template writePacket<LoadMode>(row, col, x);
+        m_expression.const_cast_derived().template writePacket<LoadMode>(row, col, x);
     }
 
-    template<int LoadMode>
+    template <int LoadMode>
     inline const PacketScalar packet(int index) const
     {
-      return m_expression.template packet<LoadMode>(index);
+        return m_expression.template packet<LoadMode>(index);
     }
 
-    template<int LoadMode>
+    template <int LoadMode>
     inline void writePacket(int index, const PacketScalar& x)
     {
-      m_expression.const_cast_derived().template writePacket<LoadMode>(index, x);
+        m_expression.const_cast_derived().template writePacket<LoadMode>(index, x);
     }
 
   protected:
@@ -104,11 +115,10 @@ template<typename ExpressionType> class NestByValue
 
 /** \returns an expression of the temporary version of *this.
   */
-template<typename Derived>
-inline const NestByValue<Derived>
-MatrixBase<Derived>::nestByValue() const
+template <typename Derived>
+inline const NestByValue<Derived> MatrixBase<Derived>::nestByValue() const
 {
-  return NestByValue<Derived>(derived());
+    return NestByValue<Derived>(derived());
 }
 
-#endif // EIGEN_NESTBYVALUE_H
+#endif  // EIGEN_NESTBYVALUE_H

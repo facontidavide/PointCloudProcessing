@@ -8,7 +8,7 @@
 *                                                                    \      *
 * All rights reserved.                                                      *
 *                                                                           *
-* This program is free software; you can redistribute it and/or modify      *   
+* This program is free software; you can redistribute it and/or modify      *
 * it under the terms of the GNU General Public License as published by      *
 * the Free Software Foundation; either version 2 of the License, or         *
 * (at your option) any later version.                                       *
@@ -44,89 +44,109 @@ Revision 1.13  2005/04/14 17:23:08  ponchio
 #ifndef __VCGLIB_UGRID_OBJ
 #define __VCGLIB_UGRID_OBJ
 
-#include <vector>
-#include <algorithm>
 #include <stdio.h>
+#include <algorithm>
+#include <vector>
 
 #include <vcg/space/box3.h>
-#include <vcg/space/line3.h>
 #include <vcg/space/index/grid_util.h>
-namespace vcg {
+#include <vcg/space/line3.h>
+namespace vcg
+{
 /** Static Uniform Grid
-A simple Spatial grid of object. 
-Kept in the most trivial way. Every cell is allocated 
+A simple Spatial grid of object.
+Kept in the most trivial way. Every cell is allocated
 and contains one istance of the template class.
 */
 
-template < class ObjType, class FLT=float  >
+template <class ObjType, class FLT = float>
 class GridStaticObj : public BasicGrid<FLT>
 {
- public:
+  public:
+    /// La matriciona della griglia
+    ObjType *grid;
 
-	 /// La matriciona della griglia
-	 ObjType *grid;
+    int size() const
+    {
+        return this->siz[0] * this->siz[1] * this->siz[2];
+    }
 
-	 int size() const { return this->siz[0]*this->siz[1]*this->siz[2];}
+    inline GridStaticObj()
+    {
+        grid = 0;
+    }
+    inline ~GridStaticObj()
+    {
+        if (grid)
+            delete[] grid;
+    }
+    inline void Init(const ObjType &val)
+    {
+        fill(grid, grid + size(), val);
+    }
 
-	 inline  GridStaticObj() { grid = 0; }
-	 inline ~GridStaticObj() { if(grid) delete[] grid; }
-	 inline void Init(const ObjType &val)
-	 {
-		 fill(grid,grid+size(),val);
-	 }
+    /// Date le coordinate ritorna la cella
+    inline ObjType &Grid(const int x, const int y, const int z)
+    {
+        return grid[GridIndI(Point3i(x, y, z))];
+    }
 
+    // Dato un punto ritorna la cella
+    inline ObjType &Grid(const Point3<FLT> &p)
+    {
+        return grid[GridIndF(p)];
+    }
 
-	 /// Date le coordinate ritorna la cella
-	 inline ObjType & Grid( const int x, const int y, const int z ) {return grid[GridIndI(Point3i(x,y,z))]; }
-
-	 // Dato un punto ritorna la cella  
-	 inline ObjType & Grid( const Point3<FLT> & p )                 {				return grid[GridIndF(p)];		}
-
-	 inline int GridIndI( const Point3i & pi ) const
-	 {
+    inline int GridIndI(const Point3i &pi) const
+    {
 #ifndef NDEBUG
-		 if ( pi[0]<0 || pi[0]>=this->siz[0] || pi[1]<0 || pi[1]>=this->siz[1] || pi[2]<0 || pi[2]>=this->siz[2] )
-		 {	assert(0);
-		 return 0;
-		 } 
+        if (pi[0] < 0 || pi[0] >= this->siz[0] || pi[1] < 0 || pi[1] >= this->siz[1] || pi[2] < 0 ||
+            pi[2] >= this->siz[2])
+        {
+            assert(0);
+            return 0;
+        }
 #endif
-		 return pi[0]+this->siz[0]*(pi[1]+this->siz[1]*pi[2]);
-	 }
+        return pi[0] + this->siz[0] * (pi[1] + this->siz[1] * pi[2]);
+    }
 
-	 // Dato un punto ritorna l'indice della cella
-	 inline int GridIndF( const Point3<FLT> & p ) const { return GridIndI(GridP(p)); 	}
-  
-	void Create( const Point3i &_siz, const ObjType & init )
-	{
-		this->siz=_siz;
-	 	this->voxel[0] = this->dim[0]/this->siz[0];
-		this->voxel[1] = this->dim[1]/this->siz[1];
-		this->voxel[2] = this->dim[2]/this->siz[2];
+    // Dato un punto ritorna l'indice della cella
+    inline int GridIndF(const Point3<FLT> &p) const
+    {
+        return GridIndI(GridP(p));
+    }
 
-		if(grid) delete[] grid;
-		int n = this->siz[0]*this->siz[1]*this->siz[2];
-		grid = new ObjType[n];
-		fill(grid,grid+n,init);
-	}
+    void Create(const Point3i &_siz, const ObjType &init)
+    {
+        this->siz = _siz;
+        this->voxel[0] = this->dim[0] / this->siz[0];
+        this->voxel[1] = this->dim[1] / this->siz[1];
+        this->voxel[2] = this->dim[2] / this->siz[2];
 
-	/// Crea una griglia di un dato bbox e con un certo numero di elem.
-	/// il bbox viene gonfiato appositamente.
+        if (grid)
+            delete[] grid;
+        int n = this->siz[0] * this->siz[1] * this->siz[2];
+        grid = new ObjType[n];
+        fill(grid, grid + n, init);
+    }
 
-	template<class FLT2>
-	void Create(const Box3<FLT2> & b, int ncell, const ObjType & init, bool Inflate = true )
-	{
-		this->bbox.Import(b);
-		if(Inflate) this->bbox.Offset(0.01*this->bbox.Diag());
-		this->dim  = this->bbox.max - this->bbox.min;
+    /// Crea una griglia di un dato bbox e con un certo numero di elem.
+    /// il bbox viene gonfiato appositamente.
 
-		// Calcola la dimensione della griglia
-		Point3i _siz;
-		BestDim( ncell, this->dim, _siz );
-		Create(_siz, init );
-	}
+    template <class FLT2>
+    void Create(const Box3<FLT2> &b, int ncell, const ObjType &init, bool Inflate = true)
+    {
+        this->bbox.Import(b);
+        if (Inflate)
+            this->bbox.Offset(0.01 * this->bbox.Diag());
+        this->dim = this->bbox.max - this->bbox.min;
+
+        // Calcola la dimensione della griglia
+        Point3i _siz;
+        BestDim(ncell, this->dim, _siz);
+        Create(_siz, init);
+    }
 };
-//end class SGrid
-
-
+// end class SGrid
 }
 #endif

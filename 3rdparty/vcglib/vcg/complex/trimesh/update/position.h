@@ -8,7 +8,7 @@
 *                                                                    \      *
 * All rights reserved.                                                      *
 *                                                                           *
-* This program is free software; you can redistribute it and/or modify      *   
+* This program is free software; you can redistribute it and/or modify      *
 * it under the terms of the GNU General Public License as published by      *
 * the Free Software Foundation; either version 2 of the License, or         *
 * (at your option) any later version.                                       *
@@ -34,10 +34,11 @@ Initial commit
 
 #include "normal.h"
 
-namespace vcg {
-namespace tri {
-
-/// \ingroup trimesh 
+namespace vcg
+{
+namespace tri
+{
+/// \ingroup trimesh
 
 /// \headerfile position.h vcg/complex/trimesh/update/position.h
 
@@ -45,39 +46,40 @@ namespace tri {
 template <class ComputeMeshType>
 class UpdatePosition
 {
+  public:
+    typedef ComputeMeshType MeshType;
+    typedef typename MeshType::ScalarType ScalarType;
+    typedef typename MeshType::VertexType VertexType;
+    typedef typename MeshType::VertexPointer VertexPointer;
+    typedef typename MeshType::VertexIterator VertexIterator;
+    typedef typename MeshType::FaceType FaceType;
+    typedef typename MeshType::FacePointer FacePointer;
+    typedef typename MeshType::FaceIterator FaceIterator;
 
-public:
-typedef ComputeMeshType MeshType; 
-typedef typename MeshType::ScalarType     ScalarType;
-typedef typename MeshType::VertexType     VertexType;
-typedef typename MeshType::VertexPointer  VertexPointer;
-typedef typename MeshType::VertexIterator VertexIterator;
-typedef typename MeshType::FaceType       FaceType;
-typedef typename MeshType::FacePointer    FacePointer;
-typedef typename MeshType::FaceIterator   FaceIterator;
+    /// \brief Multiply
+    static void Matrix(ComputeMeshType &m, const Matrix44<ScalarType> &M, bool update_also_normals = true)
+    {
+        VertexIterator vi;
+        for (vi = m.vert.begin(); vi != m.vert.end(); ++vi)
+            if (!(*vi).IsD())
+                (*vi).P() = M * (*vi).cP();
 
-/// \brief Multiply 
-static void Matrix(ComputeMeshType &m, const Matrix44<ScalarType> &M, bool update_also_normals = true)
-{
-	VertexIterator vi;
-	for(vi=m.vert.begin();vi!=m.vert.end();++vi)
-	        if(!(*vi).IsD()) (*vi).P()=M*(*vi).cP();
+        if (update_also_normals)
+        {
+            if (m.HasPerVertexNormal())
+            {
+                UpdateNormals<ComputeMeshType>::PerVertexMatrix(m, M);
+            }
+            if (m.HasPerFaceNormal())
+            {
+                UpdateNormals<ComputeMeshType>::PerFaceMatrix(m, M);
+            }
+        }
+    }
 
-	if(update_also_normals){
-		if(m.HasPerVertexNormal()){
-			UpdateNormals<ComputeMeshType>::PerVertexMatrix(m,M);
-		}
-		if(m.HasPerFaceNormal()){
-			UpdateNormals<ComputeMeshType>::PerFaceMatrix(m,M);
-		}
-	}
-}
+};  // end class
 
-
-}; // end class
-
-}	// End namespace
-}	// End namespace
-
+}  // End namespace
+}  // End namespace
 
 #endif

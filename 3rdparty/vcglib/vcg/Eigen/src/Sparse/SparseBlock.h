@@ -26,148 +26,163 @@
 #ifndef EIGEN_SPARSE_BLOCK_H
 #define EIGEN_SPARSE_BLOCK_H
 
-template<typename MatrixType, int Size>
+template <typename MatrixType, int Size>
 struct ei_traits<SparseInnerVectorSet<MatrixType, Size> >
 {
-  typedef typename ei_traits<MatrixType>::Scalar Scalar;
-  enum {
-    IsRowMajor = (int(MatrixType::Flags)&RowMajorBit)==RowMajorBit,
-    Flags = MatrixType::Flags,
-    RowsAtCompileTime = IsRowMajor ? Size : MatrixType::RowsAtCompileTime,
-    ColsAtCompileTime = IsRowMajor ? MatrixType::ColsAtCompileTime : Size,
-    CoeffReadCost = MatrixType::CoeffReadCost
-  };
+    typedef typename ei_traits<MatrixType>::Scalar Scalar;
+    enum
+    {
+        IsRowMajor = (int(MatrixType::Flags) & RowMajorBit) == RowMajorBit,
+        Flags = MatrixType::Flags,
+        RowsAtCompileTime = IsRowMajor ? Size : MatrixType::RowsAtCompileTime,
+        ColsAtCompileTime = IsRowMajor ? MatrixType::ColsAtCompileTime : Size,
+        CoeffReadCost = MatrixType::CoeffReadCost
+    };
 };
 
-template<typename MatrixType, int Size>
-class SparseInnerVectorSet : ei_no_assignment_operator,
-  public SparseMatrixBase<SparseInnerVectorSet<MatrixType, Size> >
+template <typename MatrixType, int Size>
+class SparseInnerVectorSet : ei_no_assignment_operator, public SparseMatrixBase<SparseInnerVectorSet<MatrixType, Size> >
 {
-    enum { IsRowMajor = ei_traits<SparseInnerVectorSet>::IsRowMajor };
-  public:
+    enum
+    {
+        IsRowMajor = ei_traits<SparseInnerVectorSet>::IsRowMajor
+    };
 
+  public:
     EIGEN_SPARSE_GENERIC_PUBLIC_INTERFACE(SparseInnerVectorSet)
-    class InnerIterator: public MatrixType::InnerIterator
+    class InnerIterator : public MatrixType::InnerIterator
     {
       public:
         inline InnerIterator(const SparseInnerVectorSet& xpr, int outer)
-          : MatrixType::InnerIterator(xpr.m_matrix, xpr.m_outerStart + outer)
-        {}
+            : MatrixType::InnerIterator(xpr.m_matrix, xpr.m_outerStart + outer)
+        {
+        }
     };
 
     inline SparseInnerVectorSet(const MatrixType& matrix, int outerStart, int outerSize)
-      : m_matrix(matrix), m_outerStart(outerStart), m_outerSize(outerSize)
+        : m_matrix(matrix), m_outerStart(outerStart), m_outerSize(outerSize)
     {
-      ei_assert( (outerStart>=0) && ((outerStart+outerSize)<=matrix.outerSize()) );
+        ei_assert((outerStart >= 0) && ((outerStart + outerSize) <= matrix.outerSize()));
     }
 
     inline SparseInnerVectorSet(const MatrixType& matrix, int outer)
-      : m_matrix(matrix), m_outerStart(outer), m_outerSize(Size)
+        : m_matrix(matrix), m_outerStart(outer), m_outerSize(Size)
     {
-      ei_assert(Size!=Dynamic);
-      ei_assert( (outer>=0) && (outer<matrix.outerSize()) );
+        ei_assert(Size != Dynamic);
+        ei_assert((outer >= 0) && (outer < matrix.outerSize()));
     }
 
-//     template<typename OtherDerived>
-//     inline SparseInnerVectorSet& operator=(const SparseMatrixBase<OtherDerived>& other)
-//     {
-//       return *this;
-//     }
+    //     template<typename OtherDerived>
+    //     inline SparseInnerVectorSet& operator=(const SparseMatrixBase<OtherDerived>& other)
+    //     {
+    //       return *this;
+    //     }
 
-//     template<typename Sparse>
-//     inline SparseInnerVectorSet& operator=(const SparseMatrixBase<OtherDerived>& other)
-//     {
-//       return *this;
-//     }
+    //     template<typename Sparse>
+    //     inline SparseInnerVectorSet& operator=(const SparseMatrixBase<OtherDerived>& other)
+    //     {
+    //       return *this;
+    //     }
 
-    EIGEN_STRONG_INLINE int rows() const { return IsRowMajor ? m_outerSize.value() : m_matrix.rows(); }
-    EIGEN_STRONG_INLINE int cols() const { return IsRowMajor ? m_matrix.cols() : m_outerSize.value(); }
+    EIGEN_STRONG_INLINE int rows() const
+    {
+        return IsRowMajor ? m_outerSize.value() : m_matrix.rows();
+    }
+    EIGEN_STRONG_INLINE int cols() const
+    {
+        return IsRowMajor ? m_matrix.cols() : m_outerSize.value();
+    }
 
   protected:
-
     const typename MatrixType::Nested m_matrix;
     int m_outerStart;
     const ei_int_if_dynamic<Size> m_outerSize;
-
 };
 
 /***************************************************************************
 * specialisation for DynamicSparseMatrix
 ***************************************************************************/
 
-template<typename _Scalar, int _Options, int Size>
+template <typename _Scalar, int _Options, int Size>
 class SparseInnerVectorSet<DynamicSparseMatrix<_Scalar, _Options>, Size>
   : public SparseMatrixBase<SparseInnerVectorSet<DynamicSparseMatrix<_Scalar, _Options>, Size> >
 {
     typedef DynamicSparseMatrix<_Scalar, _Options> MatrixType;
-    enum { IsRowMajor = ei_traits<SparseInnerVectorSet>::IsRowMajor };
-  public:
+    enum
+    {
+        IsRowMajor = ei_traits<SparseInnerVectorSet>::IsRowMajor
+    };
 
+  public:
     EIGEN_SPARSE_GENERIC_PUBLIC_INTERFACE(SparseInnerVectorSet)
-    class InnerIterator: public MatrixType::InnerIterator
+    class InnerIterator : public MatrixType::InnerIterator
     {
       public:
         inline InnerIterator(const SparseInnerVectorSet& xpr, int outer)
-          : MatrixType::InnerIterator(xpr.m_matrix, xpr.m_outerStart + outer)
-        {}
+            : MatrixType::InnerIterator(xpr.m_matrix, xpr.m_outerStart + outer)
+        {
+        }
     };
 
     inline SparseInnerVectorSet(const MatrixType& matrix, int outerStart, int outerSize)
-      : m_matrix(matrix), m_outerStart(outerStart), m_outerSize(outerSize)
+        : m_matrix(matrix), m_outerStart(outerStart), m_outerSize(outerSize)
     {
-      ei_assert( (outerStart>=0) && ((outerStart+outerSize)<=matrix.outerSize()) );
+        ei_assert((outerStart >= 0) && ((outerStart + outerSize) <= matrix.outerSize()));
     }
 
     inline SparseInnerVectorSet(const MatrixType& matrix, int outer)
-      : m_matrix(matrix), m_outerStart(outer), m_outerSize(Size)
+        : m_matrix(matrix), m_outerStart(outer), m_outerSize(Size)
     {
-      ei_assert(Size!=Dynamic);
-      ei_assert( (outer>=0) && (outer<matrix.outerSize()) );
+        ei_assert(Size != Dynamic);
+        ei_assert((outer >= 0) && (outer < matrix.outerSize()));
     }
 
-    template<typename OtherDerived>
+    template <typename OtherDerived>
     inline SparseInnerVectorSet& operator=(const SparseMatrixBase<OtherDerived>& other)
     {
-      if (IsRowMajor != ((OtherDerived::Flags&RowMajorBit)==RowMajorBit))
-      {
-        // need to transpose => perform a block evaluation followed by a big swap
-        DynamicSparseMatrix<Scalar,IsRowMajor?RowMajorBit:0> aux(other);
-        *this = aux.markAsRValue();
-      }
-      else
-      {
-        // evaluate/copy vector per vector
-        for (int j=0; j<m_outerSize.value(); ++j)
+        if (IsRowMajor != ((OtherDerived::Flags & RowMajorBit) == RowMajorBit))
         {
-          SparseVector<Scalar,IsRowMajor ? RowMajorBit : 0> aux(other.innerVector(j));
-          m_matrix.const_cast_derived()._data()[m_outerStart+j].swap(aux._data());
+            // need to transpose => perform a block evaluation followed by a big swap
+            DynamicSparseMatrix<Scalar, IsRowMajor ? RowMajorBit : 0> aux(other);
+            *this = aux.markAsRValue();
         }
-      }
-      return *this;
+        else
+        {
+            // evaluate/copy vector per vector
+            for (int j = 0; j < m_outerSize.value(); ++j)
+            {
+                SparseVector<Scalar, IsRowMajor ? RowMajorBit : 0> aux(other.innerVector(j));
+                m_matrix.const_cast_derived()._data()[m_outerStart + j].swap(aux._data());
+            }
+        }
+        return *this;
     }
 
     inline SparseInnerVectorSet& operator=(const SparseInnerVectorSet& other)
     {
-      return operator=<SparseInnerVectorSet>(other);
+        return operator=<SparseInnerVectorSet>(other);
     }
 
-//     template<typename Sparse>
-//     inline SparseInnerVectorSet& operator=(const SparseMatrixBase<OtherDerived>& other)
-//     {
-//       return *this;
-//     }
+    //     template<typename Sparse>
+    //     inline SparseInnerVectorSet& operator=(const SparseMatrixBase<OtherDerived>& other)
+    //     {
+    //       return *this;
+    //     }
 
-    EIGEN_STRONG_INLINE int rows() const { return IsRowMajor ? m_outerSize.value() : m_matrix.rows(); }
-    EIGEN_STRONG_INLINE int cols() const { return IsRowMajor ? m_matrix.cols() : m_outerSize.value(); }
+    EIGEN_STRONG_INLINE int rows() const
+    {
+        return IsRowMajor ? m_outerSize.value() : m_matrix.rows();
+    }
+    EIGEN_STRONG_INLINE int cols() const
+    {
+        return IsRowMajor ? m_matrix.cols() : m_outerSize.value();
+    }
 
   protected:
-
     const typename MatrixType::Nested m_matrix;
     int m_outerStart;
     const ei_int_if_dynamic<Size> m_outerSize;
-
 };
-
 
 /***************************************************************************
 * specialisation for SparseMatrix
@@ -255,104 +270,113 @@ class SparseInnerVectorSet<SparseMatrix<_Scalar, _Options>, Size>
 //----------
 
 /** \returns the i-th row of the matrix \c *this. For row-major matrix only. */
-template<typename Derived>
-SparseInnerVectorSet<Derived,1> SparseMatrixBase<Derived>::row(int i)
+template <typename Derived>
+SparseInnerVectorSet<Derived, 1> SparseMatrixBase<Derived>::row(int i)
 {
-  EIGEN_STATIC_ASSERT(IsRowMajor,THIS_METHOD_IS_ONLY_FOR_ROW_MAJOR_MATRICES);
-  return innerVector(i);
+    EIGEN_STATIC_ASSERT(IsRowMajor, THIS_METHOD_IS_ONLY_FOR_ROW_MAJOR_MATRICES);
+    return innerVector(i);
 }
 
 /** \returns the i-th row of the matrix \c *this. For row-major matrix only.
   * (read-only version) */
-template<typename Derived>
-const SparseInnerVectorSet<Derived,1> SparseMatrixBase<Derived>::row(int i) const
+template <typename Derived>
+const SparseInnerVectorSet<Derived, 1> SparseMatrixBase<Derived>::row(int i) const
 {
-  EIGEN_STATIC_ASSERT(IsRowMajor,THIS_METHOD_IS_ONLY_FOR_ROW_MAJOR_MATRICES);
-  return innerVector(i);
+    EIGEN_STATIC_ASSERT(IsRowMajor, THIS_METHOD_IS_ONLY_FOR_ROW_MAJOR_MATRICES);
+    return innerVector(i);
 }
 
 /** \returns the i-th column of the matrix \c *this. For column-major matrix only. */
-template<typename Derived>
-SparseInnerVectorSet<Derived,1> SparseMatrixBase<Derived>::col(int i)
+template <typename Derived>
+SparseInnerVectorSet<Derived, 1> SparseMatrixBase<Derived>::col(int i)
 {
-  EIGEN_STATIC_ASSERT(!IsRowMajor,THIS_METHOD_IS_ONLY_FOR_COLUMN_MAJOR_MATRICES);
-  return innerVector(i);
+    EIGEN_STATIC_ASSERT(!IsRowMajor, THIS_METHOD_IS_ONLY_FOR_COLUMN_MAJOR_MATRICES);
+    return innerVector(i);
 }
 
 /** \returns the i-th column of the matrix \c *this. For column-major matrix only.
   * (read-only version) */
-template<typename Derived>
-const SparseInnerVectorSet<Derived,1> SparseMatrixBase<Derived>::col(int i) const
+template <typename Derived>
+const SparseInnerVectorSet<Derived, 1> SparseMatrixBase<Derived>::col(int i) const
 {
-  EIGEN_STATIC_ASSERT(!IsRowMajor,THIS_METHOD_IS_ONLY_FOR_COLUMN_MAJOR_MATRICES);
-  return innerVector(i);
+    EIGEN_STATIC_ASSERT(!IsRowMajor, THIS_METHOD_IS_ONLY_FOR_COLUMN_MAJOR_MATRICES);
+    return innerVector(i);
 }
 
 /** \returns the \a outer -th column (resp. row) of the matrix \c *this if \c *this
   * is col-major (resp. row-major).
   */
-template<typename Derived>
-SparseInnerVectorSet<Derived,1> SparseMatrixBase<Derived>::innerVector(int outer)
-{ return SparseInnerVectorSet<Derived,1>(derived(), outer); }
+template <typename Derived>
+SparseInnerVectorSet<Derived, 1> SparseMatrixBase<Derived>::innerVector(int outer)
+{
+    return SparseInnerVectorSet<Derived, 1>(derived(), outer);
+}
 
 /** \returns the \a outer -th column (resp. row) of the matrix \c *this if \c *this
   * is col-major (resp. row-major). Read-only.
   */
-template<typename Derived>
-const SparseInnerVectorSet<Derived,1> SparseMatrixBase<Derived>::innerVector(int outer) const
-{ return SparseInnerVectorSet<Derived,1>(derived(), outer); }
+template <typename Derived>
+const SparseInnerVectorSet<Derived, 1> SparseMatrixBase<Derived>::innerVector(int outer) const
+{
+    return SparseInnerVectorSet<Derived, 1>(derived(), outer);
+}
 
 //----------
 
 /** \returns the i-th row of the matrix \c *this. For row-major matrix only. */
-template<typename Derived>
-SparseInnerVectorSet<Derived,Dynamic> SparseMatrixBase<Derived>::subrows(int start, int size)
+template <typename Derived>
+SparseInnerVectorSet<Derived, Dynamic> SparseMatrixBase<Derived>::subrows(int start, int size)
 {
-  EIGEN_STATIC_ASSERT(IsRowMajor,THIS_METHOD_IS_ONLY_FOR_ROW_MAJOR_MATRICES);
-  return innerVectors(start, size);
+    EIGEN_STATIC_ASSERT(IsRowMajor, THIS_METHOD_IS_ONLY_FOR_ROW_MAJOR_MATRICES);
+    return innerVectors(start, size);
 }
 
 /** \returns the i-th row of the matrix \c *this. For row-major matrix only.
   * (read-only version) */
-template<typename Derived>
-const SparseInnerVectorSet<Derived,Dynamic> SparseMatrixBase<Derived>::subrows(int start, int size) const
+template <typename Derived>
+const SparseInnerVectorSet<Derived, Dynamic> SparseMatrixBase<Derived>::subrows(int start, int size) const
 {
-  EIGEN_STATIC_ASSERT(IsRowMajor,THIS_METHOD_IS_ONLY_FOR_ROW_MAJOR_MATRICES);
-  return innerVectors(start, size);
+    EIGEN_STATIC_ASSERT(IsRowMajor, THIS_METHOD_IS_ONLY_FOR_ROW_MAJOR_MATRICES);
+    return innerVectors(start, size);
 }
 
 /** \returns the i-th column of the matrix \c *this. For column-major matrix only. */
-template<typename Derived>
-SparseInnerVectorSet<Derived,Dynamic> SparseMatrixBase<Derived>::subcols(int start, int size)
+template <typename Derived>
+SparseInnerVectorSet<Derived, Dynamic> SparseMatrixBase<Derived>::subcols(int start, int size)
 {
-  EIGEN_STATIC_ASSERT(!IsRowMajor,THIS_METHOD_IS_ONLY_FOR_COLUMN_MAJOR_MATRICES);
-  return innerVectors(start, size);
+    EIGEN_STATIC_ASSERT(!IsRowMajor, THIS_METHOD_IS_ONLY_FOR_COLUMN_MAJOR_MATRICES);
+    return innerVectors(start, size);
 }
 
 /** \returns the i-th column of the matrix \c *this. For column-major matrix only.
   * (read-only version) */
-template<typename Derived>
-const SparseInnerVectorSet<Derived,Dynamic> SparseMatrixBase<Derived>::subcols(int start, int size) const
+template <typename Derived>
+const SparseInnerVectorSet<Derived, Dynamic> SparseMatrixBase<Derived>::subcols(int start, int size) const
 {
-  EIGEN_STATIC_ASSERT(!IsRowMajor,THIS_METHOD_IS_ONLY_FOR_COLUMN_MAJOR_MATRICES);
-  return innerVectors(start, size);
+    EIGEN_STATIC_ASSERT(!IsRowMajor, THIS_METHOD_IS_ONLY_FOR_COLUMN_MAJOR_MATRICES);
+    return innerVectors(start, size);
 }
 
 /** \returns the \a outer -th column (resp. row) of the matrix \c *this if \c *this
   * is col-major (resp. row-major).
   */
-template<typename Derived>
-SparseInnerVectorSet<Derived,Dynamic> SparseMatrixBase<Derived>::innerVectors(int outerStart, int outerSize)
-{ return SparseInnerVectorSet<Derived,Dynamic>(derived(), outerStart, outerSize); }
+template <typename Derived>
+SparseInnerVectorSet<Derived, Dynamic> SparseMatrixBase<Derived>::innerVectors(int outerStart, int outerSize)
+{
+    return SparseInnerVectorSet<Derived, Dynamic>(derived(), outerStart, outerSize);
+}
 
 /** \returns the \a outer -th column (resp. row) of the matrix \c *this if \c *this
   * is col-major (resp. row-major). Read-only.
   */
-template<typename Derived>
-const SparseInnerVectorSet<Derived,Dynamic> SparseMatrixBase<Derived>::innerVectors(int outerStart, int outerSize) const
-{ return SparseInnerVectorSet<Derived,Dynamic>(derived(), outerStart, outerSize); }
+template <typename Derived>
+const SparseInnerVectorSet<Derived, Dynamic> SparseMatrixBase<Derived>::innerVectors(int outerStart,
+                                                                                     int outerSize) const
+{
+    return SparseInnerVectorSet<Derived, Dynamic>(derived(), outerStart, outerSize);
+}
 
-# if 0
+#if 0
 template<typename MatrixType, int BlockRows, int BlockCols, int PacketAccess>
 class Block<MatrixType,BlockRows,BlockCols,PacketAccess,IsSparse>
   : public SparseMatrixBase<Block<MatrixType,BlockRows,BlockCols,PacketAccess,IsSparse> >
@@ -446,4 +470,4 @@ public:
 };
 #endif
 
-#endif // EIGEN_SPARSE_BLOCK_H
+#endif  // EIGEN_SPARSE_BLOCK_H

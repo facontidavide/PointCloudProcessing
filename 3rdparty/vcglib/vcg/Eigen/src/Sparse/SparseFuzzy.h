@@ -38,4 +38,4 @@
 //          <= prec * prec * std::min(nested.cwise().abs2().sum(), otherNested.cwise().abs2().sum());
 // }
 
-#endif // EIGEN_SPARSE_FUZZY_H
+#endif  // EIGEN_SPARSE_FUZZY_H

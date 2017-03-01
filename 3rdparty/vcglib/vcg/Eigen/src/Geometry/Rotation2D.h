@@ -41,88 +41,112 @@
   *
   * \sa class Quaternion, class Transform
   */
-template<typename _Scalar> struct ei_traits<Rotation2D<_Scalar> >
+template <typename _Scalar>
+struct ei_traits<Rotation2D<_Scalar> >
 {
-  typedef _Scalar Scalar;
+    typedef _Scalar Scalar;
 };
 
-template<typename _Scalar>
-class Rotation2D : public RotationBase<Rotation2D<_Scalar>,2>
+template <typename _Scalar>
+class Rotation2D : public RotationBase<Rotation2D<_Scalar>, 2>
 {
-  typedef RotationBase<Rotation2D<_Scalar>,2> Base;
+    typedef RotationBase<Rotation2D<_Scalar>, 2> Base;
 
-public:
+  public:
+    using Base::operator*;
 
-  using Base::operator*;
+    enum
+    {
+        Dim = 2
+    };
+    /** the scalar type of the coefficients */
+    typedef _Scalar Scalar;
+    typedef Matrix<Scalar, 2, 1> Vector2;
+    typedef Matrix<Scalar, 2, 2> Matrix2;
 
-  enum { Dim = 2 };
-  /** the scalar type of the coefficients */
-  typedef _Scalar Scalar;
-  typedef Matrix<Scalar,2,1> Vector2;
-  typedef Matrix<Scalar,2,2> Matrix2;
+  protected:
+    Scalar m_angle;
 
-protected:
+  public:
+    /** Construct a 2D counter clock wise rotation from the angle \a a in radian. */
+    inline Rotation2D(Scalar a) : m_angle(a)
+    {
+    }
 
-  Scalar m_angle;
+    /** \returns the rotation angle */
+    inline Scalar angle() const
+    {
+        return m_angle;
+    }
 
-public:
+    /** \returns a read-write reference to the rotation angle */
+    inline Scalar& angle()
+    {
+        return m_angle;
+    }
 
-  /** Construct a 2D counter clock wise rotation from the angle \a a in radian. */
-  inline Rotation2D(Scalar a) : m_angle(a) {}
+    /** \returns the inverse rotation */
+    inline Rotation2D inverse() const
+    {
+        return -m_angle;
+    }
 
-  /** \returns the rotation angle */
-  inline Scalar angle() const { return m_angle; }
+    /** Concatenates two rotations */
+    inline Rotation2D operator*(const Rotation2D& other) const
+    {
+        return m_angle + other.m_angle;
+    }
 
-  /** \returns a read-write reference to the rotation angle */
-  inline Scalar& angle() { return m_angle; }
+    /** Concatenates two rotations */
+    inline Rotation2D& operator*=(const Rotation2D& other)
+    {
+        return m_angle += other.m_angle;
+    }
 
-  /** \returns the inverse rotation */
-  inline Rotation2D inverse() const { return -m_angle; }
+    /** Applies the rotation to a 2D vector */
+    Vector2 operator*(const Vector2& vec) const
+    {
+        return toRotationMatrix() * vec;
+    }
 
-  /** Concatenates two rotations */
-  inline Rotation2D operator*(const Rotation2D& other) const
-  { return m_angle + other.m_angle; }
+    template <typename Derived>
+    Rotation2D& fromRotationMatrix(const MatrixBase<Derived>& m);
+    Matrix2 toRotationMatrix(void) const;
 
-  /** Concatenates two rotations */
-  inline Rotation2D& operator*=(const Rotation2D& other)
-  { return m_angle += other.m_angle; }
+    /** \returns the spherical interpolation between \c *this and \a other using
+      * parameter \a t. It is in fact equivalent to a linear interpolation.
+      */
+    inline Rotation2D slerp(Scalar t, const Rotation2D& other) const
+    {
+        return m_angle * (1 - t) + other.angle() * t;
+    }
 
-  /** Applies the rotation to a 2D vector */
-  Vector2 operator* (const Vector2& vec) const
-  { return toRotationMatrix() * vec; }
+    /** \returns \c *this with scalar type casted to \a NewScalarType
+      *
+      * Note that if \a NewScalarType is equal to the current scalar type of \c *this
+      * then this function smartly returns a const reference to \c *this.
+      */
+    template <typename NewScalarType>
+    inline typename ei_cast_return_type<Rotation2D, Rotation2D<NewScalarType> >::type cast() const
+    {
+        return typename ei_cast_return_type<Rotation2D, Rotation2D<NewScalarType> >::type(*this);
+    }
 
-  template<typename Derived>
-  Rotation2D& fromRotationMatrix(const MatrixBase<Derived>& m);
-  Matrix2 toRotationMatrix(void) const;
+    /** Copy constructor with scalar type conversion */
+    template <typename OtherScalarType>
+    inline explicit Rotation2D(const Rotation2D<OtherScalarType>& other)
+    {
+        m_angle = Scalar(other.angle());
+    }
 
-  /** \returns the spherical interpolation between \c *this and \a other using
-    * parameter \a t. It is in fact equivalent to a linear interpolation.
-    */
-  inline Rotation2D slerp(Scalar t, const Rotation2D& other) const
-  { return m_angle * (1-t) + other.angle() * t; }
-
-  /** \returns \c *this with scalar type casted to \a NewScalarType
-    *
-    * Note that if \a NewScalarType is equal to the current scalar type of \c *this
-    * then this function smartly returns a const reference to \c *this.
-    */
-  template<typename NewScalarType>
-  inline typename ei_cast_return_type<Rotation2D,Rotation2D<NewScalarType> >::type cast() const
-  { return typename ei_cast_return_type<Rotation2D,Rotation2D<NewScalarType> >::type(*this); }
-
-  /** Copy constructor with scalar type conversion */
-  template<typename OtherScalarType>
-  inline explicit Rotation2D(const Rotation2D<OtherScalarType>& other)
-  {
-    m_angle = Scalar(other.angle());
-  }
-
-  /** \returns \c true if \c *this is approximately equal to \a other, within the precision
-    * determined by \a prec.
-    *
-    * \sa MatrixBase::isApprox() */
-  bool isApprox(const Rotation2D& other, typename NumTraits<Scalar>::Real prec = precision<Scalar>()) const
-  { return ei_isApprox(m_angle,other.m_angle, prec); }
+    /** \returns \c true if \c *this is approximately equal to \a other, within the precision
+      * determined by \a prec.
+      *
+      * \sa MatrixBase::isApprox() */
+    bool isApprox(const Rotation2D& other, typename NumTraits<Scalar>::Real prec = precision<Scalar>()) const
+    {
+        return ei_isApprox(m_angle, other.m_angle, prec);
+    }
 };
 
 /** \ingroup Geometry_Module
@@ -136,24 +160,24 @@ typedef Rotation2D<double> Rotation2Dd;
   * In other words, this function extract the rotation angle
   * from the rotation matrix.
   */
-template<typename Scalar>
-template<typename Derived>
+template <typename Scalar>
+template <typename Derived>
 Rotation2D<Scalar>& Rotation2D<Scalar>::fromRotationMatrix(const MatrixBase<Derived>& mat)
 {
-  EIGEN_STATIC_ASSERT(Derived::RowsAtCompileTime==2 && Derived::ColsAtCompileTime==2,YOU_MADE_A_PROGRAMMING_MISTAKE)
-  m_angle = ei_atan2(mat.coeff(1,0), mat.coeff(0,0));
-  return *this;
+    EIGEN_STATIC_ASSERT(Derived::RowsAtCompileTime == 2 && Derived::ColsAtCompileTime == 2,
+                        YOU_MADE_A_PROGRAMMING_MISTAKE)
+    m_angle = ei_atan2(mat.coeff(1, 0), mat.coeff(0, 0));
+    return *this;
 }
 
 /** Constructs and \returns an equivalent 2x2 rotation matrix.
   */
-template<typename Scalar>
-typename Rotation2D<Scalar>::Matrix2
-Rotation2D<Scalar>::toRotationMatrix(void) const
+template <typename Scalar>
+typename Rotation2D<Scalar>::Matrix2 Rotation2D<Scalar>::toRotationMatrix(void) const
 {
-  Scalar sinA = ei_sin(m_angle);
-  Scalar cosA = ei_cos(m_angle);
-  return (Matrix2() << cosA, -sinA, sinA, cosA).finished();
+    Scalar sinA = ei_sin(m_angle);
+    Scalar cosA = ei_cos(m_angle);
+    return (Matrix2() << cosA, -sinA, sinA, cosA).finished();
 }
 
-#endif // EIGEN_ROTATION2D_H
+#endif  // EIGEN_ROTATION2D_H

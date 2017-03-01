@@ -8,7 +8,7 @@
 *                                                                    \      *
 * All rights reserved.                                                      *
 *                                                                           *
-* This program is free software; you can redistribute it and/or modify      *   
+* This program is free software; you can redistribute it and/or modify      *
 * it under the terms of the GNU General Public License as published by      *
 * the Free Software Foundation; either version 2 of the License, or         *
 * (at your option) any later version.                                       *
@@ -42,51 +42,59 @@ First Commit.
 
 // vcg headers
 #include <vcg/math/base.h>
-#include <vcg/space/point3.h>
 #include <vcg/space/box3.h>
+#include <vcg/space/point3.h>
 
-namespace vcg {
-
-class EmptyClass {
-public:
-	typedef EmptyClass ClassType;
+namespace vcg
+{
+class EmptyClass
+{
+  public:
+    typedef EmptyClass ClassType;
 };
 
-class GetPointerFunctor {
-public:
-	typedef GetPointerFunctor ClassType;
+class GetPointerFunctor
+{
+  public:
+    typedef GetPointerFunctor ClassType;
 
-	template <class T>
-	inline T * operator () (T & t) {
-		return (&t);
-	}
+    template <class T>
+    inline T* operator()(T& t)
+    {
+        return (&t);
+    }
 
-	template <class T>
-	inline T * operator () (T * & t) {
-		return (t);
-	}
+    template <class T>
+    inline T* operator()(T*& t)
+    {
+        return (t);
+    }
 };
 /// Helper class used to build in a easy way a functor that gives the bbox of a face
-/// used mainly in the aabbtree that require such a functor as a parameter 
+/// used mainly in the aabbtree that require such a functor as a parameter
 
-class GetBox3Functor {
-public:
-	template <class OBJTYPE, class SCALARTYPE>
-	void operator () (const OBJTYPE & obj, Box3<SCALARTYPE> & box) {
-		Box3<typename OBJTYPE::ScalarType> tb;
-		obj.GetBBox(tb);
-		box.Import(tb);
-	}
+class GetBox3Functor
+{
+  public:
+    template <class OBJTYPE, class SCALARTYPE>
+    void operator()(const OBJTYPE& obj, Box3<SCALARTYPE>& box)
+    {
+        Box3<typename OBJTYPE::ScalarType> tb;
+        obj.GetBBox(tb);
+        box.Import(tb);
+    }
 };
 
-class GetBarycenter3Functor {
-public:
-	template <class OBJTYPE, class SCALARTYPE>
-	void operator () (const OBJTYPE & obj, Point3<SCALARTYPE> & bar) {
-		bar.Import(Barycenter<OBJTYPE>(obj));
-	}
+class GetBarycenter3Functor
+{
+  public:
+    template <class OBJTYPE, class SCALARTYPE>
+    void operator()(const OBJTYPE& obj, Point3<SCALARTYPE>& bar)
+    {
+        bar.Import(Barycenter<OBJTYPE>(obj));
+    }
 };
 
-} // end namespace vcg
+}  // end namespace vcg
 
-#endif // #ifndef __VCGLIB_WRAPUTILS_H
+#endif  // #ifndef __VCGLIB_WRAPUTILS_H

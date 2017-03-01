@@ -25,16 +25,15 @@
 #ifndef EIGEN_SPARSEREDUX_H
 #define EIGEN_SPARSEREDUX_H
 
-template<typename Derived>
-typename ei_traits<Derived>::Scalar
-SparseMatrixBase<Derived>::sum() const
+template <typename Derived>
+typename ei_traits<Derived>::Scalar SparseMatrixBase<Derived>::sum() const
 {
-  ei_assert(rows()>0 && cols()>0 && "you are using a non initialized matrix");
-  Scalar res = 0;
-  for (int j=0; j<outerSize(); ++j)
-    for (typename Derived::InnerIterator iter(derived(),j); iter; ++iter)
-      res += iter.value();
-  return res;
+    ei_assert(rows() > 0 && cols() > 0 && "you are using a non initialized matrix");
+    Scalar res = 0;
+    for (int j = 0; j < outerSize(); ++j)
+        for (typename Derived::InnerIterator iter(derived(), j); iter; ++iter)
+            res += iter.value();
+    return res;
 }
 
-#endif // EIGEN_SPARSEREDUX_H
+#endif  // EIGEN_SPARSEREDUX_H

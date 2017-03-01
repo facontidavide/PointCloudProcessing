@@ -8,7 +8,7 @@
  *                                                                    \      *
  * All rights reserved.                                                      *
  *                                                                           *
- * This program is free software; you can redistribute it and/or modify      *   
+ * This program is free software; you can redistribute it and/or modify      *
  * it under the terms of the GNU General Public License as published by      *
  * the Free Software Foundation; either version 2 of the License, or         *
  * (at your option) any later version.                                       *
@@ -21,9 +21,9 @@
  *                                                                           *
  ****************************************************************************/
 
-#include <vector>
-#include <string>
 #include <sstream>
+#include <string>
+#include <vector>
 
 /*include the base definition for the vertex */
 #include <vcg/simplex/vertex/base.h>
@@ -38,9 +38,9 @@
 #include <vcg/complex/trimesh/base.h>
 
 /*include the algorithms for updating: */
-#include <vcg/complex/trimesh/update/topology.h>	/* topology */
-#include <vcg/complex/trimesh/update/bounding.h>	/* bounding box */
-#include <vcg/complex/trimesh/update/normal.h>		/* normal */
+#include <vcg/complex/trimesh/update/bounding.h> /* bounding box */
+#include <vcg/complex/trimesh/update/normal.h>   /* normal */
+#include <vcg/complex/trimesh/update/topology.h> /* topology */
 
 /*include the algorithms for mesh fixing  */
 #include <vcg/complex/trimesh/clean.h>
@@ -77,118 +77,94 @@ class CHEdge;
 class CEdge;
 class MyPolyVertex;
 
-struct CUsedTypes: public vcg::UsedTypes< vcg::Use<CVertex>::AsVertexType, vcg::Use<CFace>::AsFaceType >{};
+struct CUsedTypes : public vcg::UsedTypes<vcg::Use<CVertex>::AsVertexType, vcg::Use<CFace>::AsFaceType>
+{
+};
 
 // Mesh of triangles
-class CVertex : public Vertex<
-        CUsedTypes,
-	vertex::BitFlags,
-	vertex::Coord3f, 
-	vertex::Normal3f,
-        vertex::VFAdj,
-        vertex::Mark,
-        vcg::vertex::Curvaturef,
-        vcg::vertex::CurvatureDirf,
-        vertex::Color4b,
-        vertex::Qualityf
-        >{};
+class CVertex
+  : public Vertex<CUsedTypes, vertex::BitFlags, vertex::Coord3f, vertex::Normal3f, vertex::VFAdj, vertex::Mark,
+                  vcg::vertex::Curvaturef, vcg::vertex::CurvatureDirf, vertex::Color4b, vertex::Qualityf>
+{
+};
 
-class CFace   : public Face<
-        CUsedTypes,
-        face::VertexRef,
-        face::Normal3f,
-        face::BitFlags,
-        face::FFAdj,
-        face::VFAdj,
-        face::Mark,
-        face::EdgePlane
-        > {};
+class CFace : public Face<CUsedTypes, face::VertexRef, face::Normal3f, face::BitFlags, face::FFAdj, face::VFAdj,
+                          face::Mark, face::EdgePlane>
+{
+};
 
-class CMesh : public vcg::tri::TriMesh< vector<CVertex>, vector<CFace> > {};
-
-
-
+class CMesh : public vcg::tri::TriMesh<vector<CVertex>, vector<CFace> >
+{
+};
 
 // Poly mesh
 class MyPolyFace;
 class MyPolyVertex;
 
-struct PolyUsedTypes: public vcg::UsedTypes<
-    vcg::Use<MyPolyVertex>  ::AsVertexType,
-    vcg::Use<CEdge>         ::AsEdgeType,
-    vcg::Use<CHEdge>        ::AsHEdgeType,
-    vcg::Use<MyPolyFace>    ::AsFaceType
-    >{};
+struct PolyUsedTypes : public vcg::UsedTypes<vcg::Use<MyPolyVertex>::AsVertexType, vcg::Use<CEdge>::AsEdgeType,
+                                             vcg::Use<CHEdge>::AsHEdgeType, vcg::Use<MyPolyFace>::AsFaceType>
+{
+};
 
-class MyPolyVertex:public Vertex<
-    PolyUsedTypes,
-    vertex::Coord3f,
-    vertex::Normal3f,
-    vertex::Mark,
-    vertex::BitFlags,
-    vertex::VHAdj,
-    vertex::VFAdj
-    >{};
+class MyPolyVertex : public Vertex<PolyUsedTypes, vertex::Coord3f, vertex::Normal3f, vertex::Mark, vertex::BitFlags,
+                                   vertex::VHAdj, vertex::VFAdj>
+{
+};
 
-class CEdge : public Edge<PolyUsedTypes>{};
+class CEdge : public Edge<PolyUsedTypes>
+{
+};
 
-class CHEdge : public HEdge<
-    PolyUsedTypes,
-    hedge::BitFlags,
-    hedge::HFAdj,
-    hedge::HOppAdj,
-    hedge::HNextAdj,
-    hedge::HVAdj,
-    hedge::HPrevAdj,
-    hedge::Mark
-    >{};
+class CHEdge : public HEdge<PolyUsedTypes, hedge::BitFlags, hedge::HFAdj, hedge::HOppAdj, hedge::HNextAdj, hedge::HVAdj,
+                            hedge::HPrevAdj, hedge::Mark>
+{
+};
 
-class MyPolyFace:public Face<
-    PolyUsedTypes,
-    face::PolyInfo,
-    face::PFVAdj,
-    face::PFFAdj,
-    face::PFHAdj,
-    face::BitFlags,
-    face::Normal3f,
-    face::Mark
-    > {};
+class MyPolyFace : public Face<PolyUsedTypes, face::PolyInfo, face::PFVAdj, face::PFFAdj, face::PFHAdj, face::BitFlags,
+                               face::Normal3f, face::Mark>
+{
+};
 
-class MyPolyMesh: public tri::TriMesh<
-    std::vector<MyPolyVertex>,
-    std::vector<MyPolyFace>,
-    std::vector<CHEdge>,
-    std::vector<CEdge>
-    >{};
-
-
+class MyPolyMesh
+  : public tri::TriMesh<std::vector<MyPolyVertex>, std::vector<MyPolyFace>, std::vector<CHEdge>, std::vector<CEdge> >
+{
+};
 
 /*!
   * \brief Collapse operation for adaptive simplification using fitmaps
   *
   */
-class MyCollapseAdaptive: public vcg::tri::QuadDiagonalCollapse< MyPolyMesh, MyCollapseAdaptive, CMesh , vcg::tri::VertReg<MyPolyMesh> ,vcg::tri::FitmapsCollapse<MyPolyMesh, CMesh> , vcg::tri::FitmapsCollapse<MyPolyMesh, CMesh> >
+class MyCollapseAdaptive
+  : public vcg::tri::QuadDiagonalCollapse<MyPolyMesh, MyCollapseAdaptive, CMesh, vcg::tri::VertReg<MyPolyMesh>,
+                                          vcg::tri::FitmapsCollapse<MyPolyMesh, CMesh>,
+                                          vcg::tri::FitmapsCollapse<MyPolyMesh, CMesh> >
 {
-public:
+  public:
+    typedef vcg::tri::QuadDiagonalCollapse<MyPolyMesh, MyCollapseAdaptive, CMesh, vcg::tri::VertReg<MyPolyMesh>,
+                                           vcg::tri::FitmapsCollapse<MyPolyMesh, CMesh>,
+                                           vcg::tri::FitmapsCollapse<MyPolyMesh, CMesh> >
+      constructor;
 
-    typedef vcg::tri::QuadDiagonalCollapse< MyPolyMesh, MyCollapseAdaptive, CMesh , vcg::tri::VertReg<MyPolyMesh>, vcg::tri::FitmapsCollapse<MyPolyMesh, CMesh> , vcg::tri::FitmapsCollapse<MyPolyMesh, CMesh> > constructor;
-
-    MyCollapseAdaptive(HEdgePointer he, int mark):constructor(he,mark){}
+    MyCollapseAdaptive(HEdgePointer he, int mark) : constructor(he, mark)
+    {
+    }
 };
 
 /*!
   * \brief Collapse for uniform simplification
   *
   */
-class MyCollapse: public vcg::tri::QuadDiagonalCollapseBase< MyPolyMesh, MyCollapse, CMesh , vcg::tri::VertReg<MyPolyMesh> >
+class MyCollapse
+  : public vcg::tri::QuadDiagonalCollapseBase<MyPolyMesh, MyCollapse, CMesh, vcg::tri::VertReg<MyPolyMesh> >
 {
-public:
+  public:
+    typedef vcg::tri::QuadDiagonalCollapseBase<MyPolyMesh, MyCollapse, CMesh, vcg::tri::VertReg<MyPolyMesh> >
+      constructor;
 
-    typedef vcg::tri::QuadDiagonalCollapseBase< MyPolyMesh, MyCollapse, CMesh , vcg::tri::VertReg<MyPolyMesh> > constructor;
-
-    MyCollapse(HEdgePointer he, int mark):constructor(he,mark){}
+    MyCollapse(HEdgePointer he, int mark) : constructor(he, mark)
+    {
+    }
 };
-
 
 typedef CMesh::FaceType TriFaceType;
 typedef vcg::GridStaticPtr<CMesh::FaceType, TriFaceType::ScalarType> GRID;
@@ -200,20 +176,18 @@ typedef CMesh::PerVertexAttributeHandle<float> Fitmap_attr;
   * \param m Reference mesh
   *
   */
-void initGrid(CMesh & m)
+void initGrid(CMesh &m)
 {
+    GRID *grid = new GRID();
 
-  GRID* grid = new GRID();
+    vcg::tri::UpdateBounding<CMesh>::Box(m);
+    vcg::tri::UpdateEdges<CMesh>::Set(m);
 
-  vcg::tri::UpdateBounding<CMesh>::Box(m);
-  vcg::tri::UpdateEdges<CMesh>::Set(m);
+    grid->Set(m.face.begin(), m.face.end());
 
-  grid->Set(m.face.begin(), m.face.end());
-
-//  grid->ShowStats(stdout);
-  MyCollapse::grid() = grid;
-  MyCollapseAdaptive::grid() = grid;
-
+    //  grid->ShowStats(stdout);
+    MyCollapse::grid() = grid;
+    MyCollapseAdaptive::grid() = grid;
 }
 
 /*! Initializes the heap of operations on a mesh
@@ -225,15 +199,15 @@ void initGrid(CMesh & m)
   */
 void init_heap(MyPolyMesh &m, vcg::LocalOptimization<MyPolyMesh> &loc, bool adaptive)
 {
-    if(adaptive)
+    if (adaptive)
         MyCollapseAdaptive::Init(m, loc.h);
     else
-        MyCollapse::Init(m,loc.h);
+        MyCollapse::Init(m, loc.h);
 
-    std::make_heap(loc.h.begin(),loc.h.end());
+    std::make_heap(loc.h.begin(), loc.h.end());
 
-    if(!loc.h.empty())
-        loc.currMetric=loc.h.front().pri;
+    if (!loc.h.empty())
+        loc.currMetric = loc.h.front().pri;
 }
 
 /*! Read fitmaps values from a file and loads them into a mesh
@@ -247,11 +221,11 @@ bool read_fitmaps(CMesh &m, const char *fn)
     ifstream fitmaps;
     fitmaps.open(fn);
 
-    if(! fitmaps.is_open())
+    if (!fitmaps.is_open())
         return false;
 
-    Fitmap_attr S_Fit = tri::Allocator<CMesh>::GetPerVertexAttribute<float>(m,"S-Fitmap");
-    Fitmap_attr M_Fit = tri::Allocator<CMesh>::GetPerVertexAttribute<float>(m,"M-Fitmap");
+    Fitmap_attr S_Fit = tri::Allocator<CMesh>::GetPerVertexAttribute<float>(m, "S-Fitmap");
+    Fitmap_attr M_Fit = tri::Allocator<CMesh>::GetPerVertexAttribute<float>(m, "M-Fitmap");
 
     int index;
     float S_fit, M_fit;
@@ -261,14 +235,12 @@ bool read_fitmaps(CMesh &m, const char *fn)
         S_Fit[m.vert[index]] = S_fit;
         M_Fit[m.vert[index]] = M_fit;
 
-    }while(fitmaps.good());
-
+    } while (fitmaps.good());
 
     bool eof = fitmaps.eof();
 
     fitmaps.close();
     return eof;
-
 }
 
 /*! Writes fitmaps values into a file
@@ -282,19 +254,19 @@ bool store_fitmaps(CMesh &m, const char *fn)
     ofstream fitmaps;
     fitmaps.open(fn);
 
-    if(! fitmaps.is_open())
+    if (!fitmaps.is_open())
         return false;
 
-    Fitmap_attr S_Fit = tri::Allocator<CMesh>::GetPerVertexAttribute<float>(m,"S-Fitmap");
-    Fitmap_attr M_Fit = tri::Allocator<CMesh>::GetPerVertexAttribute<float>(m,"M-Fitmap");
+    Fitmap_attr S_Fit = tri::Allocator<CMesh>::GetPerVertexAttribute<float>(m, "S-Fitmap");
+    Fitmap_attr M_Fit = tri::Allocator<CMesh>::GetPerVertexAttribute<float>(m, "M-Fitmap");
 
-    for(unsigned int i =0; i< m.vert.size(); i++)
+    for (unsigned int i = 0; i < m.vert.size(); i++)
     {
-        if( !(m.vert[i].IsD()) )
+        if (!(m.vert[i].IsD()))
         {
             fitmaps << i << " " << S_Fit[m.vert[i]] << " " << M_Fit[m.vert[i]] << endl;
 
-            if(!fitmaps.good())
+            if (!fitmaps.good())
             {
                 fitmaps.close();
                 return false;
@@ -312,35 +284,33 @@ bool store_fitmaps(CMesh &m, const char *fn)
   * \param fn Name of the mesh file
   *
   */
-void load_fitmaps(CMesh &m, char* fn)
+void load_fitmaps(CMesh &m, char *fn)
 {
-
-    Fitmap_attr S_Fit = tri::Allocator<CMesh>::AddPerVertexAttribute<float>  (m, string("S-Fitmap"));
-    Fitmap_attr M_Fit = tri::Allocator<CMesh>::AddPerVertexAttribute<float>  (m, string("M-Fitmap"));
+    Fitmap_attr S_Fit = tri::Allocator<CMesh>::AddPerVertexAttribute<float>(m, string("S-Fitmap"));
+    Fitmap_attr M_Fit = tri::Allocator<CMesh>::AddPerVertexAttribute<float>(m, string("M-Fitmap"));
 
     string filename(fn);
 
     int found = filename.find_last_of("/");
 
-    string name = filename.substr(found+1);
+    string name = filename.substr(found + 1);
 
     string suffix = ".fmp";
 
-    if( !read_fitmaps( m, (name + suffix).c_str()) )
+    if (!read_fitmaps(m, (name + suffix).c_str()))
     {
         tri::Fitmaps<CMesh>::computeSFitmap(m);
 
-        for(CMesh::VertexIterator vi = m.vert.begin(); vi != m.vert.end(); ++vi)
-        S_Fit[vi] = vi->Q();
+        for (CMesh::VertexIterator vi = m.vert.begin(); vi != m.vert.end(); ++vi)
+            S_Fit[vi] = vi->Q();
 
         tri::Fitmaps<CMesh>::computeMFitmap(m, 5);
 
-        for(CMesh::VertexIterator vi = m.vert.begin(); vi != m.vert.end(); ++vi)
-        M_Fit[vi] = vi->Q();
+        for (CMesh::VertexIterator vi = m.vert.begin(); vi != m.vert.end(); ++vi)
+            M_Fit[vi] = vi->Q();
 
-        store_fitmaps(m, ( name + suffix).c_str());
+        store_fitmaps(m, (name + suffix).c_str());
     }
-
 }
 
 /*! Load a mesh, from a file
@@ -350,12 +320,11 @@ void load_fitmaps(CMesh &m, char* fn)
   * \param loadFitmaps Specifies if fitmaps have to be loaded
   *
   */
-void loadMesh(CMesh & m, char* fn, bool loadFitmaps = false)
+void loadMesh(CMesh &m, char *fn, bool loadFitmaps = false)
 {
+    int ret = vcg::tri::io::Importer<CMesh>::Open(m, fn);
 
-    int ret = vcg::tri::io::Importer<CMesh>::Open(m,fn);
-
-    if(ret != 0)
+    if (ret != 0)
     {
         cerr << "Error reading file " << fn << endl;
         exit(1);
@@ -375,42 +344,41 @@ void loadMesh(CMesh & m, char* fn, bool loadFitmaps = false)
     tri::UpdateTopology<CMesh>::FaceFace(m);
 
     // update bounding box
-    vcg::tri::UpdateBounding<CMesh>::Box (m);
+    vcg::tri::UpdateBounding<CMesh>::Box(m);
 
     // update Normals
     vcg::tri::UpdateNormals<CMesh>::PerVertexNormalizedPerFace(m);
     vcg::tri::UpdateNormals<CMesh>::PerFaceNormalized(m);
 
-    if(loadFitmaps)
-        load_fitmaps(m,fn);
-
+    if (loadFitmaps)
+        load_fitmaps(m, fn);
 }
 
-int main(int argc, char *argv[]) {
-
-
+int main(int argc, char *argv[])
+{
     // HE mesh
     MyPolyMesh pm;
 
     // Tri meshes
-    CMesh mesh,refMesh;
+    CMesh mesh, refMesh;
 
-    char* meshfile = NULL;
-    char* trimeshfile = NULL;
-    char* outfile = NULL;
+    char *meshfile = NULL;
+    char *trimeshfile = NULL;
+    char *outfile = NULL;
     int faces;
     bool adaptive = false;
 
-    if(argc < 2)
+    if (argc < 2)
     {
-        cerr << "Usage: " << argv[0] << " -meshfile filename [-trimeshfile filename] -faces num_faces [-adaptive] [-outfile filename]" << endl;
+        cerr << "Usage: " << argv[0]
+             << " -meshfile filename [-trimeshfile filename] -faces num_faces [-adaptive] [-outfile filename]" << endl;
     }
 
-    for(int i=1; i< argc; i++)
+    for (int i = 1; i < argc; i++)
     {
         string arg = string(argv[i]);
 
-        if ( arg == "-meshfile")
+        if (arg == "-meshfile")
             meshfile = argv[++i];
 
         else if (arg == "-trimeshfile")
@@ -429,25 +397,23 @@ int main(int argc, char *argv[]) {
             adaptive = true;
     }
 
-
-    if( !meshfile)
+    if (!meshfile)
     {
         cerr << "Missing mesh filename" << endl;
         exit(1);
     }
 
-    if(faces < 0)
+    if (faces < 0)
     {
         cerr << "Missing faces number" << endl;
         exit(1);
     }
 
-
     // Load the mesh to simplify
     loadMesh(mesh, meshfile);
 
     // Load the reference mesh
-    if(trimeshfile)
+    if (trimeshfile)
         loadMesh(refMesh, trimeshfile, adaptive);
     else
         loadMesh(refMesh, meshfile, adaptive);
@@ -457,8 +423,7 @@ int main(int argc, char *argv[]) {
     MyCollapse::refMesh() = &refMesh;
     MyCollapseAdaptive::refMesh() = &refMesh;
 
-
-    vcg::tri::PolygonSupport<CMesh,MyPolyMesh>::ImportFromTriMesh(pm,mesh);
+    vcg::tri::PolygonSupport<CMesh, MyPolyMesh>::ImportFromTriMesh(pm, mesh);
     vcg::tri::UpdateHalfEdges<MyPolyMesh>::FromIndexed(pm);
 
     // After loading check mesh consistency
@@ -476,23 +441,20 @@ int main(int argc, char *argv[]) {
     // Perform simplification
     loc.DoOptimization();
 
-
     assert(vcg::tri::UpdateHalfEdges<MyPolyMesh>::CheckConsistency(pm));
-    vcg::tri::UpdateIndexed<MyPolyMesh>::FromHalfEdges(pm );
-
+    vcg::tri::UpdateIndexed<MyPolyMesh>::FromHalfEdges(pm);
 
     int ret;
-    if(outfile)
-        ret = tri::io::ExporterOFF<MyPolyMesh>::Save(pm, outfile, tri::io::Mask::IOM_BITPOLYGONAL );
+    if (outfile)
+        ret = tri::io::ExporterOFF<MyPolyMesh>::Save(pm, outfile, tri::io::Mask::IOM_BITPOLYGONAL);
     else
-        ret = tri::io::ExporterOFF<MyPolyMesh>::Save(pm, "output.off", tri::io::Mask::IOM_BITPOLYGONAL );
+        ret = tri::io::ExporterOFF<MyPolyMesh>::Save(pm, "output.off", tri::io::Mask::IOM_BITPOLYGONAL);
 
-    if(ret != 0 )
+    if (ret != 0)
     {
         cerr << "Error saving file" << endl;
         exit(1);
     }
 
     cout << "Simplification ended successfully!" << endl;
-
 }
