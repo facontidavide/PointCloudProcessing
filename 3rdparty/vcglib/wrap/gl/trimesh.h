@@ -990,7 +990,7 @@ void Crease(MESH_TYPE &m, typename MESH_TYPE::scalar_type angleRad)
 			}
 		}
 
-	m.vert.math::Swap(newvert);
+        m.vert.Swap(newvert);
 	m.vn=m.vert.size();
 }
 

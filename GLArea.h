@@ -68,7 +68,7 @@ class GLArea : public QGLWidget
 
     void saveView(QString fileName);
     void loadView(QString fileName);
-    void outputColor(ostream &out, QColor &color);
+    void outputColor(ostream &out, const QColor &color);
     QColor inputColor(istream &in);
     void readRGBNormal(QString fileName);
 

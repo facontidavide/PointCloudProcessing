@@ -1075,7 +1075,7 @@ void GLArea::runNormalSmoothing()
     emit needUpdateStatus();
 }
 
-void GLArea::outputColor(ostream &out, QColor &color)
+void GLArea::outputColor(ostream &out, const QColor &color)
 {
     out << color.red() << "	" << color.green() << "	" << color.blue() << endl;
 }

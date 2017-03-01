@@ -193,7 +193,12 @@ public:
 
         for (VertexIterator iter=begin; iter!=end; iter++)
         {
-            if (callback!=NULL && (++progress%step)==0 && (percentage=int((progress*100)/vertex_count))<100) (callback)(percentage, message);
+            if (callback!=NULL &&
+                    (++progress%step)==0 &&
+                    (percentage=int((progress*100)/vertex_count))<100)
+            {
+                (callback)(percentage, message);
+            }
             VertPointDistanceFunctor vpdf;
             DummyObjectMarker dom;
             octree_for_neighbors.GetKClosest(vpdf, dom, k, iter->P(), max_distance, nearest_vertices, distances, nearest_points);
@@ -202,12 +207,13 @@ public:
             NormalType normal_accum(0.0, 0.0, 0.0);
 
             ScalarType dist_max = -100.0;
-            if(usedistance)
+            if(usedistance){
                 for (unsigned int n=0; n<k; n++)
                 {
                     if (distances[n] > dist_max)
                         dist_max = distances[n];
                 }
+            }
 
             for (unsigned int n=0; n<k; n++)
             {
