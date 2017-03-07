@@ -242,7 +242,7 @@ class Pos
     /// the vertex pointers
     inline bool operator<=(PosType const &p) const
     {
-        return (f != p.f) ? (f < f.p) : (z != p.z) ? (z < p.z) : (v <= p.v);
+        return (f != p->f) ? (f < f->p) : (z != p.z) ? (z < p.z) : (v <= p.v);
     }
 
     /// Assignment operator
