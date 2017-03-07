@@ -90,7 +90,7 @@ class VectorNBW<bool>
             memcpy(newdataLoc, data, sizeof(datasize));
         std::swap(data, newdataLoc);
         if (newdataLoc != 0)
-            delete newdataLoc;
+            delete[] newdataLoc;
         datareserve = sz;
     }
 

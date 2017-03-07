@@ -5,6 +5,7 @@
 
 int main(int argc, char *argv[])
 {
+    glutInit(&argc, argv);
    // CConsoleOutput::Instance();
     // QApplication app(argc, argv);
     QApplication::setStyle(QStyleFactory::create("cleanlooks"));

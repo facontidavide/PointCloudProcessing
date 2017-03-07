@@ -112,7 +112,7 @@ class View
 {
   public:
     void GetView();
-    void SetView(const float *_proj, const float *_modelview, const int *_viewport);
+    void SetView(const float *_proj = NULL, const float *_modelview = NULL, const int *_viewport = NULL);
     Point3<T> Project(const Point3<T> &p) const;
     Point3<T> UnProject(const Point3<T> &p) const;
     Point3<T> ViewPoint() const;
@@ -152,7 +152,7 @@ void View<T>::GetView()
 }
 
 template <class T>
-void View<T>::SetView(const float *_proj = NULL, const float *_modelview = NULL, const int *_viewport = NULL)
+void View<T>::SetView(const float *_proj, const float *_modelview, const int *_viewport)
 {
     for (int i = 0; i < 4; i++)
     {

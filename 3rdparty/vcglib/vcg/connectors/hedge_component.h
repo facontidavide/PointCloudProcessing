@@ -139,7 +139,8 @@ class EmptyMark : public T
     }
     inline const int &IMark() const
     {
-        return 0;
+        static int zero(0);
+        return zero;
     }
     template <class LeftV>
     void ImportData(const LeftV &left)
